@@ -66,28 +66,17 @@
       position: relative;
     }
 
-    /* SPLASH SCREEN INTRO ANIMATION */
-    #app-splash-overlay {
+    #app-splash-screen {
       position: fixed;
       inset: 0;
-      background: #090a0f;
+      background: #000;
       z-index: 999999;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .splash-container {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.85s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.85s ease;
+      pointer-events: all;
+      transition: opacity 0.5s ease-out;
     }
 
     .splash-img {
@@ -97,17 +86,28 @@
       object-fit: contain;
       top: 0;
       left: 0;
-      transition: opacity 1.2s ease-in-out;
+      transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     #splash-icon {
       opacity: 1;
+      transform: scale(1);
       z-index: 1;
     }
 
     #splash-logo {
       opacity: 0;
+      transform: scale(1);
       z-index: 2;
+    }
+
+    #splash-logo.blend-in {
+      opacity: 1;
+    }
+
+    #splash-logo.shrink-out {
+      transform: scale(0.18);
+      opacity: 0;
     }
 
     .app-header-fixed {
@@ -640,7 +640,6 @@
       color: #fff;
     }
 
-    /* BARRE STATISTICHE CLICCABILI */
     .stat-row-click {
       cursor: pointer;
       padding: 4px;
@@ -730,12 +729,10 @@
 </head>
 <body>
 
-  <!-- SPLASH SCREEN INTRO ELEMENT -->
-  <div id="app-splash-overlay">
-    <div class="splash-container" id="splash-box">
-      <img id="splash-icon" class="splash-img" src="https://i.postimg.cc/LXc6SHfv/1790974080159.jpg" alt="Icona Sucapro">
-      <img id="splash-logo" class="splash-img" src="https://i.postimg.cc/VrDFWS1Q/logo.jpg" alt="Logo Sucapro">
-    </div>
+  <!-- SPLASH SCREEN INTRO OVERLAY -->
+  <div id="app-splash-screen">
+    <img id="splash-icon" class="splash-img" src="https://i.postimg.cc/LXc6SHfv/1790974080159.jpg" alt="Icona Sucapro">
+    <img id="splash-logo" class="splash-img" src="https://i.postimg.cc/VrDFWS1Q/logo.jpg" alt="Logo Sucapro">
   </div>
 
   <header class="app-header-fixed" id="global-header">
@@ -1014,12 +1011,12 @@
                 <option value="9">⭐️ 9 - Bellissima</option>
                 <option value="8" selected>⭐️ 8 - Molto bella</option>
                 <option value="7">⭐️ 7 - Buona</option>
-                <option value="6">⭐️ 6 - Sufficiente</option>
+                <option value="6">⭐️️ 6 - Sufficiente</option>
                 <option value="5">⭐️ 5 - Discreta</option>
                 <option value="4">⭐️ 4 - Fredda/Torbida</option>
                 <option value="3">⭐️ 3 - Pessima</option>
                 <option value="2">⭐️ 2 - Interrotta</option>
-                <option value="1">⭐️️ 1 - Disastrosa</option>
+                <option value="1">⭐️ 1 - Disastrosa</option>
               </select>
             </div>
           </div>
@@ -1082,7 +1079,6 @@
 
         <div class="panel">
           <div class="grid-2">
-            <!-- SITO CON MENU A TENDINA E CUSTOM -->
             <div class="form-group">
               <span class="form-label">Sito d'Immersione</span>
               <div class="form-select-box" onclick="openDropdownSheet('site')">
@@ -1090,7 +1086,6 @@
                 <span style="color:var(--accent);">▾</span>
               </div>
             </div>
-            <!-- BUDDY CON MENU A TENDINA E CUSTOM -->
             <div class="form-group">
               <span class="form-label">Compagno (Buddy)</span>
               <div class="form-select-box" onclick="openDropdownSheet('buddy')">
@@ -1133,7 +1128,6 @@
             </div>
           </div>
 
-          <!-- DIVING CENTER CON MENU A TENDINA E CUSTOM -->
           <div class="form-group">
             <span class="form-label">Diving Center</span>
             <div class="form-select-box" onclick="openDropdownSheet('center')">
@@ -1230,34 +1224,67 @@
     <!-- TAB LOGBOOK -->
     <div id="tab-log" class="tab-content">
       <div class="panel" style="padding: 8px;">
-        <div class="panel-header" style="margin-bottom:4px;">
-          <span>Filtri Ricerca Logbook</span>
-          <span style="cursor:pointer; color:var(--accent);" onclick="resetLogFilters()">Azzera Filtri</span>
+        <div class="panel-header" style="margin-bottom:6px;">
+          <span>Filtri & Ordinamento Logbook</span>
+          <span style="cursor:pointer; color:var(--accent);" onclick="resetLogFilters()">Azzera</span>
         </div>
-        <div class="grid-2">
-          <input type="text" id="filter-text" class="form-control" placeholder="Cerca Luogo / Sito..." oninput="renderLogbookFeed()">
-          <input type="text" id="filter-buddy" class="form-control" placeholder="Cerca Compagno (Buddy)..." oninput="renderLogbookFeed()">
+
+        <div class="grid-3">
+          <div class="form-group">
+            <span class="form-label">Luogo / Sito</span>
+            <select id="filter-site-select" class="form-control" onchange="renderLogbookFeed()">
+              <option value="">Tutti i Luoghi</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <span class="form-label">Buddy</span>
+            <select id="filter-buddy-select" class="form-control" onchange="renderLogbookFeed()">
+              <option value="">Tutti i Buddy</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <span class="form-label">Diving Center</span>
+            <select id="filter-center-select" class="form-control" onchange="renderLogbookFeed()">
+              <option value="">Tutti i Diving</option>
+            </select>
+          </div>
         </div>
-        <div class="grid-3" style="margin-top:6px;">
-          <select id="filter-gas" class="form-control" onchange="renderLogbookFeed()">
-            <option value="">Tutti i Gas</option>
-            <option value="Aria">Aria</option>
-            <option value="32">EAN32</option>
-            <option value="36">EAN36</option>
-            <option value="Tx">Trimix</option>
-          </select>
-          <input type="number" id="filter-depth" class="form-control" placeholder="Prof. Min (m)" oninput="renderLogbookFeed()">
-          <input type="number" id="filter-duration" class="form-control" placeholder="Durata Min (')" oninput="renderLogbookFeed()">
-        </div>
-        <div style="margin-top:6px;">
-          <select id="filter-rating" class="form-control" onchange="renderLogbookFeed()">
-            <option value="">Tutti i Voti</option>
-            <option value="10">⭐️ 10</option>
-            <option value="9">≥ 9 ⭐️</option>
-            <option value="8">≥ 8 ⭐️</option>
-            <option value="7">≥ 7 ⭐️</option>
-            <option value="6">≥ 6 ⭐️</option>
-          </select>
+
+        <div class="grid-3" style="margin-top:2px;">
+          <div class="form-group">
+            <span class="form-label">Miscela Gas</span>
+            <select id="filter-gas" class="form-control" onchange="renderLogbookFeed()">
+              <option value="">Tutti i Gas</option>
+              <option value="Aria">Aria</option>
+              <option value="32">EAN32</option>
+              <option value="36">EAN36</option>
+              <option value="Tx">Trimix</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <span class="form-label">Voto Minimo</span>
+            <select id="filter-rating" class="form-control" onchange="renderLogbookFeed()">
+              <option value="">Tutti i Voti</option>
+              <option value="10">⭐️ 10</option>
+              <option value="9">≥ 9 ⭐️</option>
+              <option value="8">≥ 8 ⭐️️</option>
+              <option value="7">≥ 7 ⭐️</option>
+              <option value="6">≥ 6 ⭐️</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <span class="form-label">Ordina Per</span>
+            <select id="sort-log-by" class="form-control" onchange="renderLogbookFeed()">
+              <option value="date_desc">Data (Recenti prima)</option>
+              <option value="date_asc">Data (Meno recenti)</option>
+              <option value="depth_desc">Profondità Max (Più profondo)</option>
+              <option value="depth_asc">Profondità Max (Meno profondo)</option>
+              <option value="temp_max_desc">Temp. Max (Più calda)</option>
+              <option value="temp_min_asc">Temp. Min (Più fredda)</option>
+              <option value="dur_desc">Durata (Più lunga)</option>
+              <option value="dur_asc">Durata (Più corta)</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -1343,7 +1370,7 @@
         </div>
       </div>
 
-      <!-- NUOVA STATISTICA: IMMERSIONI PER MESE -->
+      <!-- GRAFICO 4: IMMERSIONI PER MESE -->
       <div class="panel">
         <div class="panel-header">
           <span>4. Immersioni per Mese</span>
@@ -1354,7 +1381,7 @@
         </div>
       </div>
 
-      <!-- GRAFICO 5: DISTRIBUZIONE MISCELE CLICCABILI SUL NOME -->
+      <!-- GRAFICO 5: DISTRIBUZIONE MISCELE -->
       <div class="panel">
         <div class="panel-header">
           <span>5. Ripartizione Miscele Respirate (Tocca la voce per filtrare)</span>
@@ -1364,7 +1391,7 @@
         </div>
       </div>
 
-      <!-- STATISTICA BUDDY CLICCABILE SUL NOME -->
+      <!-- GRAFICO 6: BUDDY -->
       <div class="panel">
         <div class="panel-header">
           <span>6. Compagni d'Immersione (Buddy - Tocca la voce per filtrare)</span>
@@ -1374,7 +1401,7 @@
         </div>
       </div>
 
-      <!-- STATISTICA LUOGHI CLICCABILE SUL NOME -->
+      <!-- GRAFICO 7: LUOGHI -->
       <div class="panel">
         <div class="panel-header">
           <span>7. Luoghi d'Immersione (Tocca la voce per filtrare)</span>
@@ -1462,41 +1489,6 @@
   </div>
 
   <script>
-    // GESTIONE ANIMAZIONE SPLASH SCREEN ALL'AVVIO
-    function startAppSplashSequence() {
-      const splashOverlay = document.getElementById('app-splash-overlay');
-      const splashLogo = document.getElementById('splash-logo');
-      const splashBox = document.getElementById('splash-box');
-      if (!splashOverlay) return;
-
-      // 1. All'avvio l'icona è visibile a tutto schermo (#splash-icon con opacity:1).
-      // 2. Dopo 2 secondi, fa blending (cross-fade) verso il logo.
-      setTimeout(() => {
-        if (splashLogo) {
-          splashLogo.style.opacity = '1';
-        }
-
-        // 3. Dopo la dissolvenza (1.2s), il logo si rimpicciolisce verso il centro per avviare l'app
-        setTimeout(() => {
-          if (splashBox) {
-            splashBox.style.transform = 'scale(0.12)';
-            splashBox.style.opacity = '0';
-          }
-          if (splashOverlay) {
-            splashOverlay.style.opacity = '0';
-            splashOverlay.style.pointerEvents = 'none';
-          }
-
-          // Rimozione definitiva dal DOM al termine dell'animazione
-          setTimeout(() => {
-            if (splashOverlay && splashOverlay.parentNode) {
-              splashOverlay.parentNode.removeChild(splashOverlay);
-            }
-          }, 850);
-        }, 1250);
-      }, 2000);
-    }
-
     const DEFAULT_OPTIONS = {
       diveType: ["Ricreativa (NDL)", "Deco Normossica", "Deco Ipossica", "Rebreather (CCR)", "Addestramento"],
       gas: ["Aria (21/0)", "EAN32 (32/0)", "EAN36 (36/0)", "Tx 21/35", "Tx 18/45", "Tx 15/55", "Tx 10/70"],
@@ -1526,8 +1518,26 @@
     let bestRmvDiveId = null;
     let worstRmvDiveId = null;
 
+    function runSplashScreenAnimation() {
+      const splashScreen = document.getElementById('app-splash-screen');
+      const splashLogo = document.getElementById('splash-logo');
+      if (!splashScreen || !splashLogo) return;
+
+      // Durata icona impostata a 1,2 secondi
+      setTimeout(() => {
+        splashLogo.classList.add('blend-in');
+        setTimeout(() => {
+          splashLogo.classList.add('shrink-out');
+          splashScreen.style.opacity = '0';
+          setTimeout(() => {
+            splashScreen.style.display = 'none';
+          }, 500);
+        }, 1200);
+      }, 1200);
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
-      startAppSplashSequence();
+      runSplashScreenAnimation();
       loadStorage();
       loadUserName();
       checkUserGate();
@@ -1537,6 +1547,7 @@
       renderHomeCerts();
       sortDivesChronologically();
       updateCounter();
+      populateLogbookDropdowns();
       runLiveCalculations();
       runPlannerEngine();
       initHomeTimers();
@@ -1546,7 +1557,6 @@
       });
     });
 
-    // CALCOLATORE DINAMICO TRIANGOLO DEI GAS
     function runLiveGasTriangle(source) {
       const po2Input = document.getElementById('calc-po2');
       const modInput = document.getElementById('calc-mod');
@@ -1577,7 +1587,6 @@
       }
     }
 
-    // CONTROLLO GATE E NOME UTENTE
     function checkUserGate() {
       const userName = (localStorage.getItem('sucapro_user_fullname') || "").trim();
       const banner = document.getElementById('user-gate-banner');
@@ -1663,7 +1672,6 @@
       if (certCount) certCount.innerText = `${AppState.certs.length} Titoli`;
     }
 
-    // PLANNER
     function calculateNDL(d, fN2, gfLow, gfHigh) {
       let ndlBase = 0;
       if (d <= 12) ndlBase = 135;
@@ -2053,7 +2061,6 @@
       });
     }
 
-    // GOOGLE MAPS
     function openGoogleMaps() {
       const loc = document.getElementById('val-maps-url').value.trim() || document.getElementById('val-site').innerText.trim();
       if (!loc) {
@@ -2067,7 +2074,6 @@
       }
     }
 
-    // REGISTRAZIONE & LIVE CALCULATIONS
     function runLiveCalculations() {
       const dur = parseFloat(document.getElementById('val-duration').value) || 0;
       const maxD = parseFloat(document.getElementById('val-depth-max').value) || 0;
@@ -2201,8 +2207,8 @@
         depthMax: maxD,
         depthAvg: avgD,
         rating: parseInt(document.getElementById('val-rating').value) || 8,
-        tempMin: parseFloat(document.getElementById('val-temp-min').value) || '--',
-        tempMax: parseFloat(document.getElementById('val-temp-max').value) || '--',
+        tempMin: document.getElementById('val-temp-min').value !== '' ? parseFloat(document.getElementById('val-temp-min').value) : '--',
+        tempMax: document.getElementById('val-temp-max').value !== '' ? parseFloat(document.getElementById('val-temp-max').value) : '--',
         pStart: parseFloat(document.getElementById('val-p-start').value) || 0,
         pEnd: parseFloat(document.getElementById('val-p-end').value) || 0,
         diveType: document.getElementById('val-diveType').innerText || "Ricreativa (NDL)",
@@ -2238,6 +2244,7 @@
 
       sortDivesChronologically();
       updateCounter();
+      populateLogbookDropdowns();
       cancelEditMode();
       switchMainTab('log', document.querySelectorAll('.nav-btn')[3]);
     }
@@ -2307,19 +2314,62 @@
       if (confirm("Vuoi cancellare definitivamente questa immersione?")) {
         AppState.dives = AppState.dives.filter(x => x.id !== currentEditingDiveId);
         sortDivesChronologically();
+        populateLogbookDropdowns();
         cancelEditMode();
         switchMainTab('log', document.querySelectorAll('.nav-btn')[3]);
       }
     }
 
-    // LOGBOOK FILTERS
+    function populateLogbookDropdowns() {
+      const siteSelect = document.getElementById('filter-site-select');
+      const buddySelect = document.getElementById('filter-buddy-select');
+      const centerSelect = document.getElementById('filter-center-select');
+
+      if (!siteSelect || !buddySelect || !centerSelect) return;
+
+      const currentSite = siteSelect.value;
+      const currentBuddy = buddySelect.value;
+      const currentCenter = centerSelect.value;
+
+      const sites = new Set();
+      const buddies = new Set();
+      const centers = new Set();
+
+      AppState.dives.forEach(d => {
+        if (d.site && d.site.trim()) sites.add(d.site.trim());
+        if (d.buddy && d.buddy.trim()) buddies.add(d.buddy.trim());
+        if (d.center && d.center.trim()) centers.add(d.center.trim());
+      });
+
+      siteSelect.innerHTML = '<option value="">Tutti i Luoghi</option>' +
+        Array.from(sites).sort().map(s => `<option value="${s.replace(/"/g, '&quot;')}">${s}</option>`).join('');
+
+      buddySelect.innerHTML = '<option value="">Tutti i Buddy</option>' +
+        Array.from(buddies).sort().map(b => `<option value="${b.replace(/"/g, '&quot;')}">${b}</option>`).join('');
+
+      centerSelect.innerHTML = '<option value="">Tutti i Diving</option>' +
+        Array.from(centers).sort().map(c => `<option value="${c.replace(/"/g, '&quot;')}">${c}</option>`).join('');
+
+      siteSelect.value = sites.has(currentSite) ? currentSite : '';
+      buddySelect.value = buddies.has(currentBuddy) ? currentBuddy : '';
+      centerSelect.value = centers.has(currentCenter) ? currentCenter : '';
+    }
+
     function resetLogFilters() {
-      document.getElementById('filter-text').value = '';
-      document.getElementById('filter-buddy').value = '';
-      document.getElementById('filter-gas').value = '';
-      document.getElementById('filter-depth').value = '';
-      document.getElementById('filter-duration').value = '';
-      document.getElementById('filter-rating').value = '';
+      const siteSelect = document.getElementById('filter-site-select');
+      const buddySelect = document.getElementById('filter-buddy-select');
+      const centerSelect = document.getElementById('filter-center-select');
+      const gasSelect = document.getElementById('filter-gas');
+      const ratingSelect = document.getElementById('filter-rating');
+      const sortSelect = document.getElementById('sort-log-by');
+
+      if (siteSelect) siteSelect.value = '';
+      if (buddySelect) buddySelect.value = '';
+      if (centerSelect) centerSelect.value = '';
+      if (gasSelect) gasSelect.value = '';
+      if (ratingSelect) ratingSelect.value = '';
+      if (sortSelect) sortSelect.value = 'date_desc';
+
       renderLogbookFeed();
     }
 
@@ -2330,19 +2380,18 @@
         return;
       }
 
-      const fText = document.getElementById('filter-text').value.toLowerCase().trim();
-      const fBuddy = document.getElementById('filter-buddy').value.toLowerCase().trim();
-      const fGas = document.getElementById('filter-gas').value;
-      const fDepth = parseFloat(document.getElementById('filter-depth').value) || 0;
-      const fDuration = parseFloat(document.getElementById('filter-duration').value) || 0;
-      const fRating = parseInt(document.getElementById('filter-rating').value) || 0;
+      const fSite = (document.getElementById('filter-site-select')?.value || "").toLowerCase().trim();
+      const fBuddy = (document.getElementById('filter-buddy-select')?.value || "").toLowerCase().trim();
+      const fCenter = (document.getElementById('filter-center-select')?.value || "").toLowerCase().trim();
+      const fGas = document.getElementById('filter-gas')?.value || "";
+      const fRating = parseInt(document.getElementById('filter-rating')?.value, 10) || 0;
+      const sortBy = document.getElementById('sort-log-by')?.value || "date_desc";
 
       const filtered = AppState.dives.filter(d => {
-        if (fText && !((d.site || '').toLowerCase().includes(fText))) return false;
-        if (fBuddy && !((d.buddy || '').toLowerCase().includes(fBuddy))) return false;
+        if (fSite && (d.site || '').toLowerCase().trim() !== fSite) return false;
+        if (fBuddy && (d.buddy || '').toLowerCase().trim() !== fBuddy) return false;
+        if (fCenter && (d.center || '').toLowerCase().trim() !== fCenter) return false;
         if (fGas && !((d.gas || '').includes(fGas))) return false;
-        if (fDepth > 0 && ((parseFloat(d.depthMax) || 0) < fDepth)) return false;
-        if (fDuration > 0 && ((parseFloat(d.duration) || 0) < fDuration)) return false;
         if (fRating > 0 && ((d.rating || 8) < fRating)) return false;
         return true;
       });
@@ -2352,7 +2401,40 @@
         return;
       }
 
-      feed.innerHTML = [...filtered].reverse().map(d => {
+      filtered.sort((a, b) => {
+        const timeA = new Date(`${a.date || "1970-01-01"}T${a.time || "00:00"}:00`).getTime();
+        const timeB = new Date(`${b.date || "1970-01-01"}T${b.time || "00:00"}:00`).getTime();
+        const depthA = parseFloat(a.depthMax) || 0;
+        const depthB = parseFloat(b.depthMax) || 0;
+        const durA = parseFloat(a.duration) || 0;
+        const durB = parseFloat(b.duration) || 0;
+        const tMaxA = a.tempMax !== '--' && a.tempMax !== undefined ? parseFloat(a.tempMax) : -999;
+        const tMaxB = b.tempMax !== '--' && b.tempMax !== undefined ? parseFloat(b.tempMax) : -999;
+        const tMinA = a.tempMin !== '--' && a.tempMin !== undefined ? parseFloat(a.tempMin) : 999;
+        const tMinB = b.tempMin !== '--' && b.tempMin !== undefined ? parseFloat(b.tempMin) : 999;
+
+        switch (sortBy) {
+          case 'date_asc':
+            return timeA - timeB;
+          case 'depth_desc':
+            return depthB - depthA;
+          case 'depth_asc':
+            return depthA - depthB;
+          case 'temp_max_desc':
+            return tMaxB - tMaxA;
+          case 'temp_min_asc':
+            return tMinA - tMinB;
+          case 'dur_desc':
+            return durB - durA;
+          case 'dur_asc':
+            return durA - durB;
+          case 'date_desc':
+          default:
+            return timeB - timeA;
+        }
+      });
+
+      feed.innerHTML = filtered.map(d => {
         const deltaP = (d.pStart && d.pEnd) ? (d.pStart - d.pEnd) : '--';
         return `
           <div class="log-card" onclick="loadDiveForEdit(${d.id})">
@@ -2362,6 +2444,9 @@
             </div>
             <div style="font-size:0.7rem; color:var(--text-sub); margin-bottom:3px;">
               ${d.date} ${d.time || ''} | Gas: <strong>${d.gas}</strong> | Buddy: <strong>${d.buddy || 'Solo Diving'}</strong>
+            </div>
+            <div style="font-size:0.65rem; color:var(--text-muted); margin-bottom:2px;">
+              Diving: <strong>${d.center || 'Privato / Da Riva'}</strong> | Temp: <strong>${d.tempMin !== '--' ? d.tempMin + '°C' : '--'} / ${d.tempMax !== '--' ? d.tempMax + '°C' : '--'}</strong>
             </div>
             <div style="font-size:0.65rem; color:var(--text-muted);">
               Consumo: ${d.pStart || '--'}b ➔ ${d.pEnd || '--'}b (ΔP ${deltaP} bar) | CNS: <span style="color:var(--accent);">${d.cns || '0%'}</span> | Densità: ${d.density || '--'}
@@ -2411,15 +2496,18 @@
       }).join('');
     }
 
-    // PROFILO E STATISTICHE
     function filterLogBy(type, val) {
       resetLogFilters();
+      populateLogbookDropdowns();
       if (type === 'gas') {
-        document.getElementById('filter-gas').value = val.includes('Aria') ? 'Aria' : (val.includes('32') ? '32' : (val.includes('36') ? '36' : (val.includes('Tx') ? 'Tx' : '')));
+        const gasEl = document.getElementById('filter-gas');
+        if (gasEl) gasEl.value = val.includes('Aria') ? 'Aria' : (val.includes('32') ? '32' : (val.includes('36') ? '36' : (val.includes('Tx') ? 'Tx' : '')));
       } else if (type === 'buddy') {
-        document.getElementById('filter-buddy').value = val;
+        const buddyEl = document.getElementById('filter-buddy-select');
+        if (buddyEl) buddyEl.value = val;
       } else if (type === 'site') {
-        document.getElementById('filter-text').value = val;
+        const siteEl = document.getElementById('filter-site-select');
+        if (siteEl) siteEl.value = val;
       }
       switchMainTab('log', document.querySelectorAll('.nav-btn')[3]);
     }
@@ -2479,7 +2567,6 @@
       drawSiteDistribution();
     }
 
-    // STATISTICA PER MESE
     function drawMonthDistribution() {
       const container = document.getElementById('monthDistributionBars');
       if (!container) return;
@@ -2521,7 +2608,6 @@
       }).join('');
     }
 
-    // STATISTICA MISCELE
     function drawGasDistribution() {
       const container = document.getElementById('gasDistributionBars');
       if (!container) return;
@@ -2554,7 +2640,6 @@
       }).join('');
     }
 
-    // STATISTICA BUDDY
     function drawBuddyDistribution() {
       const container = document.getElementById('buddyDistributionBars');
       if (!container) return;
@@ -2587,7 +2672,6 @@
       }).join('');
     }
 
-    // STATISTICA LUOGHI
     function drawSiteDistribution() {
       const container = document.getElementById('siteDistributionBars');
       if (!container) return;
@@ -2921,7 +3005,6 @@
       });
     }
 
-    // BREVETTI
     function renderHomeCerts() {
       const container = document.getElementById('c-cards-list-home');
       if (!container) return;
@@ -3048,7 +3131,6 @@
       }
     }
 
-    // TIMERS E TABS
     function initHomeTimers() {
       updateHomeIntervalTimers();
       if (homeTimerInterval) clearInterval(homeTimerInterval);
@@ -3164,7 +3246,7 @@
 
       if (tabKey === 'home') { updateHomeIntervalTimers(); renderHomeCerts(); }
       if (tabKey === 'plan') { runPlannerEngine(); }
-      if (tabKey === 'log') renderLogbookFeed();
+      if (tabKey === 'log') { populateLogbookDropdowns(); renderLogbookFeed(); }
       if (tabKey === 'profile') renderProfileData();
       if (tabKey === 'record') {
         resizeSigCanvas();
@@ -3183,7 +3265,6 @@
       switchMainTab('record', targetBtn);
     }
 
-    // DROPDOWN SHEET
     function openDropdownSheet(key) {
       currentSheetCategory = key;
       const titles = {
@@ -3341,6 +3422,7 @@
           checkUserGate();
           sortDivesChronologically();
           updateCounter();
+          populateLogbookDropdowns();
           renderHomeCerts();
           runPlannerEngine();
           alert("Backup ripristinato con successo.");
