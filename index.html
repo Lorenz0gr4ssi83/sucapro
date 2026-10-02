@@ -1,0 +1,2567 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#090a0f">
+  <title>Sucapro</title>
+
+  <!-- Configurazione Schermo Intero e Icona per Chrome Android -->
+  <link rel="icon" type="image/jpeg" href="https://i.postimg.cc/LXc6SHfv/1790974080159.jpg">
+  <link rel="apple-touch-icon" href="https://i.postimg.cc/LXc6SHfv/1790974080159.jpg">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Sucapro">
+  <meta name="application-name" content="Sucapro">
+
+  <!-- Manifest PWA inline per forzare il nome 'Sucapro' e la modalità fullscreen standalone -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Sucapro%22%2C%22short_name%22%3A%22Sucapro%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23090a0f%22%2C%22theme_color%22%3A%22%23090a0f%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fi.postimg.cc%2FLXc6SHfv%2F1790974080159.jpg%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fjpeg%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fi.postimg.cc%2FLXc6SHfv%2F1790974080159.jpg%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fjpeg%22%7D%5D%7D">
+
+  <style>
+    :root {
+      --bg: #090a0f;
+      --surface: #12141c;
+      --surface-card: #181b26;
+      --surface-border: #262a3b;
+      --accent: #ff8c00;
+      --accent-glow: rgba(255, 140, 0, 0.25);
+      --accent-hover: #ffa333;
+      --text-main: #f5f6fa;
+      --text-sub: #b2b9cb;
+      --text-muted: #858da4;
+      --danger: #ff4757;
+      --success: #2ed573;
+      --warning: #eccc68;
+      --temp-line: #00d2d3;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --nav-height: 58px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      max-width: 540px;
+      margin: 0 auto;
+      padding-top: var(--safe-top);
+      position: relative;
+    }
+
+    .app-header-fixed {
+      display: none;
+      flex-shrink: 0;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--surface-border);
+      z-index: 90;
+    }
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      color: #fff;
+    }
+    .brand-title span { color: var(--accent); }
+    .header-context {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .view-title-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-sub);
+    }
+    .header-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      background: rgba(255, 140, 0, 0.12);
+      border: 1px solid rgba(255, 140, 0, 0.3);
+      border-radius: 12px;
+      color: var(--accent);
+    }
+
+    .views-wrapper {
+      flex: 1;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: calc(var(--nav-height) + var(--safe-bottom));
+    }
+
+    .tab-content {
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: 8px 10px 14px 10px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .tab-content.active { display: block; }
+
+    #tab-home.active {
+      overflow-y: hidden;
+    }
+
+    .home-hero-banner {
+      display: flex;
+      position: relative;
+      align-items: stretch;
+      gap: 10px;
+      background: linear-gradient(135deg, rgba(255, 140, 0, 0.12), rgba(18, 20, 28, 0.8));
+      border: 1px solid rgba(255, 140, 0, 0.35);
+      border-radius: 12px;
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      height: 104px;
+    }
+    .home-hero-logo-container {
+      width: 88px;
+      height: 88px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+    }
+    .home-hero-logo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid var(--accent);
+      display: block;
+    }
+    .home-hero-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
+    }
+    .home-hero-top-row {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+    }
+    .home-hero-title {
+      font-size: 0.95rem;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      color: #fff;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+    .home-user-box {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+    }
+    .home-user-label {
+      font-size: 0.55rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+    .home-user-name-input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px dashed var(--surface-border);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 800;
+      outline: none;
+      padding: 1px 0;
+      width: 100%;
+    }
+    .home-user-name-input:focus {
+      border-bottom-color: var(--accent);
+    }
+    .home-hero-bottom-row {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+    }
+    .header-badge-large {
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 3px 10px;
+      background: rgba(255, 140, 0, 0.18);
+      border: 1.5px solid var(--accent);
+      border-radius: 10px;
+      color: var(--accent);
+      letter-spacing: 0.3px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 8px 10px;
+      margin-bottom: 6px;
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .panel-header span:last-child {
+      font-size: 0.68rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .c-cards-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+    .c-cards-scroll::-webkit-scrollbar { display: none; }
+
+    .c-card {
+      min-width: 110px;
+      max-width: 110px;
+      background: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 5px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .c-card-badge {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      font-size: 0.55rem;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 4px;
+      background: var(--accent);
+      color: #000;
+      z-index: 2;
+    }
+    .c-card-img {
+      width: 100%;
+      height: 56px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-top: 14px;
+      margin-bottom: 3px;
+      background: #000;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .c-card-placeholder {
+      width: 100%;
+      height: 56px;
+      margin-top: 14px;
+      margin-bottom: 3px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.02);
+      border: 1px dashed var(--surface-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.58rem;
+      color: var(--text-muted);
+    }
+    .c-card-org { font-size: 0.58rem; font-weight: 800; color: var(--accent); text-transform: uppercase; }
+    .c-card-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 1px 0;
+    }
+    .c-card-sub { font-size: 0.55rem; color: var(--text-sub); }
+
+    .add-c-btn {
+      min-width: 76px;
+      height: 92px;
+      background: rgba(255, 140, 0, 0.05);
+      border: 1.5px dashed rgba(255, 140, 0, 0.35);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      color: var(--accent);
+      font-size: 0.65rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .form-group { position: relative; margin-bottom: 8px; }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-label {
+      position: absolute;
+      top: -6px;
+      left: 8px;
+      background: var(--surface);
+      padding: 0 4px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--accent);
+      z-index: 2;
+      border-radius: 3px;
+    }
+
+    .form-control, .form-select-box {
+      width: 100%;
+      height: 38px;
+      background: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 0 10px;
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 600;
+      outline: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .form-control:focus, .form-select-box:active { border-color: var(--accent); }
+    .form-control::placeholder { color: var(--text-muted); font-weight: 400; font-size: 0.75rem; }
+
+    .select-val { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.8rem; }
+    .select-val.empty { color: var(--text-muted); font-weight: 400; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
+
+    .metric-box {
+      background: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 6px 8px;
+      margin-bottom: 4px;
+    }
+    .metric-box-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      margin-bottom: 1px;
+    }
+    .timer-val {
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+    }
+    .timer-val.cleared { color: var(--success); }
+    .timer-val.active-time { color: var(--temp-line); }
+    .metric-subtext { font-size: 0.58rem; color: var(--text-muted); }
+
+    .sac-banner {
+      display: flex;
+      justify-content: space-around;
+      background: rgba(255, 140, 0, 0.08);
+      border: 1px solid rgba(255, 140, 0, 0.3);
+      padding: 6px 4px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    .sac-banner div { display: flex; flex-direction: column; align-items: center; }
+    .sac-banner span.val { font-size: 0.95rem; color: #fff; }
+    .sac-banner span.lbl { font-size: 0.58rem; color: var(--text-sub); text-transform: uppercase; margin-top: 1px; }
+
+    .btn-action {
+      width: 100%;
+      height: 38px;
+      background: linear-gradient(135deg, var(--accent), #e65c00);
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-action:active { opacity: 0.85; }
+
+    .btn-icon {
+      width: 38px;
+      height: 38px;
+      background: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-width: 540px;
+      margin: 0 auto;
+      height: calc(var(--nav-height) + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom);
+      background: rgba(18, 20, 28, 0.98);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid var(--surface-border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 9999;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.62rem;
+      font-weight: 700;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      cursor: pointer;
+      flex: 1;
+      height: 100%;
+      justify-content: center;
+      user-select: none;
+    }
+    .nav-btn svg { width: 19px; height: 19px; fill: currentColor; pointer-events: none; }
+    .nav-btn.active { color: var(--accent); }
+
+    .log-card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .log-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2px;
+    }
+    .log-title { font-size: 0.88rem; font-weight: 800; color: #fff; }
+    .log-stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: var(--surface-card);
+      border-radius: 8px;
+      padding: 6px 2px;
+      margin-top: 6px;
+      text-align: center;
+    }
+    .stat-val { font-size: 0.82rem; font-weight: 800; color: #fff; }
+    .stat-label { font-size: 0.55rem; color: var(--text-sub); text-transform: uppercase; }
+
+    .profile-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .profile-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .kpi-card {
+      background: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: 10px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .kpi-title { font-size: 0.6rem; font-weight: 700; color: var(--text-sub); text-transform: uppercase; }
+    .kpi-value { font-size: 1.15rem; font-weight: 800; color: #fff; margin-top: 2px; }
+    .kpi-value span { font-size: 0.72rem; color: var(--accent); margin-left: 2px; }
+    .kpi-sub { font-size: 0.58rem; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .chart-container {
+      position: relative;
+      background: #000;
+      border: 1px solid var(--surface-border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    canvas { width: 100% !important; display: block; }
+
+    .plan-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.72rem;
+      margin-top: 4px;
+    }
+    .plan-table th {
+      color: var(--text-sub);
+      text-align: left;
+      padding: 4px 2px;
+      border-bottom: 1px solid var(--surface-border);
+      font-size: 0.62rem;
+      text-transform: uppercase;
+    }
+    .plan-table td {
+      padding: 5px 2px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: #fff;
+    }
+
+    .sheet-modal, .modal-dialog {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 10000;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .sheet-modal.active, .modal-dialog.active { display: flex; }
+    .modal-dialog { align-items: center; padding: 12px; }
+
+    .sheet-body {
+      width: 100%;
+      max-width: 540px;
+      background: var(--surface);
+      border-top: 1px solid var(--accent);
+      border-radius: 16px 16px 0 0;
+      padding: 12px 14px calc(var(--safe-bottom) + 20px) 14px;
+      max-height: 75vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-dialog-content {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 440px;
+      padding: 14px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    .sheet-header-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--surface-border);
+      margin-bottom: 8px;
+    }
+    .sheet-items-list { overflow-y: auto; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .sheet-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 12px;
+      background: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .sheet-row.selected { border-color: var(--accent); background: rgba(255, 140, 0, 0.12); }
+
+    .edit-mode-banner {
+      display: none;
+      background: rgba(255, 140, 0, 0.15);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      padding: 6px 10px;
+      margin-bottom: 8px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sign-pad-wrap {
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      background: #000;
+      position: relative;
+      margin-top: 4px;
+      touch-action: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="app-header-fixed" id="global-header">
+    <div class="brand-title">SUCA<span>PRO</span></div>
+    <div class="header-context">
+      <div class="view-title-tag" id="global-view-name">Planner</div>
+      <div class="header-badge" id="global-badge-count">0 Tuffi</div>
+    </div>
+  </header>
+
+  <main class="views-wrapper">
+
+    <!-- TAB HOME -->
+    <div id="tab-home" class="tab-content active">
+      <div class="home-hero-banner">
+        <div class="home-hero-logo-container">
+          <img class="home-hero-logo" id="home-main-logo" alt="SucaPro Logo" src="https://i.postimg.cc/VrDFWS1Q/logo.jpg">
+        </div>
+        <div class="home-hero-right">
+          <div class="home-hero-top-row">
+            <div class="home-hero-title">HOME</div>
+          </div>
+          <div class="home-user-box">
+            <span class="home-user-label">Subacqueo</span>
+            <input type="text" id="home-user-name" class="home-user-name-input" placeholder="Nome e Cognome" oninput="saveUserName(this.value)">
+          </div>
+          <div class="home-hero-bottom-row">
+            <div class="header-badge-large" id="home-badge-count">0 Tuffi</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span>Portafoglio Brevetti (C-Cards)</span>
+          <span id="home-cert-count">0 Titoli</span>
+        </div>
+        <div class="c-cards-scroll" id="c-cards-list-home"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span>Fisiologia & Decompressione</span>
+          <span id="timer-nofly-rule">DAN Guidelines</span>
+        </div>
+        <div class="metric-box">
+          <div class="metric-box-header">
+            <span>Tempo di No-Fly Residuo</span>
+            <span style="color:var(--accent);">Pre-Flight</span>
+          </div>
+          <div class="timer-val" id="timer-nofly-display">00:00:00</div>
+          <div class="metric-subtext" id="timer-nofly-sub">Nessun azoto residuo registrato</div>
+        </div>
+        <div class="metric-box" style="margin-bottom:0;">
+          <div class="metric-box-header">
+            <span>Intervallo di Superficie (SI)</span>
+            <span style="color:var(--temp-line);">Tempo Trascorso</span>
+          </div>
+          <div class="timer-val active-time" id="timer-si-display">00:00:00</div>
+          <div class="metric-subtext" id="timer-si-sub">Nessuna immersione precedente</div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:8px;">
+        <button class="btn-action" style="background:var(--surface-card); color:var(--text-sub); border:1px solid var(--surface-border);" onclick="exportDataJson()">Backup</button>
+        <button class="btn-action" style="background:var(--surface-card); color:var(--text-sub); border:1px solid var(--surface-border);" onclick="document.getElementById('import-file').click()">Ripristina</button>
+        <input type="file" id="import-file" style="display:none;" accept=".json" onchange="importDataJson(event)">
+      </div>
+    </div>
+
+    <!-- TAB PLANNER -->
+    <div id="tab-plan" class="tab-content">
+      <div class="panel">
+        <div class="panel-header">
+          <span>Parametri Piano Ottimale</span>
+          <span style="color:var(--accent);" id="plan-target-reserve-header">Target Riserva: 50 bar</span>
+        </div>
+        <div class="grid-3">
+          <div class="form-group">
+            <span class="form-label">Quota Max (m)</span>
+            <input type="number" step="1" id="plan-depth" class="form-control" value="30" oninput="runPlannerEngine()">
+          </div>
+          <div class="form-group">
+            <span class="form-label">T. Fondo Max (min)</span>
+            <input type="number" step="1" id="plan-bottom-time" class="form-control" value="10" oninput="runPlannerEngine()">
+          </div>
+          <div class="form-group">
+            <span class="form-label">RMV (L/m)</span>
+            <input type="number" step="0.5" id="plan-sac" class="form-control" value="16" oninput="runPlannerEngine()">
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="form-group">
+            <span class="form-label">Miscela Gas</span>
+            <div class="form-select-box" onclick="openDropdownSheet('planGas')">
+              <span class="select-val" id="val-planGas">Aria (21/0)</span>
+              <span style="color:var(--accent);">▾</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">Bombola</span>
+            <div class="form-select-box" onclick="openDropdownSheet('planTank')">
+              <span class="select-val" id="val-planTank">Acciaio 15L</span>
+              <span style="color:var(--accent);">▾</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">Acqua</span>
+            <div class="form-select-box" onclick="openDropdownSheet('planWater')">
+              <span class="select-val" id="val-planWater">Salata (1.028)</span>
+              <span style="color:var(--accent);">▾</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="form-group">
+            <span class="form-label">Gradient Factors</span>
+            <div class="form-select-box" onclick="openDropdownSheet('planGf')">
+              <span class="select-val" id="val-planGf">40 / 85</span>
+              <span style="color:var(--accent);">▾</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">P. Iniziale (bar)</span>
+            <input type="number" id="plan-p-start" class="form-control" value="210" oninput="runPlannerEngine()">
+          </div>
+          <div class="form-group">
+            <span class="form-label">Riserva Min. (bar)</span>
+            <input type="number" id="plan-reserve-target" class="form-control" value="50" min="20" max="120" step="5" oninput="runPlannerEngine()">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:0;">
+          <span class="form-label">T. Totale Stimato Immersione</span>
+          <input type="text" id="plan-total-time-display" class="form-control" value="-- min" readonly style="color:var(--temp-line); font-weight:800;">
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="sac-banner" style="margin-bottom:0;">
+          <div><span class="val" id="plan-ndl-val">--</span><span class="lbl">NDL Fondo</span></div>
+          <div><span class="val" id="plan-tts-val">--'</span><span class="lbl">TTS Fondo</span></div>
+          <div><span class="val" id="plan-mod-val">-- m</span><span class="lbl">MOD (1.4b)</span></div>
+          <div><span class="val" id="plan-dens-val">-- g/L</span><span class="lbl">Densità Max</span></div>
+        </div>
+        <div style="font-size:0.62rem; color:var(--text-muted); text-align:center; margin-top:4px;" id="plan-dens-note">
+          ≤ 6.0 g/L (Ideale) | 6.0 - 7.5 g/L (Deep Air)
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span>Bilancio Gas & Riserva di Sicurezza</span>
+          <span style="color:var(--success);" id="plan-reserve-card-badge">Target Riserva: 50 bar</span>
+        </div>
+        <div class="profile-grid-2">
+          <div class="kpi-card">
+            <div class="kpi-title">Turn Pressure (Fondo Max)</div>
+            <div class="kpi-value" style="color:var(--accent);" id="plan-turn-press">-- <span>bar</span></div>
+            <div class="kpi-sub">Quota stacco da fondo</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Pressione a 0m (Emersione)</div>
+            <div class="kpi-value" style="color:var(--success);" id="plan-surf-press">-- <span>bar</span></div>
+            <div class="kpi-sub" id="plan-surf-sub">Residuo a fine tuffo</div>
+          </div>
+        </div>
+        <div class="profile-grid-2" style="margin-bottom:0;">
+          <div class="kpi-card">
+            <div class="kpi-title" id="plan-multilevel-title">Quota Profonda Multi-level</div>
+            <div class="kpi-value" style="color:var(--temp-line);" id="plan-extra-time">-- <span>min</span></div>
+            <div class="kpi-sub" id="plan-extra-sub">Permanenza a quota profonda</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Gas Consumato Totale</div>
+            <div class="kpi-value" id="plan-gas-needed">-- <span>L</span></div>
+            <div class="kpi-sub" id="plan-bar-needed">-- bar erogati</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span>Run-Time e Profilo Multi-Level Ottimizzato</span>
+          <span id="plan-total-runtime">Run-Time: --</span>
+        </div>
+        <table class="plan-table">
+          <thead>
+            <tr>
+              <th>Fase</th>
+              <th>Quota</th>
+              <th>Velocità / Sosta</th>
+              <th>Run-Time</th>
+              <th>Gas</th>
+            </tr>
+          </thead>
+          <tbody id="plan-runtime-body">
+            <tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Calcolo in corso...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB REGISTRA -->
+    <div id="tab-record" class="tab-content">
+      <div id="edit-notice-bar" class="edit-mode-banner">
+        <div>
+          <span style="font-weight:800; color:var(--accent); font-size:0.75rem;" id="edit-notice-text">Modifica Tuffo</span>
+          <div style="font-size:0.62rem; color:var(--text-sub);">Aggiorna i parametri registrati.</div>
+        </div>
+        <button type="button" class="btn-icon" style="height:28px; width:28px; font-size:0.75rem;" onclick="cancelEditMode()">✕</button>
+      </div>
+
+      <form id="main-dive-form" onsubmit="submitDive(event)">
+        <input type="hidden" id="editing-dive-id" value="">
+
+        <div class="panel">
+          <div class="form-group">
+            <span class="form-label">Tipologia Profilo</span>
+            <div class="form-select-box" onclick="openDropdownSheet('diveType')">
+              <span class="select-val empty" id="val-diveType">-- Seleziona --</span>
+              <span style="color:var(--accent);">▾</span>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <span class="form-label">Miscela Principale</span>
+              <div class="form-select-box" onclick="openDropdownSheet('gas')">
+                <span class="select-val empty" id="val-gas">-- Seleziona --</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <span class="form-label">Gas Deco / Stadio</span>
+              <div class="form-select-box" onclick="openDropdownSheet('decoGas')">
+                <span class="select-val empty" id="val-decoGas">-- Nessuno --</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="form-group">
+              <span class="form-label">Bombola</span>
+              <div class="form-select-box" onclick="openDropdownSheet('tank')">
+                <span class="select-val empty" id="val-tank">-- Bombola --</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <span class="form-label">Acqua</span>
+              <div class="form-select-box" onclick="openDropdownSheet('waterType')">
+                <span class="select-val" id="val-waterType">Salata (1.028)</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <span class="form-label">Gradient Factors</span>
+              <div class="form-select-box" onclick="openDropdownSheet('gf')">
+                <span class="select-val" id="val-planGf">40 / 85</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:0;">
+            <div class="form-group">
+              <span class="form-label">Muta</span>
+              <div class="form-select-box" onclick="openDropdownSheet('suit')">
+                <span class="select-val empty" id="val-suit">-- Seleziona --</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <span class="form-label">Zavorra (kg)</span>
+              <input type="number" step="0.5" id="val-ballast" class="form-control" placeholder="es. 6">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="form-group">
+            <span class="form-label">Sito d'Immersione</span>
+            <div class="form-select-box" onclick="openDropdownSheet('site')">
+              <span class="select-val empty" id="val-site">-- Seleziona o aggiungi --</span>
+              <span style="color:var(--accent);">▾</span>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="form-group">
+              <span class="form-label">Visibilità (m)</span>
+              <input type="number" id="val-visibility" class="form-control" placeholder="es. 15">
+            </div>
+            <div class="form-group">
+              <span class="form-label">Corrente</span>
+              <select id="val-current" class="form-control">
+                <option value="Nulla">Nulla</option>
+                <option value="Leggera">Leggera</option>
+                <option value="Media">Media</option>
+                <option value="Forte">Forte</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <span class="form-label">Moto Ondoso</span>
+              <select id="val-sea-state" class="form-control">
+                <option value="Calmo">Calmo</option>
+                <option value="Poco mosso">Poco mosso</option>
+                <option value="Mosso">Mosso</option>
+                <option value="Agitato">Agitato</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <span class="form-label">Compagno (Buddy)</span>
+              <div class="form-select-box" onclick="openDropdownSheet('buddy')">
+                <span class="select-val empty" id="val-buddy">-- Nessuno --</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <span class="form-label">Diving Center</span>
+              <div class="form-select-box" onclick="openDropdownSheet('center')">
+                <span class="select-val empty" id="val-center">-- Nessuno --</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0;">
+            <span class="form-label">Coordinate GPS</span>
+            <div style="display:flex; gap:6px;">
+              <input type="text" id="val-gps" class="form-control" placeholder="44.3647° N, 8.6833° E">
+              <button type="button" class="btn-icon" onclick="readGPS()">📍</button>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0; margin-top:8px;">
+            <span class="form-label">Video YouTube (URL)</span>
+            <input type="url" id="val-video-link" class="form-control" placeholder="https://youtu.be/...">
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="grid-3">
+            <div class="form-group">
+              <span class="form-label">Data</span>
+              <input type="date" id="val-date" class="form-control">
+            </div>
+            <div class="form-group">
+              <span class="form-label">Ora Inizio</span>
+              <input type="time" id="val-time" class="form-control">
+            </div>
+            <div class="form-group">
+              <span class="form-label">Durata (min)</span>
+              <input type="number" id="val-duration" class="form-control" placeholder="45" oninput="runLiveCalculations()">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <span class="form-label">Prof. Massima (m)</span>
+              <input type="number" step="0.1" id="val-depth-max" class="form-control" placeholder="25.0" oninput="runLiveCalculations()">
+            </div>
+            <div class="form-group">
+              <span class="form-label">Prof. Media (m)</span>
+              <input type="number" step="0.1" id="val-depth-avg" class="form-control" placeholder="14.5" oninput="runLiveCalculations()">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <span class="form-label">Temp Min (°C)</span>
+              <input type="number" step="0.1" id="val-temp-min" class="form-control" placeholder="14">
+            </div>
+            <div class="form-group">
+              <span class="form-label">Temp Max (°C)</span>
+              <input type="number" step="0.1" id="val-temp-max" class="form-control" placeholder="22">
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:0;">
+            <div class="form-group">
+              <span class="form-label">P. Inizio (bar)</span>
+              <input type="number" id="val-p-start" class="form-control" placeholder="210" oninput="runLiveCalculations()">
+            </div>
+            <div class="form-group">
+              <span class="form-label">P. Fine (bar)</span>
+              <input type="number" id="val-p-end" class="form-control" placeholder="50" oninput="runLiveCalculations()">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="sac-banner" style="margin-bottom:0;">
+            <div><span class="val" id="ind-rmv">-- L/min</span><span class="lbl">RMV Stimato</span></div>
+            <div><span class="val" id="ind-cns">0%</span><span class="lbl">CNS Clock</span></div>
+            <div><span class="val" id="ind-otu">0</span><span class="lbl">OTU Tossicità</span></div>
+            <div><span class="val" id="ind-density">-- g/L</span><span class="lbl">Densità Max</span></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span>Firma Buddy / Timbro Istruttore</span>
+            <span onclick="clearSignature()" style="cursor:pointer; color:var(--danger);">Cancella</span>
+          </div>
+          <div class="sign-pad-wrap">
+            <canvas id="signatureCanvas" height="80"></canvas>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button type="submit" class="btn-action" id="btn-submit-main" style="flex:1;">REGISTRA NEL LOGBOOK</button>
+          <button type="button" id="btn-delete-editing" class="btn-icon" style="color:var(--danger); display:none;" onclick="deleteDiveCurrentlyEditing()">🗑</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- TAB LOGBOOK -->
+    <div id="tab-log" class="tab-content">
+      <div id="logbook-feed"></div>
+    </div>
+
+    <!-- TAB PROFILO -->
+    <div id="tab-profile" class="tab-content">
+      <div class="profile-grid-2">
+        <div class="kpi-card">
+          <div class="kpi-title">Tempo Fondo Totale</div>
+          <div class="kpi-value" id="kpi-total-time">0h <span>00'</span></div>
+          <div class="kpi-sub" id="kpi-total-days">0 giorni cumulativi</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">Profondità Massima</div>
+          <div class="kpi-value" id="kpi-max-depth">0.0<span>m</span></div>
+          <div class="kpi-sub" id="kpi-max-depth-site">Nessun record</div>
+        </div>
+      </div>
+
+      <div class="profile-grid-3">
+        <div class="kpi-card">
+          <div class="kpi-title">RMV Medio (Ultimi 10)</div>
+          <div class="kpi-value" style="color:var(--temp-line);" id="kpi-rmv-avg-10">--<span>L/m</span></div>
+          <div class="kpi-sub" id="kpi-rmv-avg-10-sub">0 tuffi considerati</div>
+        </div>
+        <div class="kpi-card" id="kpi-card-best" style="cursor:pointer;" onclick="jumpToBestRmvDive()">
+          <div class="kpi-title">Miglior RMV (Min)</div>
+          <div class="kpi-value" style="color:var(--success);" id="kpi-rmv-best">--<span>L/m</span></div>
+          <div class="kpi-sub" id="kpi-rmv-best-sub">Tocca per aprire</div>
+        </div>
+        <div class="kpi-card" id="kpi-card-worst" style="cursor:pointer;" onclick="jumpToWorstRmvDive()">
+          <div class="kpi-title">Peggior RMV (Max)</div>
+          <div class="kpi-value" style="color:var(--danger);" id="kpi-rmv-worst">--<span>L/m</span></div>
+          <div class="kpi-sub" id="kpi-rmv-worst-sub">Tocca per aprire</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span>Trend Consumo RMV</span>
+          <span id="kpi-rmv-avg-label">Media 10: -- L/m</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="sacTrendCanvas" height="150" style="cursor:pointer;"></canvas>
+        </div>
+        <div style="display:flex; justify-content:center; gap:12px; margin-top:6px; font-size:0.62rem; font-weight:700;">
+          <div style="display:flex; align-items:center; gap:3px;"><span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--success);"></span>Minimo</div>
+          <div style="display:flex; align-items:center; gap:3px;"><span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--danger);"></span>Massimo</div>
+          <div style="display:flex; align-items:center; gap:3px;"><span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#fff;"></span>Altri</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span>Ripartizione Fasce di Profondità</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="depthDistCanvas" height="130"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" onclick="switchMainTab('home', this)">
+      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      Home
+    </button>
+    <button class="nav-btn" onclick="switchMainTab('plan', this)">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      Planner
+    </button>
+    <button class="nav-btn" onclick="startNewDiveMode(this)">
+      <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      Registra
+    </button>
+    <button class="nav-btn" onclick="switchMainTab('log', this)">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+      Logbook
+    </button>
+    <button class="nav-btn" onclick="switchMainTab('profile', this)">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+      Profilo
+    </button>
+  </nav>
+
+  <!-- SHEET DROPDOWN -->
+  <div class="sheet-modal" id="sheet-overlay" onclick="closeDropdownSheet(event)">
+    <div class="sheet-body" onclick="event.stopPropagation()">
+      <div class="sheet-header-box">
+        <span class="sheet-title" id="sheet-title" style="font-size:0.85rem; font-weight:800;">Opzione</span>
+        <button style="background:none; border:none; color:var(--text-sub); font-size:1.2rem;" onclick="closeDropdownSheet()">&times;</button>
+      </div>
+      <div class="sheet-items-list" id="sheet-list"></div>
+      <div style="display:flex; gap:6px; margin-top:8px;">
+        <input type="text" id="sheet-new-val" class="form-control" placeholder="Aggiungi voce custom...">
+        <button type="button" class="btn-action" style="width:auto; padding:0 14px;" onclick="addNewOption()">Salva</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALE BREVETTO -->
+  <div class="modal-dialog" id="cert-modal">
+    <div class="modal-dialog-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-weight:800; font-size:0.88rem; color:#fff;" id="cert-modal-title">Gestione Brevetto</span>
+        <button style="background:none; border:none; color:var(--text-sub); font-size:1.2rem;" onclick="closeCertModal()">&times;</button>
+      </div>
+      <input type="hidden" id="cert-edit-id">
+      <div class="form-group">
+        <span class="form-label">Didattica</span>
+        <input type="text" id="cert-org" class="form-control" placeholder="es. SNSI, PADI, TDI, GUE">
+      </div>
+      <div class="form-group">
+        <span class="form-label">Livello / Corso</span>
+        <input type="text" id="cert-title" class="form-control" placeholder="es. Advanced OWD, Deep, Trimix">
+      </div>
+      <div class="form-group">
+        <span class="form-label">Numero Licenza</span>
+        <input type="text" id="cert-num" class="form-control" placeholder="Seriale licenza">
+      </div>
+      <div class="form-group">
+        <span class="form-label">Data Emissione</span>
+        <input type="date" id="cert-date" class="form-control">
+      </div>
+      <div class="form-group">
+        <span class="form-label">Immagine Brevetto</span>
+        <input type="file" id="cert-file" accept="image/*" class="form-control" style="padding-top:7px; font-size:0.75rem;" onchange="previewCertFile(event)">
+        <img id="cert-img-display" style="width:100%; height:90px; object-fit:cover; border-radius:8px; margin-top:6px; display:none; border:1px solid var(--surface-border);">
+      </div>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button type="button" class="btn-action" style="flex:1;" onclick="saveCertRecord()">Salva Brevetto</button>
+        <button type="button" id="cert-del-btn" class="btn-icon" style="color:var(--danger); display:none;" onclick="deleteCurrentCert()">🗑</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DEFAULT_OPTIONS = {
+      diveType: ["Ricreativa (NDL)", "Deco Normossica", "Deco Ipossica", "Rebreather (CCR)", "Addestramento"],
+      gas: ["Aria (21/0)", "EAN32 (32/0)", "EAN36 (36/0)", "Tx 21/35", "Tx 18/45", "Tx 15/55", "Tx 10/70"],
+      decoGas: ["Nessuno", "EAN50 (50/0)", "Ossigeno 100%", "Tx 50/25"],
+      tank: ["Alluminio S80 (11.1L)", "Acciaio 12L", "Acciaio 15L", "Acciaio 18L", "Bibombola 2x10L (20L)", "Bibombola 2x12L (24L)"],
+      waterType: ["Salata (1.028)", "Dolce (1.000)"],
+      suit: ["Umida 5mm", "Semistagna 7mm", "Stagna Neoprene 4mm", "Stagna Trilaminato"],
+      gf: ["40 / 85", "30 / 70", "50 / 80", "45 / 85", "30 / 85"],
+      site: ["Y-40 The Deep Joy", "Relitto Haven", "Secca Cernie", "Grotta Gamberi", "Punta della Chiappa"],
+      buddy: ["Solo Diving", "Buddy"],
+      center: ["Privato / Da Riva", "Diving Center"]
+    };
+
+    let AppState = {
+      dives: [],
+      certs: [],
+      options: JSON.parse(JSON.stringify(DEFAULT_OPTIONS))
+    };
+
+    let currentSheetCategory = null;
+    let homeTimerInterval = null;
+    let currentEditingDiveId = null;
+    let tempCertImageBase64 = "";
+
+    let sigCanvas, sigCtx, isDrawing = false;
+    let sacChartPoints = [];
+    let bestRmvDiveId = null;
+    let worstRmvDiveId = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadStorage();
+      loadUserName();
+      initSignaturePad();
+      initSacTrendCanvasInteractivity();
+      renderHomeCerts();
+      sortDivesChronologically();
+      updateCounter();
+      runLiveCalculations();
+      runPlannerEngine();
+      initHomeTimers();
+      window.addEventListener('resize', resizeSigCanvas);
+    });
+
+    function saveUserName(val) {
+      localStorage.setItem('sucapro_user_fullname', val);
+    }
+
+    function loadUserName() {
+      const saved = localStorage.getItem('sucapro_user_fullname') || "Lorenzo Grassi";
+      const input = document.getElementById('home-user-name');
+      if (input) {
+        input.value = saved;
+      }
+      if (!localStorage.getItem('sucapro_user_fullname')) {
+        localStorage.setItem('sucapro_user_fullname', "Lorenzo Grassi");
+      }
+    }
+
+    function getTodayString() {
+      const today = new Date();
+      return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    }
+
+    function loadStorage() {
+      const data = localStorage.getItem('sucapro_storage_v10');
+      if (data) {
+        try {
+          const parsed = JSON.parse(data);
+          AppState.dives = parsed.dives || [];
+          AppState.certs = parsed.certs || [];
+          if (parsed.options) AppState.options = Object.assign({}, DEFAULT_OPTIONS, parsed.options);
+        } catch(e) { console.error(e); }
+      }
+    }
+
+    function saveStorage() {
+      localStorage.setItem('sucapro_storage_v10', JSON.stringify(AppState));
+    }
+
+    async function exportDataJson() {
+      const backupPayload = {
+        ...AppState,
+        userName: localStorage.getItem('sucapro_user_fullname') || "Lorenzo Grassi"
+      };
+      const jsonContent = JSON.stringify(backupPayload, null, 2);
+      const fileName = `sucapro_backup_${getTodayString()}.json`;
+
+      if (window.showSaveFilePicker) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: fileName,
+            types: [{
+              description: 'JSON Backup File',
+              accept: { 'application/json': ['.json'] }
+            }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(jsonContent);
+          await writable.close();
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') return;
+        }
+      }
+
+      const blob = new Blob([jsonContent], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importDataJson(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const parsed = JSON.parse(evt.target.result);
+          if (parsed.dives) AppState.dives = parsed.dives;
+          if (parsed.certs) AppState.certs = parsed.certs;
+          if (parsed.options) AppState.options = parsed.options;
+          if (parsed.userName) {
+            localStorage.setItem('sucapro_user_fullname', parsed.userName);
+            loadUserName();
+          }
+          saveStorage();
+          sortDivesChronologically();
+          updateCounter();
+          renderHomeCerts();
+          runPlannerEngine();
+          alert("Backup ripristinato con successo.");
+        } catch(err) {
+          alert("File JSON non valido.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function sortDivesChronologically() {
+      AppState.dives.sort((a, b) => {
+        const timeA = new Date(`${a.date || "1970-01-01"}T${a.time || "00:00"}:00`).getTime();
+        const timeB = new Date(`${b.date || "1970-01-01"}T${b.time || "00:00"}:00`).getTime();
+        return timeA - timeB;
+      });
+      AppState.dives.forEach((d, idx) => { d.num = idx + 1; });
+      saveStorage();
+    }
+
+    function updateCounter() {
+      const total = AppState.dives.length;
+      const badge = document.getElementById('global-badge-count');
+      if (badge) badge.innerText = `${total} ${total === 1 ? 'Tuffo' : 'Tuffi'}`;
+      const homeBadge = document.getElementById('home-badge-count');
+      if (homeBadge) homeBadge.innerText = `${total} ${total === 1 ? 'Tuffo' : 'Tuffi'}`;
+      const certCount = document.getElementById('home-cert-count');
+      if (certCount) certCount.innerText = `${AppState.certs.length} Titoli`;
+    }
+
+    function calculateNDL(d, fN2, gfLow, gfHigh) {
+      let ndlBase = 0;
+      if (d <= 12) ndlBase = 135;
+      else if (d <= 15) ndlBase = 75;
+      else if (d <= 18) ndlBase = 50;
+      else if (d <= 21) ndlBase = 35;
+      else if (d <= 24) ndlBase = 25;
+      else if (d <= 27) ndlBase = 20;
+      else if (d <= 30) ndlBase = 16;
+      else if (d <= 33) ndlBase = 13;
+      else if (d <= 36) ndlBase = 11;
+      else if (d <= 39) ndlBase = 9;
+      else if (d <= 42) ndlBase = 8;
+      else if (d <= 45) ndlBase = 7;
+      else ndlBase = Math.max(3, Math.round(250 / d));
+
+      const eanFactor = (0.79 / (fN2 || 0.79));
+      let calc = Math.round(ndlBase * eanFactor);
+
+      const gfScale = Math.max(0.55, Math.min(1.25, gfHigh / 85));
+      calc = Math.max(1, Math.round(calc * gfScale));
+      const gfLowScale = Math.max(0.7, Math.min(1.1, (gfLow + 20) / 60));
+      return Math.max(1, Math.round(calc * gfLowScale));
+    }
+
+    function runPlannerEngine() {
+      const depth = Math.max(1, parseFloat(document.getElementById('plan-depth').value) || 30);
+      const userBottomTime = Math.max(1, parseFloat(document.getElementById('plan-bottom-time').value) || 10);
+      const sac = Math.max(5, parseFloat(document.getElementById('plan-sac').value) || 16);
+      const pStart = Math.max(60, parseFloat(document.getElementById('plan-p-start').value) || 210);
+      const reserveTarget = Math.max(10, Math.min(pStart - 10, parseFloat(document.getElementById('plan-reserve-target').value) || 50));
+
+      const headerTargetBadge = document.getElementById('plan-target-reserve-header');
+      if (headerTargetBadge) headerTargetBadge.innerText = `Target Riserva: ${reserveTarget} bar`;
+
+      const cardReserveBadge = document.getElementById('plan-reserve-card-badge');
+      if (cardReserveBadge) cardReserveBadge.innerText = `Target Riserva: ${reserveTarget} bar`;
+
+      const gasText = document.getElementById('val-planGas').innerText;
+      const tankText = document.getElementById('val-planTank').innerText;
+      const waterText = document.getElementById('val-planWater').innerText;
+      const gfText = document.getElementById('val-planGf').innerText;
+
+      let gfLow = 40, gfHigh = 85;
+      const gfMatch = gfText.match(/(\d+)\s*\/\s*(\d+)/);
+      if (gfMatch) {
+        gfLow = parseFloat(gfMatch[1]);
+        gfHigh = parseFloat(gfMatch[2]);
+      }
+
+      let tankVol = 15;
+      const tMatch = tankText.match(/(\d+(\.\d+)?)\s*L/i);
+      if (tMatch) tankVol = parseFloat(tMatch[1]);
+
+      let rho = waterText.includes("1.000") ? 1.000 : 1.028;
+
+      let fO2 = 0.21;
+      let fHe = 0;
+      if (gasText.includes("32")) fO2 = 0.32;
+      else if (gasText.includes("36")) fO2 = 0.36;
+      else if (gasText.includes("Tx")) {
+        const txMatch = gasText.match(/Tx\s*(\d+)\/(\d+)/i);
+        if (txMatch) {
+          fO2 = parseFloat(txMatch[1]) / 100;
+          fHe = parseFloat(txMatch[2]) / 100;
+        }
+      }
+      const fN2 = Math.max(0, 1 - fO2 - fHe);
+
+      const pAmbMax = 1 + (depth * rho / 10);
+      const mod = (((1.4 / fO2) - 1) * (10 / rho)).toFixed(1);
+
+      const rho0 = (fO2 * 1.428) + (fN2 * 1.251) + (fHe * 0.179);
+      const density = (rho0 * pAmbMax).toFixed(2);
+
+      document.getElementById('plan-mod-val').innerText = `${mod}m`;
+      document.getElementById('plan-dens-val').innerText = `${density} g/L`;
+
+      const dNote = document.getElementById('plan-dens-note');
+      const dNum = parseFloat(density);
+      if (dNum > 7.5) {
+        dNote.style.color = "var(--danger)";
+        dNote.innerText = `Densità elevata (${density} g/L): Oltre 48m ad aria, consigliato Trimix.`;
+      } else if (dNum > 6.0) {
+        dNote.style.color = "var(--warning)";
+        dNote.innerText = `Deep Air Zone (${density} g/L): Conforme a brevetto. No sforzi intensi.`;
+      } else {
+        dNote.style.color = "var(--success)";
+        dNote.innerText = `Densità ottimale (≤ 6.0 g/L): Basso lavoro respiratorio.`;
+      }
+
+      const calcNdlMax = calculateNDL(depth, fN2, gfLow, gfHigh);
+      const isDecoAtBottom = userBottomTime > calcNdlMax;
+      const ndlEl = document.getElementById('plan-ndl-val');
+
+      if (isDecoAtBottom) {
+        const decoDiff = userBottomTime - calcNdlMax;
+        ndlEl.innerText = `DECO +${decoDiff}'`;
+        ndlEl.style.color = "var(--danger)";
+      } else {
+        ndlEl.innerText = `${calcNdlMax - userBottomTime}' NDL`;
+        ndlEl.style.color = "var(--success)";
+      }
+
+      const descentSpeed = 18;
+      const descentTime = Math.ceil(depth / descentSpeed);
+      const avgPAmbDescent = 1 + ((depth / 2) * rho / 10);
+      const descentLiters = descentTime * avgPAmbDescent * sac;
+
+      const bottomLiters = userBottomTime * pAmbMax * sac;
+
+      let chosenDeepLevel = Math.max(6, Math.min(depth - 3, 21));
+      if (depth <= 12) chosenDeepLevel = 6;
+      else if (depth <= 18) chosenDeepLevel = 12;
+      else if (depth <= 24) chosenDeepLevel = 15;
+      else if (depth <= 30) chosenDeepLevel = 18;
+      else chosenDeepLevel = 21;
+
+      const ndlAtDeepLevel = calculateNDL(chosenDeepLevel, fN2, gfLow, gfHigh);
+      const ndlFractionUsedAtMax = Math.min(1.0, userBottomTime / calcNdlMax);
+      const remainingNdlAtDeepLevel = Math.max(1, Math.round(ndlAtDeepLevel * (1.0 - (ndlFractionUsedAtMax * 0.75))));
+
+      const ascentSpeed = 9;
+      const toDeepLevelTime = Math.max(1, Math.ceil((depth - chosenDeepLevel) / ascentSpeed));
+      const avgPAmbToDeep = 1 + (((depth + chosenDeepLevel) / 2) * rho / 10);
+      const transitToDeepLiters = toDeepLevelTime * avgPAmbToDeep * sac;
+
+      const fromDeepTo6mTime = Math.max(1, Math.ceil((chosenDeepLevel - 6) / ascentSpeed));
+      const avgPAmbFromDeepTo6m = 1 + (((chosenDeepLevel + 6) / 2) * rho / 10);
+      const transitFromDeepTo6mLiters = fromDeepTo6mTime * avgPAmbFromDeepTo6m * sac;
+
+      const safetyStopLiters = 3 * (1 + 5 * rho / 10) * sac;
+      const finalAscentLiters = 2 * (1 + 3 * rho / 10) * sac;
+      const baseAscentAndSafetyLiters = transitFromDeepTo6mLiters + safetyStopLiters + finalAscentLiters;
+
+      const fixedOverheadLiters = descentLiters + bottomLiters + transitToDeepLiters + baseAscentAndSafetyLiters;
+      const targetAvailableGasLiters = Math.max(0, (pStart - reserveTarget) * tankVol);
+      const gasForMultiLevelLiters = targetAvailableGasLiters - fixedOverheadLiters;
+
+      const pAmbDeepLevel = 1 + (chosenDeepLevel * rho / 10);
+      const deepLevelLiterPerMin = pAmbDeepLevel * sac;
+
+      const pAmbShallow = 1 + (5 * rho / 10);
+      const shallowLiterPerMin = pAmbShallow * sac;
+
+      let deepLevelTime = 0;
+      let shallowLevelTime = 0;
+
+      if (gasForMultiLevelLiters > 0) {
+        const maxMinutesByGasAtDeep = Math.floor(gasForMultiLevelLiters / deepLevelLiterPerMin);
+
+        if (maxMinutesByGasAtDeep <= remainingNdlAtDeepLevel) {
+          deepLevelTime = maxMinutesByGasAtDeep;
+          const gasUsedAtDeep = deepLevelTime * deepLevelLiterPerMin;
+          const residualGas = gasForMultiLevelLiters - gasUsedAtDeep;
+          shallowLevelTime = Math.floor(residualGas / shallowLiterPerMin);
+        } else {
+          deepLevelTime = remainingNdlAtDeepLevel;
+          const gasUsedAtDeep = deepLevelTime * deepLevelLiterPerMin;
+          const residualGas = gasForMultiLevelLiters - gasUsedAtDeep;
+          shallowLevelTime = Math.floor(residualGas / shallowLiterPerMin);
+        }
+      }
+
+      const mlTitleEl = document.getElementById('plan-multilevel-title');
+      const extraTimeEl = document.getElementById('plan-extra-time');
+      const extraSubEl = document.getElementById('plan-extra-sub');
+
+      mlTitleEl.innerText = `Quota Profonda (${chosenDeepLevel}m)`;
+
+      if (gasForMultiLevelLiters >= 0) {
+        if (shallowLevelTime > 0) {
+          extraTimeEl.innerHTML = `${deepLevelTime}'<span> + ${shallowLevelTime}' a 5m</span>`;
+          extraSubEl.innerText = `${deepLevelTime}' a ${chosenDeepLevel}m (limite NDL) + ${shallowLevelTime}' a 5m per ${reserveTarget}b`;
+        } else {
+          extraTimeEl.innerHTML = `${deepLevelTime} <span>min</span>`;
+          extraSubEl.innerText = `A ${chosenDeepLevel}m per uscire a ${reserveTarget}b esatti`;
+        }
+        extraTimeEl.style.color = "var(--temp-line)";
+      } else {
+        extraTimeEl.innerHTML = `0 <span>min</span>`;
+        extraTimeEl.style.color = "var(--danger)";
+        const deficitBar = Math.ceil(Math.abs(gasForMultiLevelLiters) / tankVol);
+        extraSubEl.innerText = `DEFICIT: mancano ${deficitBar}b rispetto al target riserva`;
+      }
+
+      const totalMultiLevelGasLiters = (deepLevelTime * deepLevelLiterPerMin) + (shallowLevelTime * shallowLiterPerMin);
+      const totalProfileGasLiters = Math.round(fixedOverheadLiters + totalMultiLevelGasLiters);
+      const totalProfileBar = Math.round(totalProfileGasLiters / tankVol);
+
+      document.getElementById('plan-gas-needed').innerHTML = `${totalProfileGasLiters} <span>L</span>`;
+      document.getElementById('plan-bar-needed').innerText = `${totalProfileBar} bar erogati`;
+
+      const gasAscentTotalBar = Math.ceil((transitToDeepLiters + totalMultiLevelGasLiters + baseAscentAndSafetyLiters) / tankVol);
+      const turnPressure = reserveTarget + gasAscentTotalBar;
+      document.getElementById('plan-turn-press').innerHTML = `${turnPressure} <span>bar</span>`;
+
+      const surfaceResidue = Math.max(0, pStart - totalProfileBar);
+      const surfEl = document.getElementById('plan-surf-press');
+      const surfSub = document.getElementById('plan-surf-sub');
+      surfEl.innerHTML = `${surfaceResidue} <span>bar</span>`;
+
+      if (surfaceResidue < reserveTarget) {
+        surfEl.style.color = "var(--danger)";
+        surfSub.innerText = `ATTENZIONE: sotto la riserva di ${reserveTarget} bar!`;
+      } else if (surfaceResidue === reserveTarget) {
+        surfEl.style.color = "var(--temp-line)";
+        surfSub.innerText = `Esattamente al target di riserva (${reserveTarget} bar)`;
+      } else {
+        surfEl.style.color = "var(--success)";
+        surfSub.innerText = `Residuo: ${surfaceResidue} bar (target: ${reserveTarget}b)`;
+      }
+
+      const runtimeRows = [];
+      let currentRunTime = 0;
+
+      currentRunTime += descentTime;
+      runtimeRows.push({
+        phase: "Discesa",
+        depth: `0 ➔ ${depth}m`,
+        speed: `18 m/min (${descentTime}')`,
+        runtime: `${currentRunTime}'`,
+        gas: gasText
+      });
+
+      currentRunTime += userBottomTime;
+      runtimeRows.push({
+        phase: "Fondo Quota Max",
+        depth: `${depth}m`,
+        speed: `Permanenza fissa (${userBottomTime}')`,
+        runtime: `${currentRunTime}'`,
+        gas: gasText
+      });
+
+      currentRunTime += toDeepLevelTime;
+      runtimeRows.push({
+        phase: "Risalita Quota Profonda",
+        depth: `${depth} ➔ ${chosenDeepLevel}m`,
+        speed: `9 m/min (${toDeepLevelTime}')`,
+        runtime: `${currentRunTime}'`,
+        gas: gasText
+      });
+
+      if (deepLevelTime > 0) {
+        currentRunTime += deepLevelTime;
+        runtimeRows.push({
+          phase: "Esplorazione Profonda",
+          depth: `${chosenDeepLevel}m`,
+          speed: `Permanenza (${deepLevelTime}')`,
+          runtime: `${currentRunTime}'`,
+          gas: gasText
+        });
+      }
+
+      currentRunTime += fromDeepTo6mTime;
+      runtimeRows.push({
+        phase: "Risalita a Quota Sosta",
+        depth: `${chosenDeepLevel} ➔ 6m`,
+        speed: `9 m/min (${fromDeepTo6mTime}')`,
+        runtime: `${currentRunTime}'`,
+        gas: gasText
+      });
+
+      if (shallowLevelTime > 0) {
+        currentRunTime += shallowLevelTime;
+        runtimeRows.push({
+          phase: "Sosta Bassa Quota",
+          depth: "5m",
+          speed: `Consumo residuo (${shallowLevelTime}')`,
+          runtime: `${currentRunTime}'`,
+          gas: gasText
+        });
+      }
+
+      currentRunTime += 3;
+      runtimeRows.push({
+        phase: "Safety Stop",
+        depth: "5m",
+        speed: "0 m/min (Sosta 3')",
+        runtime: `${currentRunTime}'`,
+        gas: gasText
+      });
+
+      currentRunTime += 2;
+      runtimeRows.push({
+        phase: "Emersione",
+        depth: "5 ➔ 0m",
+        speed: `3 m/min (2')`,
+        runtime: `${currentRunTime}'`,
+        gas: gasText
+      });
+
+      document.getElementById('plan-tts-val').innerText = `${toDeepLevelTime + fromDeepTo6mTime + 3 + 2}'`;
+      document.getElementById('plan-total-runtime').innerText = `Run-Time: ${currentRunTime}'`;
+      document.getElementById('plan-total-time-display').value = `${currentRunTime} min`;
+
+      const tableBody = document.getElementById('plan-runtime-body');
+      tableBody.innerHTML = runtimeRows.map(r => `
+        <tr>
+          <td><strong>${r.phase}</strong></td>
+          <td>${r.depth}</td>
+          <td>${r.speed}</td>
+          <td style="color:var(--accent);">${r.runtime}</td>
+          <td style="font-size:0.65rem;">${r.gas}</td>
+        </tr>
+      `).join('');
+    }
+
+    function runLiveCalculations() {
+      const dur = parseFloat(document.getElementById('val-duration').value) || 0;
+      const maxD = parseFloat(document.getElementById('val-depth-max').value) || 0;
+      const avgD = parseFloat(document.getElementById('val-depth-avg').value) || (maxD * 0.6);
+      const pStart = parseFloat(document.getElementById('val-p-start').value) || 0;
+      const pEnd = parseFloat(document.getElementById('val-p-end').value) || 0;
+      const tankText = document.getElementById('val-tank').innerText;
+      const gasText = document.getElementById('val-gas').innerText;
+
+      let vol = 15;
+      const match = tankText.match(/(\d+(\.\d+)?)\s*L/i);
+      if (match) vol = parseFloat(match[1]);
+
+      let fO2 = 0.21;
+      let fHe = 0;
+      if (gasText.includes("32")) fO2 = 0.32;
+      else if (gasText.includes("36")) fO2 = 0.36;
+      else if (gasText.includes("50")) fO2 = 0.50;
+      else if (gasText.includes("Tx")) {
+        const txMatch = gasText.match(/Tx\s*(\d+)\/(\d+)/i);
+        if (txMatch) {
+          fO2 = parseFloat(txMatch[1]) / 100;
+          fHe = parseFloat(txMatch[2]) / 100;
+        }
+      }
+
+      if (dur > 0 && pStart > pEnd && avgD >= 0) {
+        const deltaP = pStart - pEnd;
+        const pAmbAvg = 1 + (avgD / 10);
+        const rmv = ((deltaP * vol) / (pAmbAvg * dur)).toFixed(1);
+        document.getElementById('ind-rmv').innerText = `${rmv} L/min`;
+      } else {
+        document.getElementById('ind-rmv').innerText = `-- L/min`;
+      }
+
+      if (dur > 0 && maxD > 0) {
+        const pAmbMax = 1 + (maxD / 10);
+        const po2Avg = (1 + (avgD / 10)) * fO2;
+
+        let ratePerMin = 0;
+        if (po2Avg >= 1.6) ratePerMin = 100 / 45;
+        else if (po2Avg >= 1.5) ratePerMin = 100 / 120;
+        else if (po2Avg >= 1.4) ratePerMin = 100 / 150;
+        else if (po2Avg >= 1.3) ratePerMin = 100 / 180;
+        else if (po2Avg >= 1.2) ratePerMin = 100 / 210;
+        else if (po2Avg >= 1.0) ratePerMin = 100 / 300;
+
+        const totalCns = Math.min(250, Math.round(ratePerMin * dur));
+        const cnsEl = document.getElementById('ind-cns');
+        cnsEl.innerText = `${totalCns}%`;
+        cnsEl.style.color = totalCns > 80 ? 'var(--danger)' : (totalCns > 50 ? 'var(--warning)' : '#fff');
+
+        let otu = 0;
+        if (po2Avg > 0.5) {
+          otu = Math.round(dur * Math.pow((po2Avg - 0.5) / 0.5, 0.83));
+        }
+        document.getElementById('ind-otu').innerText = otu;
+
+        const fN2 = Math.max(0, 1 - fO2 - fHe);
+        const rho0 = (fO2 * 1.428) + (fN2 * 1.251) + (fHe * 0.179);
+        const maxDensity = (rho0 * pAmbMax).toFixed(2);
+        document.getElementById('ind-density').innerText = `${maxDensity} g/L`;
+      }
+    }
+
+    function initSignaturePad() {
+      sigCanvas = document.getElementById('signatureCanvas');
+      if (!sigCanvas) return;
+      sigCtx = sigCanvas.getContext('2d');
+      resizeSigCanvas();
+
+      const start = (e) => {
+        isDrawing = true;
+        const pos = getSigPos(e);
+        sigCtx.beginPath();
+        sigCtx.moveTo(pos.x, pos.y);
+      };
+      const move = (e) => {
+        if (!isDrawing) return;
+        const pos = getSigPos(e);
+        sigCtx.lineTo(pos.x, pos.y);
+        sigCtx.strokeStyle = '#00d2d3';
+        sigCtx.lineWidth = 2;
+        sigCtx.stroke();
+      };
+      const stop = () => { isDrawing = false; };
+
+      sigCanvas.addEventListener('mousedown', start);
+      sigCanvas.addEventListener('mousemove', move);
+      window.addEventListener('mouseup', stop);
+
+      sigCanvas.addEventListener('touchstart', (e) => { start(e.touches[0]); e.preventDefault(); });
+      sigCanvas.addEventListener('touchmove', (e) => { move(e.touches[0]); e.preventDefault(); });
+      sigCanvas.addEventListener('touchend', stop);
+    }
+
+    function resizeSigCanvas() {
+      if (!sigCanvas) return;
+      const rect = sigCanvas.getBoundingClientRect();
+      sigCanvas.width = rect.width;
+      sigCanvas.height = 80;
+    }
+
+    function getSigPos(e) {
+      const rect = sigCanvas.getBoundingClientRect();
+      return {
+        x: (e.clientX || e.pageX) - rect.left,
+        y: (e.clientY || e.pageY) - rect.top
+      };
+    }
+
+    function clearSignature() {
+      if (!sigCanvas || !sigCtx) return;
+      sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+    }
+
+    function initHomeTimers() {
+      updateHomeIntervalTimers();
+      if (homeTimerInterval) clearInterval(homeTimerInterval);
+      homeTimerInterval = setInterval(updateHomeIntervalTimers, 1000);
+    }
+
+    function updateHomeIntervalTimers() {
+      const noflyEl = document.getElementById('timer-nofly-display');
+      const noflySub = document.getElementById('timer-nofly-sub');
+      const siEl = document.getElementById('timer-si-display');
+      const siSub = document.getElementById('timer-si-sub');
+      const ruleEl = document.getElementById('timer-nofly-rule');
+
+      if (AppState.dives.length === 0) {
+        noflyEl.innerText = "00:00:00";
+        noflyEl.className = "timer-val cleared";
+        noflySub.innerText = "Nessun azoto residuo";
+        siEl.innerText = "00:00:00";
+        siEl.className = "timer-val cleared";
+        siSub.innerText = "Nessun tuffo registrato";
+        return;
+      }
+
+      const last = AppState.dives[AppState.dives.length - 1];
+      const diveDate = `${last.date || getTodayString()}T${last.time || "12:00"}:00`;
+      const startTime = new Date(diveDate).getTime();
+      const durationMs = (parseFloat(last.duration) || 45) * 60000;
+      const surfaceTime = startTime + durationMs;
+      const now = Date.now();
+
+      const elapsedSiMs = now - surfaceTime;
+      if (elapsedSiMs <= 0 || isNaN(elapsedSiMs)) {
+        siEl.innerText = "00:00:00";
+        siEl.className = "timer-val";
+        siSub.innerText = "Immersione in corso";
+      } else {
+        siEl.innerText = formatTimeMs(elapsedSiMs);
+        const elapsedMin = Math.floor(elapsedSiMs / 60000);
+        if (elapsedMin < 60) {
+          siEl.className = "timer-val";
+          siSub.innerText = `SI < 1h. Tessuti carichi per eventuale ripetitiva.`;
+        } else if (elapsedMin < 720) {
+          siEl.className = "timer-val active-time";
+          siSub.innerText = `Intervallo attivo per ripetitiva.`;
+        } else {
+          siEl.className = "timer-val cleared";
+          siSub.innerText = `Desaturazione completata (>12h).`;
+        }
+      }
+
+      let noFlyHours = 12;
+      let label = "DAN: Singola NDL (12h)";
+      const isDeco = (last.diveType && last.diveType.includes("Deco")) || (last.depthMax > 30);
+      if (isDeco) {
+        noFlyHours = 24;
+        label = "DAN: Deco Profile (24h)";
+      } else if (AppState.dives.length >= 2) {
+        noFlyHours = 18;
+        label = "DAN: Ripetitiva (18h)";
+      }
+
+      ruleEl.innerText = label;
+      const remainingNoFly = (surfaceTime + noFlyHours * 3600000) - now;
+
+      if (remainingNoFly <= 0 || isNaN(remainingNoFly)) {
+        noflyEl.innerText = "00:00:00";
+        noflyEl.className = "timer-val cleared";
+        noflySub.innerText = "Desaturazione completata. Volo autorizzato.";
+      } else {
+        noflyEl.innerText = formatTimeMs(remainingNoFly);
+        noflyEl.className = "timer-val";
+        noflySub.innerText = `Attesa minima ${noFlyHours}h da emersione.`;
+      }
+    }
+
+    function formatTimeMs(ms) {
+      const sec = Math.max(0, Math.floor(ms / 1000));
+      const h = String(Math.floor(sec / 3600)).padStart(2, '0');
+      const m = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return `${h}:${m}:${s}`;
+    }
+
+    function submitDive(e) {
+      e.preventDefault();
+      const dur = parseFloat(document.getElementById('val-duration').value) || 0;
+      const maxD = parseFloat(document.getElementById('val-depth-max').value) || 0;
+      const avgD = parseFloat(document.getElementById('val-depth-avg').value) || 0;
+
+      if (dur <= 0 || maxD <= 0) {
+        alert("Inserisci durata e profondità massima.");
+        return;
+      }
+
+      const diveData = {
+        date: document.getElementById('val-date').value || getTodayString(),
+        time: document.getElementById('val-time').value || "12:00",
+        duration: dur,
+        depthMax: maxD,
+        depthAvg: avgD,
+        tempMin: parseFloat(document.getElementById('val-temp-min').value) || '--',
+        tempMax: parseFloat(document.getElementById('val-temp-max').value) || '--',
+        pStart: parseFloat(document.getElementById('val-p-start').value) || 0,
+        pEnd: parseFloat(document.getElementById('val-p-end').value) || 0,
+        diveType: document.getElementById('val-diveType').innerText,
+        gas: document.getElementById('val-gas').innerText,
+        decoGas: document.getElementById('val-decoGas').innerText,
+        tank: document.getElementById('val-tank').innerText,
+        water: document.getElementById('val-waterType').innerText,
+        visibility: document.getElementById('val-visibility').value || '--',
+        current: document.getElementById('val-current').value,
+        sea: document.getElementById('val-sea-state').value,
+        ballast: document.getElementById('val-ballast').value || '0',
+        suit: document.getElementById('val-suit').innerText,
+        gf: document.getElementById('val-gf').innerText,
+        site: document.getElementById('val-site').innerText,
+        buddy: document.getElementById('val-buddy').innerText,
+        center: document.getElementById('val-center').innerText,
+        gps: document.getElementById('val-gps').value,
+        video: document.getElementById('val-video-link').value || '',
+        rmv: document.getElementById('ind-rmv').innerText,
+        cns: document.getElementById('ind-cns').innerText,
+        otu: document.getElementById('ind-otu').innerText,
+        density: document.getElementById('ind-density').innerText,
+        signature: sigCanvas ? sigCanvas.toDataURL() : null
+      };
+
+      if (currentEditingDiveId) {
+        const idx = AppState.dives.findIndex(x => x.id === currentEditingDiveId);
+        if (idx !== -1) AppState.dives[idx] = Object.assign(AppState.dives[idx], diveData);
+      } else {
+        diveData.id = Date.now();
+        diveData.num = AppState.dives.length + 1;
+        AppState.dives.push(diveData);
+      }
+
+      sortDivesChronologically();
+      updateCounter();
+      cancelEditMode();
+      switchMainTab('log', document.querySelectorAll('.nav-btn')[3]);
+    }
+
+    function cancelEditMode() {
+      currentEditingDiveId = null;
+      document.getElementById('editing-dive-id').value = '';
+      document.getElementById('edit-notice-bar').style.display = 'none';
+      document.getElementById('btn-delete-editing').style.display = 'none';
+      document.getElementById('btn-submit-main').innerText = "REGISTRA NEL LOGBOOK";
+      document.getElementById('main-dive-form').reset();
+      clearSignature();
+      updateCounter();
+    }
+
+    function loadDiveForEdit(id) {
+      const d = AppState.dives.find(x => x.id === id);
+      if (!d) return;
+
+      currentEditingDiveId = d.id;
+      document.getElementById('editing-dive-id').value = d.id;
+      document.getElementById('edit-notice-bar').style.display = 'flex';
+      document.getElementById('edit-notice-text').innerText = `Modifica Tuffo #${d.num} (${d.site})`;
+      document.getElementById('btn-submit-main').innerText = "AGGIORNA IMMERSIONE";
+      document.getElementById('btn-delete-editing').style.display = 'flex';
+
+      document.getElementById('val-date').value = d.date || '';
+      document.getElementById('val-time').value = d.time || '';
+      document.getElementById('val-duration').value = d.duration || '';
+      document.getElementById('val-depth-max').value = d.depthMax || '';
+      document.getElementById('val-depth-avg').value = d.depthAvg || '';
+      document.getElementById('val-temp-min').value = d.tempMin !== '--' ? d.tempMin : '';
+      document.getElementById('val-temp-max').value = d.tempMax !== '--' ? d.tempMax : '';
+      document.getElementById('val-p-start').value = d.pStart || '';
+      document.getElementById('val-p-end').value = d.pEnd || '';
+      document.getElementById('val-gps').value = d.gps || '';
+      document.getElementById('val-video-link').value = d.video || '';
+      document.getElementById('val-visibility').value = d.visibility !== '--' ? d.visibility : '';
+      document.getElementById('val-current').value = d.current || 'Nulla';
+      document.getElementById('val-sea-state').value = d.sea || 'Calmo';
+      document.getElementById('val-ballast').value = d.ballast || '';
+
+      ['diveType', 'gas', 'decoGas', 'tank', 'waterType', 'suit', 'gf', 'site', 'buddy', 'center'].forEach(k => {
+        const el = document.getElementById(`val-${k}`);
+        if (d[k] && !d[k].includes('--')) {
+          el.innerText = d[k];
+          el.classList.remove('empty');
+        }
+      });
+
+      if (d.signature && sigCtx) {
+        clearSignature();
+        const img = new Image();
+        img.onload = () => { sigCtx.drawImage(img, 0, 0); };
+        img.src = d.signature;
+      }
+
+      runLiveCalculations();
+      switchMainTab('record', document.querySelectorAll('.nav-btn')[2]);
+    }
+
+    function deleteDiveCurrentlyEditing() {
+      if (!currentEditingDiveId) return;
+      if (confirm("Vuoi cancellare definitivamente questa immersione?")) {
+        AppState.dives = AppState.dives.filter(x => x.id !== currentEditingDiveId);
+        sortDivesChronologically();
+        cancelEditMode();
+        switchMainTab('log', document.querySelectorAll('.nav-btn')[3]);
+      }
+    }
+
+    function renderLogbookFeed() {
+      const feed = document.getElementById('logbook-feed');
+      if (AppState.dives.length === 0) {
+        feed.innerHTML = `<div style="text-align:center; padding: 40px 10px; color: var(--text-muted); font-size: 0.8rem;">Nessuna immersione archiviata.</div>`;
+        return;
+      }
+
+      feed.innerHTML = [...AppState.dives].reverse().map(d => {
+        const deltaP = (d.pStart && d.pEnd) ? (d.pStart - d.pEnd) : '--';
+        return `
+          <div class="log-card" onclick="loadDiveForEdit(${d.id})">
+            <div class="log-header">
+              <span class="log-title">#${d.num} · ${d.site !== '-- Seleziona o aggiungi --' ? d.site : 'Sito Tech'}</span>
+              <span style="font-size:0.7rem; color:var(--text-sub);">${d.date}</span>
+            </div>
+            <div style="font-size:0.7rem; color:var(--text-sub); margin-bottom:3px;">
+              ${d.gas} | GF: ${d.gf || '40/85'} | CNS: <span style="color:var(--accent);">${d.cns || '0%'}</span> | Densità: ${d.density || '--'}
+            </div>
+            <div style="font-size:0.65rem; color:var(--text-muted);">
+              Consumo: ${d.pStart || '--'}b ➔ ${d.pEnd || '--'}b (ΔP ${deltaP} bar)
+            </div>
+            ${d.video ? `
+              <div style="margin-top:4px; font-size:0.68rem;">
+                <a href="${d.video}" target="_blank" onclick="event.stopPropagation();" style="color:var(--temp-line); text-decoration:underline;">
+                  ▶ Guarda Video YouTube
+                </a>
+              </div>
+            ` : ''}
+            <div class="log-stats-bar">
+              <div>
+                <div class="stat-val">${d.depthMax}m</div>
+                <div class="stat-label">Prof. Max</div>
+              </div>
+              <div>
+                <div class="stat-val">${d.duration}'</div>
+                <div class="stat-label">Tempo</div>
+              </div>
+              <div>
+                <div class="stat-val">${d.depthAvg || '--'}m</div>
+                <div class="stat-label">Media</div>
+              </div>
+              <div>
+                <div class="stat-val" style="color:var(--accent);">${d.rmv ? d.rmv.replace(' L/min','') : '--'}</div>
+                <div class="stat-label">RMV L/m</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderProfileData() {
+      const total = AppState.dives.length;
+      if (total === 0) return;
+
+      const totalMinutes = AppState.dives.reduce((acc, d) => acc + (parseFloat(d.duration) || 0), 0);
+      document.getElementById('kpi-total-time').innerHTML = `${Math.floor(totalMinutes / 60)}h <span>${String(totalMinutes % 60).padStart(2, '0')}'</span>`;
+      document.getElementById('kpi-total-days').innerText = `${(totalMinutes / (24 * 60)).toFixed(1)} giorni sott'acqua`;
+
+      const maxD = AppState.dives.reduce((p, c) => (parseFloat(c.depthMax) || 0) > (parseFloat(p.depthMax) || 0) ? c : p, AppState.dives[0]);
+      document.getElementById('kpi-max-depth').innerHTML = `${maxD.depthMax}<span>m</span>`;
+      document.getElementById('kpi-max-depth-site').innerText = `${maxD.site} (${maxD.date})`;
+
+      const rmvEntries = AppState.dives
+        .map(d => ({ id: d.id, val: parseFloat(d.rmv), site: d.site, date: d.date }))
+        .filter(x => !isNaN(x.val) && x.val > 0);
+
+      if (rmvEntries.length > 0) {
+        const last10 = rmvEntries.slice(-10);
+        const sum10 = last10.reduce((a, b) => a + b.val, 0);
+        const avg10 = (sum10 / last10.length).toFixed(1);
+
+        document.getElementById('kpi-rmv-avg-10').innerHTML = `${avg10}<span>L/m</span>`;
+        document.getElementById('kpi-rmv-avg-10-sub').innerText = `${last10.length} ${last10.length === 1 ? 'tuffo' : 'tuffi'} considerati`;
+        document.getElementById('kpi-rmv-avg-label').innerText = `Media 10: ${avg10} L/m`;
+
+        const best = rmvEntries.reduce((p, c) => c.val < p.val ? c : p, rmvEntries[0]);
+        const worst = rmvEntries.reduce((p, c) => c.val > p.val ? c : p, rmvEntries[0]);
+
+        bestRmvDiveId = best.id;
+        worstRmvDiveId = worst.id;
+
+        document.getElementById('kpi-rmv-best').innerHTML = `${best.val.toFixed(1)}<span>L/m</span>`;
+        document.getElementById('kpi-rmv-best-sub').innerText = `${best.site}`;
+
+        document.getElementById('kpi-rmv-worst').innerHTML = `${worst.val.toFixed(1)}<span>L/m</span>`;
+        document.getElementById('kpi-rmv-worst-sub').innerText = `${worst.site}`;
+      } else {
+        bestRmvDiveId = null;
+        worstRmvDiveId = null;
+        document.getElementById('kpi-rmv-avg-10').innerHTML = `--<span>L/m</span>`;
+        document.getElementById('kpi-rmv-avg-10-sub').innerText = `0 tuffi`;
+        document.getElementById('kpi-rmv-avg-label').innerText = `Media 10: -- L/m`;
+        document.getElementById('kpi-rmv-best').innerHTML = `--<span>L/m</span>`;
+        document.getElementById('kpi-rmv-worst').innerHTML = `--<span>L/m</span>`;
+      }
+
+      drawSacTrend();
+      drawDepthDistribution();
+    }
+
+    function jumpToBestRmvDive() {
+      if (bestRmvDiveId) loadDiveForEdit(bestRmvDiveId);
+    }
+
+    function jumpToWorstRmvDive() {
+      if (worstRmvDiveId) loadDiveForEdit(worstRmvDiveId);
+    }
+
+    function initSacTrendCanvasInteractivity() {
+      const canvas = document.getElementById('sacTrendCanvas');
+      if (!canvas) return;
+
+      canvas.addEventListener('click', (e) => {
+        if (!sacChartPoints || sacChartPoints.length === 0) return;
+        const rect = canvas.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+
+        let closest = null;
+        let minDist = 24;
+
+        sacChartPoints.forEach(pt => {
+          const dist = Math.hypot(pt.x - clickX, pt.y - clickY);
+          if (dist < minDist) {
+            minDist = dist;
+            closest = pt;
+          }
+        });
+
+        if (closest && closest.id) {
+          loadDiveForEdit(closest.id);
+        }
+      });
+    }
+
+    function drawSacTrend() {
+      const canvas = document.getElementById('sacTrendCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width || 360;
+      const h = 150;
+
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      sacChartPoints = [];
+
+      const divesWithRmv = AppState.dives
+        .map(d => ({ id: d.id, val: parseFloat(d.rmv), num: d.num, site: d.site }))
+        .filter(d => !isNaN(d.val) && d.val > 0);
+
+      if (divesWithRmv.length === 0) {
+        ctx.fillStyle = '#858da4';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText("Nessun dato RMV registrato", w / 2, h / 2);
+        return;
+      }
+
+      const vals = divesWithRmv.map(d => d.val);
+      const minVal = Math.min(...vals);
+      const maxVal = Math.max(...vals);
+
+      const maxR = Math.max(maxVal * 1.15, 25);
+      const minR = Math.max(0, Math.min(minVal * 0.85, 10));
+
+      const padL = 30, padR = 20, padT = 24, padB = 22;
+      const plotW = w - padL - padR;
+      const plotH = h - padT - padB;
+
+      ctx.strokeStyle = '#202434';
+      ctx.lineWidth = 1;
+      [minR, (minR + maxR) / 2, maxR].forEach(v => {
+        const y = padT + (1 - ((v - minR) / (maxR - minR || 1))) * plotH;
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(w - padR, y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#858da4';
+        ctx.font = '8px monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText(`${Math.round(v)}`, padL - 5, y + 3);
+      });
+
+      if (divesWithRmv.length > 1) {
+        ctx.beginPath();
+        ctx.strokeStyle = '#ff8c00';
+        ctx.lineWidth = 2;
+
+        divesWithRmv.forEach((d, idx) => {
+          const x = padL + (idx / (divesWithRmv.length - 1)) * plotW;
+          const y = padT + (1 - ((d.val - minR) / (maxR - minR || 1))) * plotH;
+          if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      }
+
+      divesWithRmv.forEach((d, idx) => {
+        const x = divesWithRmv.length === 1 ? (padL + plotW / 2) : (padL + (idx / (divesWithRmv.length - 1)) * plotW);
+        const y = padT + (1 - ((d.val - minR) / (maxR - minR || 1))) * plotH;
+
+        const isBest = (d.val === minVal);
+        const isWorst = (d.val === maxVal && !isBest);
+
+        sacChartPoints.push({ x, y, id: d.id, val: d.val, isBest, isWorst });
+
+        ctx.beginPath();
+        if (isBest) {
+          ctx.arc(x, y, 6, 0, Math.PI * 2);
+          ctx.fillStyle = 'var(--success)';
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = '#fff';
+          ctx.stroke();
+
+          ctx.fillStyle = 'var(--success)';
+          ctx.font = 'bold 8px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`MIN ${d.val.toFixed(1)}`, x, y - 8);
+        } else if (isWorst) {
+          ctx.arc(x, y, 6, 0, Math.PI * 2);
+          ctx.fillStyle = 'var(--danger)';
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = '#fff';
+          ctx.stroke();
+
+          ctx.fillStyle = 'var(--danger)';
+          ctx.font = 'bold 8px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`MAX ${d.val.toFixed(1)}`, x, y - 8);
+        } else {
+          ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+          ctx.fillStyle = '#fff';
+          ctx.fill();
+        }
+      });
+    }
+
+    function drawDepthDistribution() {
+      const canvas = document.getElementById('depthDistCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width || 360;
+      const h = 130;
+
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      const brackets = [
+        { label: '0-20m', count: 0 },
+        { label: '20-40m', count: 0 },
+        { label: '40-60m', count: 0 },
+        { label: '>60m', count: 0 }
+      ];
+
+      AppState.dives.forEach(d => {
+        const dep = d.depthMax || 0;
+        if (dep <= 20) brackets[0].count++;
+        else if (dep <= 40) brackets[1].count++;
+        else if (dep <= 60) brackets[2].count++;
+        else brackets[3].count++;
+      });
+
+      const maxCount = Math.max(...brackets.map(b => b.count), 1);
+      const colW = (w - 30) / 4;
+
+      brackets.forEach((b, idx) => {
+        const barH = (b.count / maxCount) * (h - 40);
+        const x = 20 + idx * colW;
+        const y = h - 20 - barH;
+
+        ctx.fillStyle = 'rgba(255, 140, 0, 0.85)';
+        ctx.fillRect(x + 5, y, colW - 10, barH);
+
+        ctx.fillStyle = '#b2b9cb';
+        ctx.font = '9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(b.label, x + colW / 2, h - 5);
+        ctx.fillText(String(b.count), x + colW / 2, y - 4);
+      });
+    }
+
+    function openDropdownSheet(key) {
+      currentSheetCategory = key;
+      const titles = {
+        diveType: "Tipologia Profilo",
+        gas: "Miscela Principale",
+        planGas: "Miscela Gas (Planner)",
+        decoGas: "Gas Decompressivo",
+        tank: "Volume & Materiale Bombola",
+        planTank: "Bombola (Planner)",
+        waterType: "Tipologia Acqua",
+        planWater: "Acqua (Planner)",
+        suit: "Muta Protettiva",
+        gf: "Gradient Factors",
+        planGf: "Gradient Factors (Planner)",
+        site: "Sito Immersione",
+        buddy: "Compagno / Guida",
+        center: "Diving Center"
+      };
+
+      document.getElementById('sheet-title').innerText = titles[key] || "Seleziona";
+      renderSheetList();
+      document.getElementById('sheet-new-val').value = '';
+      document.getElementById('sheet-overlay').classList.add('active');
+    }
+
+    function closeDropdownSheet(e) {
+      if (e && e.target !== document.getElementById('sheet-overlay')) return;
+      document.getElementById('sheet-overlay').classList.remove('active');
+      currentSheetCategory = null;
+    }
+
+    function getCategoryOptionList(cat) {
+      if (cat === 'planGas') return AppState.options.gas;
+      if (cat === 'planTank') return AppState.options.tank;
+      if (cat === 'planWater') return AppState.options.waterType;
+      if (cat === 'planGf') return AppState.options.gf;
+      return AppState.options[cat] || [];
+    }
+
+    function renderSheetList() {
+      const container = document.getElementById('sheet-list');
+      container.innerHTML = '';
+      const list = getCategoryOptionList(currentSheetCategory);
+      const targetEl = document.getElementById(`val-${currentSheetCategory}`);
+      const currentSelected = targetEl ? targetEl.innerText : '';
+
+      list.forEach(item => {
+        const row = document.createElement('div');
+        row.className = `sheet-row ${item === currentSelected ? 'selected' : ''}`;
+        row.innerHTML = `
+          <span style="font-weight:600; color:#fff;">${item}</span>
+          <button style="background:none; border:none; color:var(--text-muted);" onclick="deleteOption('${item}', event)">✕</button>
+        `;
+        row.onclick = () => selectSheetOption(item);
+        container.appendChild(row);
+      });
+    }
+
+    function selectSheetOption(val) {
+      const el = document.getElementById(`val-${currentSheetCategory}`);
+      if (el) {
+        el.innerText = val;
+        el.classList.remove('empty');
+      }
+      document.getElementById('sheet-overlay').classList.remove('active');
+
+      if (currentSheetCategory && currentSheetCategory.startsWith('plan')) {
+        runPlannerEngine();
+      } else {
+        runLiveCalculations();
+      }
+    }
+
+    function addNewOption() {
+      const val = document.getElementById('sheet-new-val').value.trim();
+      if (!val) return;
+
+      let key = currentSheetCategory;
+      if (key === 'planGas') key = 'gas';
+      if (key === 'planTank') key = 'tank';
+      if (key === 'planWater') key = 'waterType';
+      if (key === 'planGf') key = 'gf';
+
+      if (!AppState.options[key].includes(val)) {
+        AppState.options[key].push(val);
+        saveStorage();
+      }
+      selectSheetOption(val);
+    }
+
+    function deleteOption(val, e) {
+      e.stopPropagation();
+      let key = currentSheetCategory;
+      if (key === 'planGas') key = 'gas';
+      if (key === 'planTank') key = 'tank';
+      if (key === 'planWater') key = 'waterType';
+      if (key === 'planGf') key = 'gf';
+
+      AppState.options[key] = AppState.options[key].filter(x => x !== val);
+      saveStorage();
+      renderSheetList();
+    }
+
+    function renderHomeCerts() {
+      const container = document.getElementById('c-cards-list-home');
+      if (!container) return;
+
+      if (AppState.certs.length === 0) {
+        container.innerHTML = `
+          <div class="add-c-btn" style="min-width:110px; height:84px;" onclick="openCertModal()">
+            <span style="font-size:1.2rem; font-weight:300;">+</span>
+            <span>Aggiungi Brevetto</span>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = AppState.certs.map((c, i) => `
+        <div class="c-card" onclick="openCertModal(${c.id})">
+          <div class="c-card-badge">#${i + 1}</div>
+          ${c.img ? `<img src="${c.img}" class="c-card-img">` : `<div class="c-card-placeholder">Nessun file</div>`}
+          <div class="c-card-org">${c.org}</div>
+          <div class="c-card-title">${c.title}</div>
+          <div class="c-card-sub">${c.num || 'Licenza archiviata'}</div>
+        </div>
+      `).join('') + `
+        <div class="add-c-btn" style="min-width:56px; height:84px;" onclick="openCertModal()">
+          <span style="font-size:1.1rem;">+</span>
+        </div>
+      `;
+    }
+
+    function openCertModal(id = null) {
+      document.getElementById('cert-modal').classList.add('active');
+      const delBtn = document.getElementById('cert-del-btn');
+      const imgEl = document.getElementById('cert-img-display');
+
+      if (id) {
+        const c = AppState.certs.find(x => x.id === id);
+        if (!c) return;
+        document.getElementById('cert-edit-id').value = c.id;
+        document.getElementById('cert-org').value = c.org;
+        document.getElementById('cert-title').value = c.title;
+        document.getElementById('cert-num').value = c.num;
+        document.getElementById('cert-date').value = c.date;
+        tempCertImageBase64 = c.img || "";
+        if (c.img) {
+          imgEl.src = c.img;
+          imgEl.style.display = 'block';
+        } else {
+          imgEl.style.display = 'none';
+        }
+        delBtn.style.display = 'flex';
+      } else {
+        document.getElementById('cert-edit-id').value = "";
+        document.getElementById('cert-org').value = "";
+        document.getElementById('cert-title').value = "";
+        document.getElementById('cert-num').value = "";
+        document.getElementById('cert-date').value = getTodayString();
+        tempCertImageBase64 = "";
+        imgEl.style.display = 'none';
+        delBtn.style.display = 'none';
+      }
+    }
+
+    function closeCertModal() {
+      document.getElementById('cert-modal').classList.remove('active');
+      tempCertImageBase64 = "";
+    }
+
+    function previewCertFile(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          tempCertImageBase64 = evt.target.result;
+          const imgEl = document.getElementById('cert-img-display');
+          imgEl.src = tempCertImageBase64;
+          imgEl.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function saveCertRecord() {
+      const id = document.getElementById('cert-edit-id').value;
+      const org = document.getElementById('cert-org').value.trim() || "SNSI";
+      const title = document.getElementById('cert-title').value.trim() || "Open Water";
+      const num = document.getElementById('cert-num').value.trim();
+      const date = document.getElementById('cert-date').value || getTodayString();
+
+      if (id) {
+        const c = AppState.certs.find(x => x.id == id);
+        if (c) {
+          c.org = org; c.title = title; c.num = num; c.date = date;
+          if (tempCertImageBase64) c.img = tempCertImageBase64;
+        }
+      } else {
+        AppState.certs.push({
+          id: Date.now(),
+          org,
+          title,
+          num,
+          date,
+          img: tempCertImageBase64
+        });
+      }
+
+      saveStorage();
+      renderHomeCerts();
+      updateCounter();
+      closeCertModal();
+    }
+
+    function deleteCurrentCert() {
+      const id = document.getElementById('cert-edit-id').value;
+      if (id) {
+        AppState.certs = AppState.certs.filter(c => c.id != id);
+        saveStorage();
+        renderHomeCerts();
+        updateCounter();
+        closeCertModal();
+      }
+    }
+
+    function switchMainTab(tabKey, btn) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      
+      const targetTab = document.getElementById(`tab-${tabKey}`);
+      if (targetTab) targetTab.classList.add('active');
+      if (btn) btn.classList.add('active');
+
+      const header = document.getElementById('global-header');
+      if (header) {
+        header.style.display = (tabKey === 'home') ? 'none' : 'flex';
+      }
+
+      const titles = {
+        home: "Home",
+        plan: "Planner",
+        record: currentEditingDiveId ? "Modifica Tuffo" : "Nuova Immersione",
+        log: "Logbook Ufficiale",
+        profile: "Profilo Subacqueo"
+      };
+      const titleEl = document.getElementById('global-view-name');
+      if (titleEl) titleEl.innerText = titles[tabKey] || "Home";
+
+      if (tabKey === 'home') { updateHomeIntervalTimers(); renderHomeCerts(); }
+      if (tabKey === 'plan') { runPlannerEngine(); }
+      if (tabKey === 'log') renderLogbookFeed();
+      if (tabKey === 'profile') renderProfileData();
+      if (tabKey === 'record') resizeSigCanvas();
+    }
+
+    function startNewDiveMode(btn = null) {
+      cancelEditMode();
+      const targetBtn = btn || document.querySelectorAll('.nav-btn')[2];
+      switchMainTab('record', targetBtn);
+    }
+
+    function readGPS() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            document.getElementById('val-gps').value = `${pos.coords.latitude.toFixed(4)}° N, ${pos.coords.longitude.toFixed(4)}° E`;
+          },
+          () => { alert("Segnale GPS non disponibile."); },
+          { timeout: 8000 }
+        );
+      }
+    }
+  </script>
+</body>
+</html>
