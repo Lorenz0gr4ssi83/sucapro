@@ -66,6 +66,50 @@
       position: relative;
     }
 
+    /* SPLASH SCREEN INTRO ANIMATION */
+    #app-splash-overlay {
+      position: fixed;
+      inset: 0;
+      background: #090a0f;
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .splash-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.85s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.85s ease;
+    }
+
+    .splash-img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      top: 0;
+      left: 0;
+      transition: opacity 1.2s ease-in-out;
+    }
+
+    #splash-icon {
+      opacity: 1;
+      z-index: 1;
+    }
+
+    #splash-logo {
+      opacity: 0;
+      z-index: 2;
+    }
+
     .app-header-fixed {
       display: none;
       flex-shrink: 0;
@@ -686,6 +730,14 @@
 </head>
 <body>
 
+  <!-- SPLASH SCREEN INTRO ELEMENT -->
+  <div id="app-splash-overlay">
+    <div class="splash-container" id="splash-box">
+      <img id="splash-icon" class="splash-img" src="https://i.postimg.cc/LXc6SHfv/1790974080159.jpg" alt="Icona Sucapro">
+      <img id="splash-logo" class="splash-img" src="https://i.postimg.cc/VrDFWS1Q/logo.jpg" alt="Logo Sucapro">
+    </div>
+  </div>
+
   <header class="app-header-fixed" id="global-header">
     <div class="brand-title">SUCA<span>PRO</span></div>
     <div class="header-context">
@@ -967,7 +1019,7 @@
                 <option value="4">⭐️ 4 - Fredda/Torbida</option>
                 <option value="3">⭐️ 3 - Pessima</option>
                 <option value="2">⭐️ 2 - Interrotta</option>
-                <option value="1">⭐️ 1 - Disastrosa</option>
+                <option value="1">⭐️️ 1 - Disastrosa</option>
               </select>
             </div>
           </div>
@@ -1410,6 +1462,41 @@
   </div>
 
   <script>
+    // GESTIONE ANIMAZIONE SPLASH SCREEN ALL'AVVIO
+    function startAppSplashSequence() {
+      const splashOverlay = document.getElementById('app-splash-overlay');
+      const splashLogo = document.getElementById('splash-logo');
+      const splashBox = document.getElementById('splash-box');
+      if (!splashOverlay) return;
+
+      // 1. All'avvio l'icona è visibile a tutto schermo (#splash-icon con opacity:1).
+      // 2. Dopo 2 secondi, fa blending (cross-fade) verso il logo.
+      setTimeout(() => {
+        if (splashLogo) {
+          splashLogo.style.opacity = '1';
+        }
+
+        // 3. Dopo la dissolvenza (1.2s), il logo si rimpicciolisce verso il centro per avviare l'app
+        setTimeout(() => {
+          if (splashBox) {
+            splashBox.style.transform = 'scale(0.12)';
+            splashBox.style.opacity = '0';
+          }
+          if (splashOverlay) {
+            splashOverlay.style.opacity = '0';
+            splashOverlay.style.pointerEvents = 'none';
+          }
+
+          // Rimozione definitiva dal DOM al termine dell'animazione
+          setTimeout(() => {
+            if (splashOverlay && splashOverlay.parentNode) {
+              splashOverlay.parentNode.removeChild(splashOverlay);
+            }
+          }, 850);
+        }, 1250);
+      }, 2000);
+    }
+
     const DEFAULT_OPTIONS = {
       diveType: ["Ricreativa (NDL)", "Deco Normossica", "Deco Ipossica", "Rebreather (CCR)", "Addestramento"],
       gas: ["Aria (21/0)", "EAN32 (32/0)", "EAN36 (36/0)", "Tx 21/35", "Tx 18/45", "Tx 15/55", "Tx 10/70"],
@@ -1440,6 +1527,7 @@
     let worstRmvDiveId = null;
 
     window.addEventListener('DOMContentLoaded', () => {
+      startAppSplashSequence();
       loadStorage();
       loadUserName();
       checkUserGate();
@@ -2290,7 +2378,7 @@
             ${d.video ? `
               <div style="margin-top:6px;">
                 <a href="${d.video}" target="_blank" onclick="event.stopPropagation();" class="yt-badge-link">
-                  <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 22c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 2c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/></svg>
+                  <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 22c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73z"/></svg>
                   Video YouTube
                 </a>
               </div>
