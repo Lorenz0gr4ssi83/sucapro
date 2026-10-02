@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#090a0f">
   <title>Sucapro</title>
 
-  <!-- Configurazione Schermo Intero e Icona per Chrome Android -->
+  <!-- Icona e PWA Standalone -->
   <link rel="icon" type="image/jpeg" href="https://i.postimg.cc/LXc6SHfv/1790974080159.jpg">
   <link rel="apple-touch-icon" href="https://i.postimg.cc/LXc6SHfv/1790974080159.jpg">
   <meta name="mobile-web-app-capable" content="yes">
@@ -15,7 +15,6 @@
   <meta name="apple-mobile-web-app-title" content="Sucapro">
   <meta name="application-name" content="Sucapro">
 
-  <!-- Manifest PWA inline per forzare il nome 'Sucapro' e la modalità fullscreen standalone -->
   <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Sucapro%22%2C%22short_name%22%3A%22Sucapro%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23090a0f%22%2C%22theme_color%22%3A%22%23090a0f%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fi.postimg.cc%2FLXc6SHfv%2F1790974080159.jpg%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fjpeg%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fi.postimg.cc%2FLXc6SHfv%2F1790974080159.jpg%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fjpeg%22%7D%5D%7D">
 
   <style>
@@ -861,7 +860,7 @@
           <div class="form-group">
             <span class="form-label">Tipologia Profilo</span>
             <div class="form-select-box" onclick="openDropdownSheet('diveType')">
-              <span class="select-val empty" id="val-diveType">-- Seleziona --</span>
+              <span class="select-val" id="val-diveType">Ricreativa (NDL)</span>
               <span style="color:var(--accent);">▾</span>
             </div>
           </div>
@@ -870,14 +869,14 @@
             <div class="form-group">
               <span class="form-label">Miscela Principale</span>
               <div class="form-select-box" onclick="openDropdownSheet('gas')">
-                <span class="select-val empty" id="val-gas">-- Seleziona --</span>
+                <span class="select-val" id="val-gas">Aria (21/0)</span>
                 <span style="color:var(--accent);">▾</span>
               </div>
             </div>
             <div class="form-group">
               <span class="form-label">Gas Deco / Stadio</span>
               <div class="form-select-box" onclick="openDropdownSheet('decoGas')">
-                <span class="select-val empty" id="val-decoGas">-- Nessuno --</span>
+                <span class="select-val" id="val-decoGas">Nessuno</span>
                 <span style="color:var(--accent);">▾</span>
               </div>
             </div>
@@ -887,7 +886,7 @@
             <div class="form-group">
               <span class="form-label">Bombola</span>
               <div class="form-select-box" onclick="openDropdownSheet('tank')">
-                <span class="select-val empty" id="val-tank">-- Bombola --</span>
+                <span class="select-val" id="val-tank">Acciaio 15L</span>
                 <span style="color:var(--accent);">▾</span>
               </div>
             </div>
@@ -901,7 +900,7 @@
             <div class="form-group">
               <span class="form-label">Gradient Factors</span>
               <div class="form-select-box" onclick="openDropdownSheet('gf')">
-                <span class="select-val" id="val-planGf">40 / 85</span>
+                <span class="select-val" id="val-gf">40 / 85</span>
                 <span style="color:var(--accent);">▾</span>
               </div>
             </div>
@@ -911,7 +910,7 @@
             <div class="form-group">
               <span class="form-label">Muta</span>
               <div class="form-select-box" onclick="openDropdownSheet('suit')">
-                <span class="select-val empty" id="val-suit">-- Seleziona --</span>
+                <span class="select-val" id="val-suit">Umida 5mm</span>
                 <span style="color:var(--accent);">▾</span>
               </div>
             </div>
@@ -926,7 +925,7 @@
           <div class="form-group">
             <span class="form-label">Sito d'Immersione</span>
             <div class="form-select-box" onclick="openDropdownSheet('site')">
-              <span class="select-val empty" id="val-site">-- Seleziona o aggiungi --</span>
+              <span class="select-val" id="val-site">Y-40 The Deep Joy</span>
               <span style="color:var(--accent);">▾</span>
             </div>
           </div>
@@ -960,14 +959,14 @@
             <div class="form-group">
               <span class="form-label">Compagno (Buddy)</span>
               <div class="form-select-box" onclick="openDropdownSheet('buddy')">
-                <span class="select-val empty" id="val-buddy">-- Nessuno --</span>
+                <span class="select-val" id="val-buddy">Solo Diving</span>
                 <span style="color:var(--accent);">▾</span>
               </div>
             </div>
             <div class="form-group">
               <span class="form-label">Diving Center</span>
               <div class="form-select-box" onclick="openDropdownSheet('center')">
-                <span class="select-val empty" id="val-center">-- Nessuno --</span>
+                <span class="select-val" id="val-center">Privato / Da Riva</span>
                 <span style="color:var(--accent);">▾</span>
               </div>
             </div>
@@ -991,26 +990,26 @@
           <div class="grid-3">
             <div class="form-group">
               <span class="form-label">Data</span>
-              <input type="date" id="val-date" class="form-control">
+              <input type="date" id="val-date" class="form-control" required>
             </div>
             <div class="form-group">
               <span class="form-label">Ora Inizio</span>
-              <input type="time" id="val-time" class="form-control">
+              <input type="time" id="val-time" class="form-control" required>
             </div>
             <div class="form-group">
               <span class="form-label">Durata (min)</span>
-              <input type="number" id="val-duration" class="form-control" placeholder="45" oninput="runLiveCalculations()">
+              <input type="number" id="val-duration" class="form-control" placeholder="45" value="45" oninput="runLiveCalculations()" required>
             </div>
           </div>
 
           <div class="grid-2">
             <div class="form-group">
               <span class="form-label">Prof. Massima (m)</span>
-              <input type="number" step="0.1" id="val-depth-max" class="form-control" placeholder="25.0" oninput="runLiveCalculations()">
+              <input type="number" step="0.1" id="val-depth-max" class="form-control" placeholder="25.0" value="20.0" oninput="runLiveCalculations()" required>
             </div>
             <div class="form-group">
               <span class="form-label">Prof. Media (m)</span>
-              <input type="number" step="0.1" id="val-depth-avg" class="form-control" placeholder="14.5" oninput="runLiveCalculations()">
+              <input type="number" step="0.1" id="val-depth-avg" class="form-control" placeholder="14.5" value="12.0" oninput="runLiveCalculations()">
             </div>
           </div>
 
@@ -1028,11 +1027,11 @@
           <div class="grid-2" style="margin-bottom:0;">
             <div class="form-group">
               <span class="form-label">P. Inizio (bar)</span>
-              <input type="number" id="val-p-start" class="form-control" placeholder="210" oninput="runLiveCalculations()">
+              <input type="number" id="val-p-start" class="form-control" placeholder="210" value="210" oninput="runLiveCalculations()">
             </div>
             <div class="form-group">
               <span class="form-label">P. Fine (bar)</span>
-              <input type="number" id="val-p-end" class="form-control" placeholder="50" oninput="runLiveCalculations()">
+              <input type="number" id="val-p-end" class="form-control" placeholder="50" value="50" oninput="runLiveCalculations()">
             </div>
           </div>
         </div>
@@ -1235,6 +1234,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       loadStorage();
       loadUserName();
+      resetFormToDefaults();
       initSignaturePad();
       initSacTrendCanvasInteractivity();
       renderHomeCerts();
@@ -1246,6 +1246,21 @@
       window.addEventListener('resize', resizeSigCanvas);
     });
 
+    function getNowDateString() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    }
+
+    function getNowTimeString() {
+      const now = new Date();
+      return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    }
+
+    function resetFormToDefaults() {
+      document.getElementById('val-date').value = getNowDateString();
+      document.getElementById('val-time').value = getNowTimeString();
+    }
+
     function saveUserName(val) {
       localStorage.setItem('sucapro_user_fullname', val);
     }
@@ -1253,17 +1268,10 @@
     function loadUserName() {
       const saved = localStorage.getItem('sucapro_user_fullname') || "Lorenzo Grassi";
       const input = document.getElementById('home-user-name');
-      if (input) {
-        input.value = saved;
-      }
+      if (input) input.value = saved;
       if (!localStorage.getItem('sucapro_user_fullname')) {
         localStorage.setItem('sucapro_user_fullname', "Lorenzo Grassi");
       }
-    }
-
-    function getTodayString() {
-      const today = new Date();
-      return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     }
 
     function loadStorage() {
@@ -1288,7 +1296,7 @@
         userName: localStorage.getItem('sucapro_user_fullname') || "Lorenzo Grassi"
       };
       const jsonContent = JSON.stringify(backupPayload, null, 2);
-      const fileName = `sucapro_backup_${getTodayString()}.json`;
+      const fileName = `sucapro_backup_${getNowDateString()}.json`;
 
       if (window.showSaveFilePicker) {
         try {
@@ -1382,7 +1390,6 @@
 
       const eanFactor = (0.79 / (fN2 || 0.79));
       let calc = Math.round(ndlBase * eanFactor);
-
       const gfScale = Math.max(0.55, Math.min(1.25, gfHigh / 85));
       calc = Math.max(1, Math.round(calc * gfScale));
       const gfLowScale = Math.max(0.7, Math.min(1.1, (gfLow + 20) / 60));
@@ -1472,7 +1479,6 @@
       const descentTime = Math.ceil(depth / descentSpeed);
       const avgPAmbDescent = 1 + ((depth / 2) * rho / 10);
       const descentLiters = descentTime * avgPAmbDescent * sac;
-
       const bottomLiters = userBottomTime * pAmbMax * sac;
 
       let chosenDeepLevel = Math.max(6, Math.min(depth - 3, 21));
@@ -1505,7 +1511,6 @@
 
       const pAmbDeepLevel = 1 + (chosenDeepLevel * rho / 10);
       const deepLevelLiterPerMin = pAmbDeepLevel * sac;
-
       const pAmbShallow = 1 + (5 * rho / 10);
       const shallowLiterPerMin = pAmbShallow * sac;
 
@@ -1514,7 +1519,6 @@
 
       if (gasForMultiLevelLiters > 0) {
         const maxMinutesByGasAtDeep = Math.floor(gasForMultiLevelLiters / deepLevelLiterPerMin);
-
         if (maxMinutesByGasAtDeep <= remainingNdlAtDeepLevel) {
           deepLevelTime = maxMinutesByGasAtDeep;
           const gasUsedAtDeep = deepLevelTime * deepLevelLiterPerMin;
@@ -1763,8 +1767,8 @@
       sigCanvas.addEventListener('mousemove', move);
       window.addEventListener('mouseup', stop);
 
-      sigCanvas.addEventListener('touchstart', (e) => { start(e.touches[0]); e.preventDefault(); });
-      sigCanvas.addEventListener('touchmove', (e) => { move(e.touches[0]); e.preventDefault(); });
+      sigCanvas.addEventListener('touchstart', (e) => { start(e.touches[0]); e.preventDefault(); }, {passive: false});
+      sigCanvas.addEventListener('touchmove', (e) => { move(e.touches[0]); e.preventDefault(); }, {passive: false});
       sigCanvas.addEventListener('touchend', stop);
     }
 
@@ -1812,7 +1816,7 @@
       }
 
       const last = AppState.dives[AppState.dives.length - 1];
-      const diveDate = `${last.date || getTodayString()}T${last.time || "12:00"}:00`;
+      const diveDate = `${last.date || getNowDateString()}T${last.time || "12:00"}:00`;
       const startTime = new Date(diveDate).getTime();
       const durationMs = (parseFloat(last.duration) || 45) * 60000;
       const surfaceTime = startTime + durationMs;
@@ -1875,7 +1879,7 @@
       e.preventDefault();
       const dur = parseFloat(document.getElementById('val-duration').value) || 0;
       const maxD = parseFloat(document.getElementById('val-depth-max').value) || 0;
-      const avgD = parseFloat(document.getElementById('val-depth-avg').value) || 0;
+      const avgD = parseFloat(document.getElementById('val-depth-avg').value) || (maxD * 0.6);
 
       if (dur <= 0 || maxD <= 0) {
         alert("Inserisci durata e profondità massima.");
@@ -1883,8 +1887,8 @@
       }
 
       const diveData = {
-        date: document.getElementById('val-date').value || getTodayString(),
-        time: document.getElementById('val-time').value || "12:00",
+        date: document.getElementById('val-date').value || getNowDateString(),
+        time: document.getElementById('val-time').value || getNowTimeString(),
         duration: dur,
         depthMax: maxD,
         depthAvg: avgD,
@@ -1892,26 +1896,26 @@
         tempMax: parseFloat(document.getElementById('val-temp-max').value) || '--',
         pStart: parseFloat(document.getElementById('val-p-start').value) || 0,
         pEnd: parseFloat(document.getElementById('val-p-end').value) || 0,
-        diveType: document.getElementById('val-diveType').innerText,
-        gas: document.getElementById('val-gas').innerText,
-        decoGas: document.getElementById('val-decoGas').innerText,
-        tank: document.getElementById('val-tank').innerText,
-        water: document.getElementById('val-waterType').innerText,
+        diveType: document.getElementById('val-diveType').innerText || "Ricreativa (NDL)",
+        gas: document.getElementById('val-gas').innerText || "Aria (21/0)",
+        decoGas: document.getElementById('val-decoGas').innerText || "Nessuno",
+        tank: document.getElementById('val-tank').innerText || "Acciaio 15L",
+        water: document.getElementById('val-waterType').innerText || "Salata (1.028)",
         visibility: document.getElementById('val-visibility').value || '--',
-        current: document.getElementById('val-current').value,
-        sea: document.getElementById('val-sea-state').value,
+        current: document.getElementById('val-current').value || "Nulla",
+        sea: document.getElementById('val-sea-state').value || "Calmo",
         ballast: document.getElementById('val-ballast').value || '0',
-        suit: document.getElementById('val-suit').innerText,
-        gf: document.getElementById('val-gf').innerText,
-        site: document.getElementById('val-site').innerText,
-        buddy: document.getElementById('val-buddy').innerText,
-        center: document.getElementById('val-center').innerText,
-        gps: document.getElementById('val-gps').value,
-        video: document.getElementById('val-video-link').value || '',
-        rmv: document.getElementById('ind-rmv').innerText,
-        cns: document.getElementById('ind-cns').innerText,
-        otu: document.getElementById('ind-otu').innerText,
-        density: document.getElementById('ind-density').innerText,
+        suit: document.getElementById('val-suit').innerText || "Umida 5mm",
+        gf: document.getElementById('val-gf').innerText || "40 / 85",
+        site: document.getElementById('val-site').innerText || "Y-40 The Deep Joy",
+        buddy: document.getElementById('val-buddy').innerText || "Solo Diving",
+        center: document.getElementById('val-center').innerText || "Privato / Da Riva",
+        gps: document.getElementById('val-gps').value || "",
+        video: document.getElementById('val-video-link').value || "",
+        rmv: document.getElementById('ind-rmv').innerText || "-- L/min",
+        cns: document.getElementById('ind-cns').innerText || "0%",
+        otu: document.getElementById('ind-otu').innerText || "0",
+        density: document.getElementById('ind-density').innerText || "-- g/L",
         signature: sigCanvas ? sigCanvas.toDataURL() : null
       };
 
@@ -1937,6 +1941,7 @@
       document.getElementById('btn-delete-editing').style.display = 'none';
       document.getElementById('btn-submit-main').innerText = "REGISTRA NEL LOGBOOK";
       document.getElementById('main-dive-form').reset();
+      resetFormToDefaults();
       clearSignature();
       updateCounter();
     }
@@ -1952,8 +1957,8 @@
       document.getElementById('btn-submit-main').innerText = "AGGIORNA IMMERSIONE";
       document.getElementById('btn-delete-editing').style.display = 'flex';
 
-      document.getElementById('val-date').value = d.date || '';
-      document.getElementById('val-time').value = d.time || '';
+      document.getElementById('val-date').value = d.date || getNowDateString();
+      document.getElementById('val-time').value = d.time || getNowTimeString();
       document.getElementById('val-duration').value = d.duration || '';
       document.getElementById('val-depth-max').value = d.depthMax || '';
       document.getElementById('val-depth-avg').value = d.depthAvg || '';
@@ -1970,7 +1975,7 @@
 
       ['diveType', 'gas', 'decoGas', 'tank', 'waterType', 'suit', 'gf', 'site', 'buddy', 'center'].forEach(k => {
         const el = document.getElementById(`val-${k}`);
-        if (d[k] && !d[k].includes('--')) {
+        if (el && d[k]) {
           el.innerText = d[k];
           el.classList.remove('empty');
         }
@@ -2009,8 +2014,8 @@
         return `
           <div class="log-card" onclick="loadDiveForEdit(${d.id})">
             <div class="log-header">
-              <span class="log-title">#${d.num} · ${d.site !== '-- Seleziona o aggiungi --' ? d.site : 'Sito Tech'}</span>
-              <span style="font-size:0.7rem; color:var(--text-sub);">${d.date}</span>
+              <span class="log-title">#${d.num} · ${d.site}</span>
+              <span style="font-size:0.7rem; color:var(--text-sub);">${d.date} ${d.time || ''}</span>
             </div>
             <div style="font-size:0.7rem; color:var(--text-sub); margin-bottom:3px;">
               ${d.gas} | GF: ${d.gf || '40/85'} | CNS: <span style="color:var(--accent);">${d.cns || '0%'}</span> | Densità: ${d.density || '--'}
@@ -2448,7 +2453,7 @@
         document.getElementById('cert-org').value = "";
         document.getElementById('cert-title').value = "";
         document.getElementById('cert-num').value = "";
-        document.getElementById('cert-date').value = getTodayString();
+        document.getElementById('cert-date').value = getNowDateString();
         tempCertImageBase64 = "";
         imgEl.style.display = 'none';
         delBtn.style.display = 'none';
@@ -2479,7 +2484,7 @@
       const org = document.getElementById('cert-org').value.trim() || "SNSI";
       const title = document.getElementById('cert-title').value.trim() || "Open Water";
       const num = document.getElementById('cert-num').value.trim();
-      const date = document.getElementById('cert-date').value || getTodayString();
+      const date = document.getElementById('cert-date').value || getNowDateString();
 
       if (id) {
         const c = AppState.certs.find(x => x.id == id);
@@ -2542,11 +2547,15 @@
       if (tabKey === 'plan') { runPlannerEngine(); }
       if (tabKey === 'log') renderLogbookFeed();
       if (tabKey === 'profile') renderProfileData();
-      if (tabKey === 'record') resizeSigCanvas();
+      if (tabKey === 'record') {
+        resizeSigCanvas();
+        if (!currentEditingDiveId) resetFormToDefaults();
+      }
     }
 
     function startNewDiveMode(btn = null) {
       cancelEditMode();
+      resetFormToDefaults();
       const targetBtn = btn || document.querySelectorAll('.nav-btn')[2];
       switchMainTab('record', targetBtn);
     }
