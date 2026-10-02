@@ -113,7 +113,6 @@
     }
     .tab-content.active { display: block; }
 
-    /* Alert Banner Blocco */
     #user-gate-banner {
       display: none;
       background: rgba(255, 71, 87, 0.15);
@@ -122,7 +121,7 @@
       padding: 8px 12px;
       margin-bottom: 8px;
       font-size: 0.75rem;
-      font-weight: 700;
+      font-weight: 800;
       color: var(--danger);
       text-align: center;
     }
@@ -512,6 +511,21 @@
       font-size: 0.65rem;
     }
 
+    .yt-badge-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255, 71, 87, 0.15);
+      border: 1px solid var(--danger);
+      color: #ff6b81;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-decoration: none;
+      margin-top: 6px;
+    }
+
     .profile-grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -624,6 +638,26 @@
     }
     .sheet-row.selected { border-color: var(--accent); background: rgba(255, 140, 0, 0.12); }
 
+    .edit-mode-banner {
+      display: none;
+      background: rgba(255, 140, 0, 0.15);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      padding: 6px 10px;
+      margin-bottom: 8px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sign-pad-wrap {
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      background: #000;
+      position: relative;
+      margin-top: 4px;
+      touch-action: none;
+    }
+
     .stat-clickable-badge {
       display: inline-flex;
       align-items: center;
@@ -636,11 +670,8 @@
       font-size: 0.72rem;
       font-weight: 600;
       color: #fff;
-      transition: border-color 0.2s;
     }
-    .stat-clickable-badge:hover {
-      border-color: var(--accent);
-    }
+    .stat-clickable-badge:hover { border-color: var(--accent); }
     .stat-clickable-badge span.count {
       color: var(--accent);
       font-weight: 800;
@@ -690,7 +721,7 @@
         </div>
         <div class="grid-3">
           <div class="form-group">
-            <span class="form-label">PO₂ Limite (bar)</span>
+            <span class="form-label">PO₂ (bar)</span>
             <input type="number" step="0.05" id="calc-po2" class="form-control" value="1.40" oninput="calcGasTriangle('po2')">
           </div>
           <div class="form-group">
@@ -698,12 +729,12 @@
             <input type="number" step="0.5" id="calc-mod" class="form-control" placeholder="es. 33.5" oninput="calcGasTriangle('mod')">
           </div>
           <div class="form-group">
-            <span class="form-label">O₂ Miscela (%)</span>
+            <span class="form-label">O₂ (%)</span>
             <input type="number" step="1" id="calc-ean" class="form-control" placeholder="es. 32" oninput="calcGasTriangle('ean')">
           </div>
         </div>
         <div style="font-size:0.6rem; color:var(--text-muted); text-align:center;">
-          PO₂ default 1.4 bar (reset ad ogni riavvio). Compilando due campi, il terzo viene calcolato.
+          PO₂ default 1.4 bar (reset al riavvio). Compilando 2 campi il 3° viene calcolato.
         </div>
       </div>
 
@@ -747,7 +778,6 @@
 
     <!-- TAB PLANNER -->
     <div id="tab-plan" class="tab-content">
-      <!-- ALLARME PO2 PLANNER -->
       <div id="plan-alarm-box" style="display:none; background:rgba(255, 71, 87, 0.2); border:1.5px solid var(--danger); border-radius:8px; padding:8px 10px; margin-bottom:8px; color:var(--danger); font-size:0.75rem; font-weight:800; text-align:center;">
         ⚠️ ALLARME IPEROSSIATOSSICA: PO₂ FUORI LIMITE!
       </div>
@@ -763,8 +793,8 @@
             <input type="number" step="1" id="plan-depth" class="form-control" value="30" oninput="runPlannerEngine()">
           </div>
           <div class="form-group">
-            <span class="form-label">T. Fondo (min)</span>
-            <input type="number" step="1" id="plan-bottom-time" class="form-control" value="15" oninput="runPlannerEngine()">
+            <span class="form-label">T. Fondo Max (min)</span>
+            <input type="number" step="1" id="plan-bottom-time" class="form-control" value="10" oninput="runPlannerEngine()">
           </div>
           <div class="form-group">
             <span class="form-label">RMV (L/m)</span>
@@ -774,7 +804,7 @@
 
         <div class="grid-3">
           <div class="form-group">
-            <span class="form-label">Gas Fondo</span>
+            <span class="form-label">Miscela Fondo</span>
             <div class="form-select-box" onclick="openDropdownSheet('planGas')">
               <span class="select-val" id="val-planGas">Aria (21/0)</span>
               <span style="color:var(--accent);">▾</span>
@@ -813,13 +843,18 @@
             <input type="number" id="plan-reserve-target" class="form-control" value="50" min="20" max="120" step="5" oninput="runPlannerEngine()">
           </div>
         </div>
+
+        <div class="form-group" style="margin-bottom:0;">
+          <span class="form-label">T. Totale Stimato Immersione</span>
+          <input type="text" id="plan-total-time-display" class="form-control" value="-- min" readonly style="color:var(--temp-line); font-weight:800;">
+        </div>
       </div>
 
       <!-- GRAFICO DEL PIANO D'IMMERSIONE -->
       <div class="panel">
         <div class="panel-header">
           <span>Curva Prevista Piano di Immersione</span>
-          <span style="color:var(--temp-line);" id="plan-profile-stats">Profilo Dinamico</span>
+          <span style="color:var(--temp-line);">Profilo Dinamico</span>
         </div>
         <div class="chart-container">
           <canvas id="planProfileCanvas" height="150"></canvas>
@@ -832,12 +867,47 @@
           <div><span class="val" id="plan-po2-deco">-- b</span><span class="lbl">PO₂ Deco/Sosta</span></div>
           <div><span class="val" id="plan-ndl-val">--</span><span class="lbl">NDL Fondo</span></div>
           <div><span class="val" id="plan-mod-val">-- m</span><span class="lbl">MOD (1.4b)</span></div>
+          <div><span class="val" id="plan-dens-val">-- g/L</span><span class="lbl">Densità Max</span></div>
+        </div>
+        <div style="font-size:0.62rem; color:var(--text-muted); text-align:center; margin-top:4px;" id="plan-dens-note">
+          ≤ 6.0 g/L (Ideale) | 6.0 - 7.5 g/L (Deep Air)
         </div>
       </div>
 
       <div class="panel">
         <div class="panel-header">
-          <span>Run-Time Dettagliato</span>
+          <span>Bilancio Gas & Riserva di Sicurezza</span>
+          <span style="color:var(--success);" id="plan-reserve-card-badge">Target Riserva: 50 bar</span>
+        </div>
+        <div class="profile-grid-2">
+          <div class="kpi-card">
+            <div class="kpi-title">Turn Pressure (Fondo Max)</div>
+            <div class="kpi-value" style="color:var(--accent);" id="plan-turn-press">-- <span>bar</span></div>
+            <div class="kpi-sub">Quota stacco da fondo</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Pressione a 0m (Emersione)</div>
+            <div class="kpi-value" style="color:var(--success);" id="plan-surf-press">-- <span>bar</span></div>
+            <div class="kpi-sub" id="plan-surf-sub">Residuo a fine tuffo</div>
+          </div>
+        </div>
+        <div class="profile-grid-2" style="margin-bottom:0;">
+          <div class="kpi-card">
+            <div class="kpi-title" id="plan-multilevel-title">Quota Profonda Multi-level</div>
+            <div class="kpi-value" style="color:var(--temp-line);" id="plan-extra-time">-- <span>min</span></div>
+            <div class="kpi-sub" id="plan-extra-sub">Permanenza a quota profonda</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Gas Consumato Totale</div>
+            <div class="kpi-value" id="plan-gas-needed">-- <span>L</span></div>
+            <div class="kpi-sub" id="plan-bar-needed">-- bar erogati</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span>Run-Time e Profilo Multi-Level Ottimizzato</span>
           <span id="plan-total-runtime">Run-Time: --</span>
         </div>
         <table class="plan-table">
@@ -845,7 +915,7 @@
             <tr>
               <th>Fase</th>
               <th>Quota</th>
-              <th>Tempo/Velocità</th>
+              <th>Velocità / Sosta</th>
               <th>Run-Time</th>
               <th>PO₂</th>
             </tr>
@@ -859,9 +929,10 @@
 
     <!-- TAB REGISTRA -->
     <div id="tab-record" class="tab-content">
-      <div id="edit-notice-bar" style="display:none; background:rgba(255, 140, 0, 0.15); border:1px solid var(--accent); border-radius:10px; padding:6px 10px; margin-bottom:8px; justify-content:space-between; align-items:center;">
+      <div id="edit-notice-bar" class="edit-mode-banner">
         <div>
           <span style="font-weight:800; color:var(--accent); font-size:0.75rem;" id="edit-notice-text">Modifica Tuffo</span>
+          <div style="font-size:0.62rem; color:var(--text-sub);">Aggiorna i parametri registrati.</div>
         </div>
         <button type="button" class="btn-icon" style="height:28px; width:28px; font-size:0.75rem;" onclick="cancelEditMode()">✕</button>
       </div>
@@ -872,15 +943,18 @@
         <div class="panel">
           <div class="grid-2">
             <div class="form-group">
-              <span class="form-label">Sito / Luogo</span>
-              <input type="text" id="val-site" class="form-control" placeholder="es. Relitto Haven o Secca">
+              <span class="form-label">Tipologia Profilo</span>
+              <div class="form-select-box" onclick="openDropdownSheet('diveType')">
+                <span class="select-val" id="val-diveType">Ricreativa (NDL)</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
             </div>
             <div class="form-group">
               <span class="form-label">Voto Immersione (1-10)</span>
               <select id="val-rating" class="form-control">
                 <option value="10">⭐️ 10 - Eccezionale</option>
                 <option value="9">⭐️ 9 - Bellissima</option>
-                <option value="8" selected>⭐️ 8 - Molto bella</option>
+                <option value="8" selected>⭐️️ 8 - Molto bella</option>
                 <option value="7">⭐️ 7 - Buona</option>
                 <option value="6">⭐️ 6 - Sufficiente</option>
                 <option value="5">⭐️ 5 - Discreta</option>
@@ -889,14 +963,6 @@
                 <option value="2">⭐️ 2 - Interrotta</option>
                 <option value="1">⭐️ 1 - Disastrosa</option>
               </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <span class="form-label">Posizione Google Maps (Cerca o incolla link/indirizzo)</span>
-            <div style="display:flex; gap:6px;">
-              <input type="text" id="val-maps-url" class="form-control" placeholder="es. Isola d'Elba oppure link Maps">
-              <button type="button" class="btn-icon" title="Cerca su Google Maps" onclick="openGoogleMaps()">🗺️</button>
             </div>
           </div>
 
@@ -909,53 +975,179 @@
               </div>
             </div>
             <div class="form-group">
-              <span class="form-label">Compagno (Buddy)</span>
-              <input type="text" id="val-buddy" class="form-control" placeholder="es. Marco Rossi">
+              <span class="form-label">Gas Deco / Stadio</span>
+              <div class="form-select-box" onclick="openDropdownSheet('decoGas')">
+                <span class="select-val" id="val-decoGas">Nessuno</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
             </div>
           </div>
 
+          <div class="grid-3">
+            <div class="form-group">
+              <span class="form-label">Bombola</span>
+              <div class="form-select-box" onclick="openDropdownSheet('tank')">
+                <span class="select-val" id="val-tank">Acciaio 15L</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <span class="form-label">Acqua</span>
+              <div class="form-select-box" onclick="openDropdownSheet('waterType')">
+                <span class="select-val" id="val-waterType">Salata (1.028)</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <span class="form-label">Gradient Factors</span>
+              <div class="form-select-box" onclick="openDropdownSheet('gf')">
+                <span class="select-val" id="val-gf">40 / 85</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:0;">
+            <div class="form-group">
+              <span class="form-label">Muta</span>
+              <div class="form-select-box" onclick="openDropdownSheet('suit')">
+                <span class="select-val" id="val-suit">Umida 5mm</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <span class="form-label">Zavorra (kg)</span>
+              <input type="number" step="0.5" id="val-ballast" class="form-control" placeholder="es. 6">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="grid-2">
+            <div class="form-group">
+              <span class="form-label">Sito d'Immersione</span>
+              <input type="text" id="val-site" class="form-control" placeholder="es. Relitto Haven" value="Y-40 The Deep Joy">
+            </div>
+            <div class="form-group">
+              <span class="form-label">Compagno (Buddy)</span>
+              <input type="text" id="val-buddy" class="form-control" placeholder="es. Marco Rossi" value="Solo Diving">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <span class="form-label">Posizione Google Maps (Cerca o incolla luogo/link)</span>
+            <div style="display:flex; gap:6px;">
+              <input type="text" id="val-maps-url" class="form-control" placeholder="es. Y-40 Montegrotto o link Maps">
+              <button type="button" class="btn-icon" title="Cerca su Google Maps" onclick="openGoogleMaps()">🗺️</button>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="form-group">
+              <span class="form-label">Visibilità (m)</span>
+              <input type="number" id="val-visibility" class="form-control" placeholder="es. 15">
+            </div>
+            <div class="form-group">
+              <span class="form-label">Corrente</span>
+              <select id="val-current" class="form-control">
+                <option value="Nulla">Nulla</option>
+                <option value="Leggera">Leggera</option>
+                <option value="Media">Media</option>
+                <option value="Forte">Forte</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <span class="form-label">Moto Ondoso</span>
+              <select id="val-sea-state" class="form-control">
+                <option value="Calmo">Calmo</option>
+                <option value="Poco mosso">Poco mosso</option>
+                <option value="Mosso">Mosso</option>
+                <option value="Agitato">Agitato</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <span class="form-label">Diving Center</span>
+            <input type="text" id="val-center" class="form-control" placeholder="es. Diving Center" value="Privato / Da Riva">
+          </div>
+
+          <!-- LINK YOUTUBE -->
+          <div class="form-group" style="margin-bottom:0; margin-top:8px;">
+            <span class="form-label">Video YouTube (Link / URL)</span>
+            <div style="display:flex; gap:6px;">
+              <input type="url" id="val-video-link" class="form-control" placeholder="https://youtu.be/... o https://www.youtube.com/watch?v=...">
+              <button type="button" class="btn-icon" style="color:var(--danger);" onclick="testVideoLink()" title="Verifica link video">▶</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
           <div class="grid-3">
             <div class="form-group">
               <span class="form-label">Data</span>
               <input type="date" id="val-date" class="form-control">
             </div>
             <div class="form-group">
-              <span class="form-label">Ora</span>
+              <span class="form-label">Ora Inizio</span>
               <input type="time" id="val-time" class="form-control">
             </div>
             <div class="form-group">
               <span class="form-label">Durata (min)</span>
-              <input type="number" id="val-duration" class="form-control" value="45" oninput="runLiveCalculations()">
+              <input type="number" id="val-duration" class="form-control" placeholder="45" value="45" oninput="runLiveCalculations()">
             </div>
           </div>
 
           <div class="grid-2">
             <div class="form-group">
               <span class="form-label">Prof. Massima (m)</span>
-              <input type="number" step="0.1" id="val-depth-max" class="form-control" value="25.0" oninput="runLiveCalculations()">
+              <input type="number" step="0.1" id="val-depth-max" class="form-control" placeholder="25.0" value="20.0" oninput="runLiveCalculations()">
             </div>
             <div class="form-group">
               <span class="form-label">Prof. Media (m)</span>
-              <input type="number" step="0.1" id="val-depth-avg" class="form-control" value="15.0" oninput="runLiveCalculations()">
+              <input type="number" step="0.1" id="val-depth-avg" class="form-control" placeholder="14.5" value="12.0" oninput="runLiveCalculations()">
             </div>
           </div>
 
           <div class="grid-2">
             <div class="form-group">
+              <span class="form-label">Temp Min (°C)</span>
+              <input type="number" step="0.1" id="val-temp-min" class="form-control" placeholder="14">
+            </div>
+            <div class="form-group">
+              <span class="form-label">Temp Max (°C)</span>
+              <input type="number" step="0.1" id="val-temp-max" class="form-control" placeholder="22">
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:0;">
+            <div class="form-group">
               <span class="form-label">P. Inizio (bar)</span>
-              <input type="number" id="val-p-start" class="form-control" value="210" oninput="runLiveCalculations()">
+              <input type="number" id="val-p-start" class="form-control" placeholder="210" value="210" oninput="runLiveCalculations()">
             </div>
             <div class="form-group">
               <span class="form-label">P. Fine (bar)</span>
-              <input type="number" id="val-p-end" class="form-control" value="50" oninput="runLiveCalculations()">
+              <input type="number" id="val-p-end" class="form-control" placeholder="50" value="50" oninput="runLiveCalculations()">
             </div>
           </div>
         </div>
 
         <div class="panel">
           <div class="sac-banner" style="margin-bottom:0;">
-            <div><span class="val" id="ind-rmv">-- L/min</span><span class="lbl">RMV Calcolato</span></div>
-            <div><span class="val" id="ind-po2">-- b</span><span class="lbl">PO₂ Max</span></div>
+            <div><span class="val" id="ind-rmv">-- L/min</span><span class="lbl">RMV Stimato</span></div>
+            <div><span class="val" id="ind-cns">0%</span><span class="lbl">CNS Clock</span></div>
+            <div><span class="val" id="ind-otu">0</span><span class="lbl">OTU Tossicità</span></div>
+            <div><span class="val" id="ind-density">-- g/L</span><span class="lbl">Densità Max</span></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span>Firma Buddy / Timbro Istruttore</span>
+            <span onclick="clearSignature()" style="cursor:pointer; color:var(--danger);">Cancella</span>
+          </div>
+          <div class="sign-pad-wrap">
+            <canvas id="signatureCanvas" height="80"></canvas>
           </div>
         </div>
 
@@ -968,7 +1160,6 @@
 
     <!-- TAB LOGBOOK -->
     <div id="tab-log" class="tab-content">
-      <!-- FILTRI MULTIPLI LOGBOOK -->
       <div class="panel" style="padding: 8px;">
         <div class="panel-header" style="margin-bottom:4px;">
           <span>Filtri Ricerca Logbook</span>
@@ -982,15 +1173,17 @@
           <select id="filter-gas" class="form-control" onchange="renderLogbookFeed()">
             <option value="">Tutti i Gas</option>
             <option value="Aria">Aria</option>
-            <option value="EAN">Nitrox (EAN)</option>
+            <option value="32">EAN32</option>
+            <option value="36">EAN36</option>
             <option value="Tx">Trimix</option>
           </select>
           <input type="number" id="filter-depth" class="form-control" placeholder="Prof. Min (m)" oninput="renderLogbookFeed()">
           <select id="filter-rating" class="form-control" onchange="renderLogbookFeed()">
             <option value="">Tutti i Voti</option>
+            <option value="9">≥ 9 ⭐️</option>
             <option value="8">≥ 8 ⭐️</option>
+            <option value="7">≥ 7 ⭐️</option>
             <option value="6">≥ 6 ⭐️</option>
-            <option value="4">≥ 4 ⭐️</option>
           </select>
         </div>
       </div>
@@ -1004,33 +1197,87 @@
         <div class="kpi-card">
           <div class="kpi-title">Tempo Fondo Totale</div>
           <div class="kpi-value" id="kpi-total-time">0h <span>00'</span></div>
+          <div class="kpi-sub" id="kpi-total-days">0 giorni cumulativi</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-title">Profondità Massima</div>
           <div class="kpi-value" id="kpi-max-depth">0.0<span>m</span></div>
+          <div class="kpi-sub" id="kpi-max-depth-site">Nessun record</div>
         </div>
       </div>
 
-      <!-- RIPARTIZIONE MISCELE CON CLICK PER FILTRO -->
-      <div class="panel">
-        <div class="panel-header">
-          <span>Ripartizione Miscele (Tocca per filtrare)</span>
+      <div class="profile-grid-3">
+        <div class="kpi-card">
+          <div class="kpi-title">RMV Medio (Ultimi 10)</div>
+          <div class="kpi-value" style="color:var(--temp-line);" id="kpi-rmv-avg-10">--<span>L/m</span></div>
+          <div class="kpi-sub" id="kpi-rmv-avg-10-sub">0 tuffi considerati</div>
         </div>
-        <div id="profile-gas-list" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+        <div class="kpi-card" id="kpi-card-best" style="cursor:pointer;" onclick="jumpToBestRmvDive()">
+          <div class="kpi-title">Miglior RMV (Min)</div>
+          <div class="kpi-value" style="color:var(--success);" id="kpi-rmv-best">--<span>L/m</span></div>
+          <div class="kpi-sub" id="kpi-rmv-best-sub">Tocca per aprire</div>
+        </div>
+        <div class="kpi-card" id="kpi-card-worst" style="cursor:pointer;" onclick="jumpToWorstRmvDive()">
+          <div class="kpi-title">Peggior RMV (Max)</div>
+          <div class="kpi-value" style="color:var(--danger);" id="kpi-rmv-worst">--<span>L/m</span></div>
+          <div class="kpi-sub" id="kpi-rmv-worst-sub">Tocca per aprire</div>
+        </div>
       </div>
 
-      <!-- STATISTICA BUDDY CON CLICK PER FILTRO -->
+      <!-- GRAFICO 1: TREND RMV -->
       <div class="panel">
         <div class="panel-header">
-          <span>Statistiche Buddy (Tocca per filtrare)</span>
+          <span>1. Trend Consumo RMV (Tocca i punti per aprire il tuffo)</span>
+          <span id="kpi-rmv-avg-label">Media 10: -- L/m</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="sacTrendCanvas" height="150" style="cursor:pointer;"></canvas>
+        </div>
+      </div>
+
+      <!-- GRAFICO 2: PROFILO CRONOLOGICO PROFONDITA & DURATA -->
+      <div class="panel">
+        <div class="panel-header">
+          <span>2. Quota Max (m) & Durata (min)</span>
+          <span style="color:var(--temp-line);">Profondità / Minuti</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="depthDurationCanvas" height="140"></canvas>
+        </div>
+      </div>
+
+      <!-- GRAFICO 3: ESPOSIZIONE CNS & OTU -->
+      <div class="panel">
+        <div class="panel-header">
+          <span>3. Tossicità O₂: CNS Clock (%) & OTU</span>
+          <span style="color:var(--warning);">Fisiologia Gas</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="cnsOtuCanvas" height="130"></canvas>
+        </div>
+      </div>
+
+      <!-- RIPARTIZIONE MISCELE -->
+      <div class="panel">
+        <div class="panel-header">
+          <span>4. Ripartizione Miscele (Tocca per filtrare)</span>
+        </div>
+        <div id="gasDistributionBars" style="display:flex; flex-direction:column; gap:8px; margin-bottom:8px;"></div>
+        <div id="profile-gas-badges" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+      </div>
+
+      <!-- STATISTICHE BUDDY -->
+      <div class="panel">
+        <div class="panel-header">
+          <span>Compagni d'Immersione (Buddy - Tocca per filtrare)</span>
         </div>
         <div id="profile-buddy-list" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
       </div>
 
-      <!-- STATISTICA LUOGHI CON CLICK PER FILTRO -->
+      <!-- STATISTICHE LUOGHI -->
       <div class="panel">
         <div class="panel-header">
-          <span>Luoghi d'Immersione (Tocca per filtrare)</span>
+          <span>Luoghi Registrati (Tocca per filtrare)</span>
         </div>
         <div id="profile-site-list" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
       </div>
@@ -1061,6 +1308,42 @@
     </button>
   </nav>
 
+  <!-- MODALE BREVETTO -->
+  <div class="modal-dialog" id="cert-modal">
+    <div class="modal-dialog-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-weight:800; font-size:0.88rem; color:#fff;" id="cert-modal-title">Gestione Brevetto</span>
+        <button style="background:none; border:none; color:var(--text-sub); font-size:1.2rem;" onclick="closeCertModal()">&times;</button>
+      </div>
+      <input type="hidden" id="cert-edit-id">
+      <div class="form-group">
+        <span class="form-label">Didattica</span>
+        <input type="text" id="cert-org" class="form-control" placeholder="es. SNSI, PADI, TDI, GUE">
+      </div>
+      <div class="form-group">
+        <span class="form-label">Livello / Corso</span>
+        <input type="text" id="cert-title" class="form-control" placeholder="es. Advanced OWD, Deep, Trimix">
+      </div>
+      <div class="form-group">
+        <span class="form-label">Numero Licenza</span>
+        <input type="text" id="cert-num" class="form-control" placeholder="Seriale licenza">
+      </div>
+      <div class="form-group">
+        <span class="form-label">Data Emissione</span>
+        <input type="date" id="cert-date" class="form-control">
+      </div>
+      <div class="form-group">
+        <span class="form-label">Immagine Brevetto</span>
+        <input type="file" id="cert-file" accept="image/*" class="form-control" style="padding-top:7px; font-size:0.75rem;" onchange="previewCertFile(event)">
+        <img id="cert-img-display" style="width:100%; height:90px; object-fit:cover; border-radius:8px; margin-top:6px; display:none; border:1px solid var(--surface-border);">
+      </div>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button type="button" class="btn-action" style="flex:1;" onclick="saveCertRecord()">Salva Brevetto</button>
+        <button type="button" id="cert-del-btn" class="btn-icon" style="color:var(--danger); display:none;" onclick="deleteCurrentCert()">🗑</button>
+      </div>
+    </div>
+  </div>
+
   <!-- SHEET DROPDOWN -->
   <div class="sheet-modal" id="sheet-overlay" onclick="closeDropdownSheet(event)">
     <div class="sheet-body" onclick="event.stopPropagation()">
@@ -1070,7 +1353,7 @@
       </div>
       <div class="sheet-items-list" id="sheet-list"></div>
       <div style="display:flex; gap:6px; margin-top:8px;">
-        <input type="text" id="sheet-new-val" class="form-control" placeholder="Aggiungi voce personalizzata...">
+        <input type="text" id="sheet-new-val" class="form-control" placeholder="Aggiungi voce custom...">
         <button type="button" class="btn-action" style="width:auto; padding:0 14px;" onclick="addNewOption()">Salva</button>
       </div>
     </div>
@@ -1078,10 +1361,13 @@
 
   <script>
     const DEFAULT_OPTIONS = {
-      gas: ["Aria (21/0)", "EAN32 (32/0)", "EAN36 (36/0)", "Tx 21/35", "Tx 18/45"],
-      decoGas: ["Stesso Gas Fondo", "EAN50 (50/0)", "Ossigeno 100%"],
-      tank: ["Alluminio S80 (11.1L)", "Acciaio 12L", "Acciaio 15L", "Acciaio 18L", "Bibombola 2x12L (24L)"],
-      gf: ["40 / 85", "30 / 70", "50 / 80", "45 / 85"]
+      diveType: ["Ricreativa (NDL)", "Deco Normossica", "Deco Ipossica", "Rebreather (CCR)", "Addestramento"],
+      gas: ["Aria (21/0)", "EAN32 (32/0)", "EAN36 (36/0)", "Tx 21/35", "Tx 18/45", "Tx 15/55", "Tx 10/70"],
+      decoGas: ["Nessuno", "EAN50 (50/0)", "Ossigeno 100%", "Tx 50/25"],
+      tank: ["Alluminio S80 (11.1L)", "Acciaio 12L", "Acciaio 15L", "Acciaio 18L", "Bibombola 2x10L (20L)", "Bibombola 2x12L (24L)"],
+      waterType: ["Salata (1.028)", "Dolce (1.000)"],
+      suit: ["Umida 5mm", "Semistagna 7mm", "Stagna Neoprene 4mm", "Stagna Trilaminato"],
+      gf: ["40 / 85", "30 / 70", "50 / 80", "45 / 85", "30 / 85"]
     };
 
     let AppState = {
@@ -1091,19 +1377,32 @@
     };
 
     let currentSheetCategory = null;
+    let homeTimerInterval = null;
     let currentEditingDiveId = null;
+    let tempCertImageBase64 = "";
+
+    let sigCanvas, sigCtx, isDrawing = false;
+    let sacChartPoints = [];
+    let bestRmvDiveId = null;
+    let worstRmvDiveId = null;
 
     window.addEventListener('DOMContentLoaded', () => {
       loadStorage();
       loadUserName();
-      syncCurrentDateTime();
       checkUserGate();
+      syncCurrentDateTime();
+      initSignaturePad();
+      initSacTrendCanvasInteractivity();
+      renderHomeCerts();
       sortDivesChronologically();
       updateCounter();
+      runLiveCalculations();
       runPlannerEngine();
+      initHomeTimers();
+      window.addEventListener('resize', resizeSigCanvas);
     });
 
-    // 1. CALCOLATORE GAS TRIANGLE (MOD / EAN / PO2)
+    // 1. CALCOLATORE DINAMICO TRIANGOLO DEI GAS
     function calcGasTriangle(triggeredBy) {
       const po2Input = document.getElementById('calc-po2');
       const modInput = document.getElementById('calc-mod');
@@ -1134,7 +1433,7 @@
       }
     }
 
-    // 2. NOME SUBACQUEO & BLOCCO APP
+    // 2. GESTIONE UTENTE E GATE DI BLOCCO
     function checkUserGate() {
       const userName = (localStorage.getItem('sucapro_user_fullname') || "").trim();
       const banner = document.getElementById('user-gate-banner');
@@ -1144,7 +1443,7 @@
         if (banner) banner.style.display = 'block';
         navButtons.forEach((btn, idx) => {
           if (idx !== 0) {
-            btn.style.opacity = '0.3';
+            btn.style.opacity = '0.35';
             btn.style.pointerEvents = 'none';
           }
         });
@@ -1171,7 +1470,7 @@
     }
 
     function loadStorage() {
-      const data = localStorage.getItem('sucapro_storage_v11');
+      const data = localStorage.getItem('sucapro_storage_v12');
       if (data) {
         try {
           const parsed = JSON.parse(data);
@@ -1183,100 +1482,296 @@
     }
 
     function saveStorage() {
-      localStorage.setItem('sucapro_storage_v11', JSON.stringify(AppState));
+      localStorage.setItem('sucapro_storage_v12', JSON.stringify(AppState));
     }
 
-    // 3. PLANNER OTTIMIZZATO, ALLARMI PO2 E GRAFICO
+    function syncCurrentDateTime() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+
+      const dateEl = document.getElementById('val-date');
+      const timeEl = document.getElementById('val-time');
+      if (dateEl) dateEl.value = `${y}-${m}-${d}`;
+      if (timeEl) timeEl.value = `${hh}:${mm}`;
+    }
+
+    function sortDivesChronologically() {
+      AppState.dives.sort((a, b) => {
+        const timeA = new Date(`${a.date || "1970-01-01"}T${a.time || "00:00"}:00`).getTime();
+        const timeB = new Date(`${b.date || "1970-01-01"}T${b.time || "00:00"}:00`).getTime();
+        return timeA - timeB;
+      });
+      AppState.dives.forEach((d, idx) => { d.num = idx + 1; });
+      saveStorage();
+    }
+
+    function updateCounter() {
+      const total = AppState.dives.length;
+      const badge = document.getElementById('global-badge-count');
+      if (badge) badge.innerText = `${total} ${total === 1 ? 'Tuffo' : 'Tuffi'}`;
+      const homeBadge = document.getElementById('home-badge-count');
+      if (homeBadge) homeBadge.innerText = `${total} ${total === 1 ? 'Tuffo' : 'Tuffi'}`;
+      const certCount = document.getElementById('home-cert-count');
+      if (certCount) certCount.innerText = `${AppState.certs.length} Titoli`;
+    }
+
+    // 3. PLANNER OTTIMIZZATO CON ALLARMI PO2 E GRAFICO PROFILO
+    function calculateNDL(d, fN2, gfLow, gfHigh) {
+      let ndlBase = 0;
+      if (d <= 12) ndlBase = 135;
+      else if (d <= 15) ndlBase = 75;
+      else if (d <= 18) ndlBase = 50;
+      else if (d <= 21) ndlBase = 35;
+      else if (d <= 24) ndlBase = 25;
+      else if (d <= 27) ndlBase = 20;
+      else if (d <= 30) ndlBase = 16;
+      else if (d <= 33) ndlBase = 13;
+      else if (d <= 36) ndlBase = 11;
+      else if (d <= 39) ndlBase = 9;
+      else if (d <= 42) ndlBase = 8;
+      else if (d <= 45) ndlBase = 7;
+      else ndlBase = Math.max(3, Math.round(250 / d));
+
+      const eanFactor = (0.79 / (fN2 || 0.79));
+      let calc = Math.round(ndlBase * eanFactor);
+      const gfScale = Math.max(0.55, Math.min(1.25, gfHigh / 85));
+      calc = Math.max(1, Math.round(calc * gfScale));
+      const gfLowScale = Math.max(0.7, Math.min(1.1, (gfLow + 20) / 60));
+      return Math.max(1, Math.round(calc * gfLowScale));
+    }
+
     function runPlannerEngine() {
       const depth = Math.max(1, parseFloat(document.getElementById('plan-depth').value) || 30);
-      const bottomTime = Math.max(1, parseFloat(document.getElementById('plan-bottom-time').value) || 15);
+      const userBottomTime = Math.max(1, parseFloat(document.getElementById('plan-bottom-time').value) || 10);
+      const sac = Math.max(5, parseFloat(document.getElementById('plan-sac').value) || 16);
+      const pStart = Math.max(60, parseFloat(document.getElementById('plan-p-start').value) || 210);
+      const reserveTarget = Math.max(10, Math.min(pStart - 10, parseFloat(document.getElementById('plan-reserve-target').value) || 50));
+
+      const headerTargetBadge = document.getElementById('plan-target-reserve-header');
+      if (headerTargetBadge) headerTargetBadge.innerText = `Target Riserva: ${reserveTarget} bar`;
+      const cardReserveBadge = document.getElementById('plan-reserve-card-badge');
+      if (cardReserveBadge) cardReserveBadge.innerText = `Target Riserva: ${reserveTarget} bar`;
+
       const gasText = document.getElementById('val-planGas').innerText;
       const decoGasText = document.getElementById('val-planDecoGas').innerText;
+      const tankText = document.getElementById('val-planTank').innerText;
+      const gfText = document.getElementById('val-planGf').innerText;
 
-      let fO2Bottom = 0.21;
+      let gfLow = 40, gfHigh = 85;
+      const gfMatch = gfText.match(/(\d+)\s*\/\s*(\d+)/);
+      if (gfMatch) { gfLow = parseFloat(gfMatch[1]); gfHigh = parseFloat(gfMatch[2]); }
+
+      let tankVol = 15;
+      const tMatch = tankText.match(/(\d+(\.\d+)?)\s*L/i);
+      if (tMatch) tankVol = parseFloat(tMatch[1]);
+
+      let rho = 1.028;
+      let fO2Bottom = 0.21, fHeBottom = 0;
       if (gasText.includes("32")) fO2Bottom = 0.32;
       else if (gasText.includes("36")) fO2Bottom = 0.36;
       else if (gasText.includes("Tx")) {
-        const m = gasText.match(/Tx\s*(\d+)/i);
-        if (m) fO2Bottom = parseFloat(m[1]) / 100;
+        const txMatch = gasText.match(/Tx\s*(\d+)\/(\d+)/i);
+        if (txMatch) {
+          fO2Bottom = parseFloat(txMatch[1]) / 100;
+          fHeBottom = parseFloat(txMatch[2]) / 100;
+        }
       }
+      const fN2Bottom = Math.max(0, 1 - fO2Bottom - fHeBottom);
 
       let fO2Deco = fO2Bottom;
       if (decoGasText.includes("100%")) fO2Deco = 1.0;
       else if (decoGasText.includes("50")) fO2Deco = 0.50;
 
-      const pAmbMax = 1 + (depth / 10);
-      const po2Bottom = (pAmbMax * fO2Bottom);
-      const pAmbDeco = 1 + (5 / 10); // Sosta di sicurezza / deco a 5m
-      const po2Deco = (pAmbDeco * fO2Deco);
+      const pAmbMax = 1 + (depth * rho / 10);
+      const po2Bottom = pAmbMax * fO2Bottom;
+      const pAmbDeco = 1 + (5 * rho / 10);
+      const po2Deco = pAmbDeco * fO2Deco;
 
       const po2BottomEl = document.getElementById('plan-po2-bottom');
       const po2DecoEl = document.getElementById('plan-po2-deco');
       po2BottomEl.innerText = `${po2Bottom.toFixed(2)} b`;
       po2DecoEl.innerText = `${po2Deco.toFixed(2)} b`;
 
+      // Gestione Allarmi PO2
       const alarmBox = document.getElementById('plan-alarm-box');
-      let alarm = false;
-      let alarmMsg = "";
-
+      let alarmMsg = [];
       if (po2Bottom > 1.40) {
-        alarm = true;
-        alarmMsg += `PO₂ a fondo (${po2Bottom.toFixed(2)} bar) supera il limite di 1.40 bar! `;
         po2BottomEl.style.color = "var(--danger)";
+        alarmMsg.push(`PO₂ Fondo (${po2Bottom.toFixed(2)} bar) > 1.40!`);
       } else {
         po2BottomEl.style.color = "var(--success)";
       }
 
       if (po2Deco > 1.60) {
-        alarm = true;
-        alarmMsg += `PO₂ in deco/sosta (${po2Deco.toFixed(2)} bar) supera il limite di 1.60 bar! `;
         po2DecoEl.style.color = "var(--danger)";
+        alarmMsg.push(`PO₂ Deco/Sosta (${po2Deco.toFixed(2)} bar) > 1.60!`);
       } else {
         po2DecoEl.style.color = "var(--success)";
       }
 
-      if (alarm) {
+      if (alarmMsg.length > 0) {
         alarmBox.style.display = 'block';
-        alarmBox.innerText = `⚠️ ALLARME IPEROSSIATOSSICA: ${alarmMsg}`;
+        alarmBox.innerText = `⚠️ ALLARME IPEROSSIATOSSICA: ${alarmMsg.join(' | ')}`;
       } else {
         alarmBox.style.display = 'none';
       }
 
-      const mod = (((1.4 / fO2Bottom) - 1) * 10).toFixed(1);
+      const mod = (((1.4 / fO2Bottom) - 1) * (10 / rho)).toFixed(1);
+      const rho0 = (fO2Bottom * 1.428) + (fN2Bottom * 1.251) + (fHeBottom * 0.179);
+      const density = (rho0 * pAmbMax).toFixed(2);
+
       document.getElementById('plan-mod-val').innerText = `${mod}m`;
+      document.getElementById('plan-dens-val').innerText = `${density} g/L`;
 
-      // Run-Time
-      const descentTime = Math.ceil(depth / 18);
-      const ascentTo5m = Math.ceil((depth - 5) / 9);
-      const safetyTime = 3;
-      const finalAscent = 1;
-      const totalTime = descentTime + bottomTime + ascentTo5m + safetyTime + finalAscent;
+      const dNote = document.getElementById('plan-dens-note');
+      const dNum = parseFloat(density);
+      if (dNum > 7.5) {
+        dNote.style.color = "var(--danger)";
+        dNote.innerText = `Densità elevata (${density} g/L): Oltre 48m ad aria, consigliato Trimix.`;
+      } else if (dNum > 6.0) {
+        dNote.style.color = "var(--warning)";
+        dNote.innerText = `Deep Air Zone (${density} g/L): Nessun lavoro respiratorio intenso.`;
+      } else {
+        dNote.style.color = "var(--success)";
+        dNote.innerText = `Densità ottimale (≤ 6.0 g/L): Basso lavoro respiratorio.`;
+      }
 
-      document.getElementById('plan-total-runtime').innerText = `Run-Time: ${totalTime}'`;
+      const calcNdlMax = calculateNDL(depth, fN2Bottom, gfLow, gfHigh);
+      const isDecoAtBottom = userBottomTime > calcNdlMax;
+      const ndlEl = document.getElementById('plan-ndl-val');
 
-      const runtimeRows = [
-        { phase: "Discesa", depth: `0 ➔ ${depth}m`, time: `${descentTime}' (18 m/min)`, rt: `${descentTime}'`, po2: `${po2Bottom.toFixed(2)}b` },
-        { phase: "Fondo", depth: `${depth}m`, time: `${bottomTime}'`, rt: `${descentTime + bottomTime}'`, po2: `${po2Bottom.toFixed(2)}b` },
-        { phase: "Risalita a 5m", depth: `${depth} ➔ 5m`, time: `${ascentTo5m}' (9 m/min)`, rt: `${descentTime + bottomTime + ascentTo5m}'`, po2: `${po2Bottom.toFixed(2)}b` },
-        { phase: "Sosta Deco/Sicurezza", depth: "5m", time: `${safetyTime}'`, rt: `${descentTime + bottomTime + ascentTo5m + safetyTime}'`, po2: `${po2Deco.toFixed(2)}b` },
-        { phase: "Emersione", depth: "5 ➔ 0m", time: `${finalAscent}' (5 m/min)`, rt: `${totalTime}'`, po2: "0.21b" }
-      ];
+      if (isDecoAtBottom) {
+        ndlEl.innerText = `DECO +${userBottomTime - calcNdlMax}'`;
+        ndlEl.style.color = "var(--danger)";
+      } else {
+        ndlEl.innerText = `${calcNdlMax - userBottomTime}' NDL`;
+        ndlEl.style.color = "var(--success)";
+      }
+
+      const descentSpeed = 18;
+      const descentTime = Math.ceil(depth / descentSpeed);
+      const avgPAmbDescent = 1 + ((depth / 2) * rho / 10);
+      const descentLiters = descentTime * avgPAmbDescent * sac;
+      const bottomLiters = userBottomTime * pAmbMax * sac;
+
+      let chosenDeepLevel = Math.max(6, Math.min(depth - 3, 21));
+      if (depth <= 12) chosenDeepLevel = 6;
+      else if (depth <= 18) chosenDeepLevel = 12;
+      else if (depth <= 24) chosenDeepLevel = 15;
+      else if (depth <= 30) chosenDeepLevel = 18;
+
+      const ndlAtDeepLevel = calculateNDL(chosenDeepLevel, fN2Bottom, gfLow, gfHigh);
+      const remainingNdlAtDeepLevel = Math.max(1, Math.round(ndlAtDeepLevel * (1.0 - (Math.min(1.0, userBottomTime / calcNdlMax) * 0.75))));
+
+      const ascentSpeed = 9;
+      const toDeepLevelTime = Math.max(1, Math.ceil((depth - chosenDeepLevel) / ascentSpeed));
+      const avgPAmbToDeep = 1 + (((depth + chosenDeepLevel) / 2) * rho / 10);
+      const transitToDeepLiters = toDeepLevelTime * avgPAmbToDeep * sac;
+
+      const fromDeepTo6mTime = Math.max(1, Math.ceil((chosenDeepLevel - 6) / ascentSpeed));
+      const avgPAmbFromDeepTo6m = 1 + (((chosenDeepLevel + 6) / 2) * rho / 10);
+      const transitFromDeepTo6mLiters = fromDeepTo6mTime * avgPAmbFromDeepTo6m * sac;
+
+      const safetyStopLiters = 3 * (1 + 5 * rho / 10) * sac;
+      const finalAscentLiters = 2 * (1 + 3 * rho / 10) * sac;
+      const baseAscentAndSafetyLiters = transitFromDeepTo6mLiters + safetyStopLiters + finalAscentLiters;
+
+      const fixedOverheadLiters = descentLiters + bottomLiters + transitToDeepLiters + baseAscentAndSafetyLiters;
+      const targetAvailableGasLiters = Math.max(0, (pStart - reserveTarget) * tankVol);
+      const gasForMultiLevelLiters = targetAvailableGasLiters - fixedOverheadLiters;
+
+      const deepLevelLiterPerMin = (1 + (chosenDeepLevel * rho / 10)) * sac;
+      const shallowLiterPerMin = (1 + (5 * rho / 10)) * sac;
+
+      let deepLevelTime = 0, shallowLevelTime = 0;
+      if (gasForMultiLevelLiters > 0) {
+        const maxMins = Math.floor(gasForMultiLevelLiters / deepLevelLiterPerMin);
+        deepLevelTime = Math.min(maxMins, remainingNdlAtDeepLevel);
+        const residual = gasForMultiLevelLiters - (deepLevelTime * deepLevelLiterPerMin);
+        shallowLevelTime = Math.floor(residual / shallowLiterPerMin);
+      }
+
+      document.getElementById('plan-multilevel-title').innerText = `Quota Profonda (${chosenDeepLevel}m)`;
+      const extraTimeEl = document.getElementById('plan-extra-time');
+      const extraSubEl = document.getElementById('plan-extra-sub');
+
+      if (gasForMultiLevelLiters >= 0) {
+        extraTimeEl.innerHTML = `${deepLevelTime}'<span> + ${shallowLevelTime}' a 5m</span>`;
+        extraSubEl.innerText = `${deepLevelTime}' a ${chosenDeepLevel}m (limite NDL) + ${shallowLevelTime}' a 5m`;
+        extraTimeEl.style.color = "var(--temp-line)";
+      } else {
+        extraTimeEl.innerHTML = `0 <span>min</span>`;
+        extraTimeEl.style.color = "var(--danger)";
+        extraSubEl.innerText = `DEFICIT: mancano ${Math.ceil(Math.abs(gasForMultiLevelLiters) / tankVol)}b rispetto al target`;
+      }
+
+      const totalMultiLevelGasLiters = (deepLevelTime * deepLevelLiterPerMin) + (shallowLevelTime * shallowLiterPerMin);
+      const totalProfileGasLiters = Math.round(fixedOverheadLiters + totalMultiLevelGasLiters);
+      const totalProfileBar = Math.round(totalProfileGasLiters / tankVol);
+
+      document.getElementById('plan-gas-needed').innerHTML = `${totalProfileGasLiters} <span>L</span>`;
+      document.getElementById('plan-bar-needed').innerText = `${totalProfileBar} bar erogati`;
+
+      const turnPressure = reserveTarget + Math.ceil((transitToDeepLiters + totalMultiLevelGasLiters + baseAscentAndSafetyLiters) / tankVol);
+      document.getElementById('plan-turn-press').innerHTML = `${turnPressure} <span>bar</span>`;
+
+      const surfaceResidue = Math.max(0, pStart - totalProfileBar);
+      const surfEl = document.getElementById('plan-surf-press');
+      surfEl.innerHTML = `${surfaceResidue} <span>bar</span>`;
+      surfEl.style.color = surfaceResidue < reserveTarget ? "var(--danger)" : "var(--success)";
+
+      const runtimeRows = [];
+      let currentRunTime = 0;
+
+      currentRunTime += descentTime;
+      runtimeRows.push({ phase: "Discesa", depth: `0 ➔ ${depth}m`, speed: `18 m/min (${descentTime}')`, runtime: `${currentRunTime}'`, po2: `${po2Bottom.toFixed(2)}b` });
+
+      currentRunTime += userBottomTime;
+      runtimeRows.push({ phase: "Fondo Quota Max", depth: `${depth}m`, speed: `Fondo (${userBottomTime}')`, runtime: `${currentRunTime}'`, po2: `${po2Bottom.toFixed(2)}b` });
+
+      currentRunTime += toDeepLevelTime;
+      runtimeRows.push({ phase: "Risalita Esplorativa", depth: `${depth} ➔ ${chosenDeepLevel}m`, speed: `9 m/min (${toDeepLevelTime}')`, runtime: `${currentRunTime}'`, po2: `${((1 + (chosenDeepLevel * rho / 10)) * fO2Bottom).toFixed(2)}b` });
+
+      if (deepLevelTime > 0) {
+        currentRunTime += deepLevelTime;
+        runtimeRows.push({ phase: "Esplorazione", depth: `${chosenDeepLevel}m`, speed: `Permanenza (${deepLevelTime}')`, runtime: `${currentRunTime}'`, po2: `${((1 + (chosenDeepLevel * rho / 10)) * fO2Bottom).toFixed(2)}b` });
+      }
+
+      currentRunTime += fromDeepTo6mTime;
+      runtimeRows.push({ phase: "Risalita a Quota Sosta", depth: `${chosenDeepLevel} ➔ 5m`, speed: `9 m/min (${fromDeepTo6mTime}')`, runtime: `${currentRunTime}'`, po2: `${po2Deco.toFixed(2)}b` });
+
+      if (shallowLevelTime > 0) {
+        currentRunTime += shallowLevelTime;
+        runtimeRows.push({ phase: "Sosta Bassa Quota", depth: "5m", speed: `Consumo residuo (${shallowLevelTime}')`, runtime: `${currentRunTime}'`, po2: `${po2Deco.toFixed(2)}b` });
+      }
+
+      currentRunTime += 3;
+      runtimeRows.push({ phase: "Safety Stop", depth: "5m", speed: "Sosta 3'", runtime: `${currentRunTime}'`, po2: `${po2Deco.toFixed(2)}b` });
+
+      currentRunTime += 2;
+      runtimeRows.push({ phase: "Emersione", depth: "5 ➔ 0m", speed: `3 m/min (2')`, runtime: `${currentRunTime}'`, po2: "0.21b" });
+
+      document.getElementById('plan-total-runtime').innerText = `Run-Time: ${currentRunTime}'`;
+      document.getElementById('plan-total-time-display').value = `${currentRunTime} min`;
 
       document.getElementById('plan-runtime-body').innerHTML = runtimeRows.map(r => `
         <tr>
           <td><strong>${r.phase}</strong></td>
           <td>${r.depth}</td>
-          <td>${r.time}</td>
-          <td style="color:var(--accent);">${r.rt}</td>
+          <td>${r.speed}</td>
+          <td style="color:var(--accent);">${r.runtime}</td>
           <td>${r.po2}</td>
         </tr>
       `).join('');
 
-      drawPlanProfile(depth, bottomTime, descentTime, ascentTo5m, safetyTime, finalAscent, totalTime);
+      drawPlanProfileChart(depth, chosenDeepLevel, descentTime, userBottomTime, toDeepLevelTime, deepLevelTime, fromDeepTo6mTime, shallowLevelTime, currentRunTime);
     }
 
-    // DISEGNO CURVA PIANO D'IMMERSIONE (CANVAS)
-    function drawPlanProfile(depth, bTime, descT, asc5T, stopT, finT, totalT) {
+    function drawPlanProfileChart(maxD, deepD, tDesc, tBott, tToDeep, tDeep, tTo6, tShallow, totalT) {
       const canvas = document.getElementById('planProfileCanvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
@@ -1290,53 +1785,47 @@
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, w, h);
 
-      const padL = 30, padR = 20, padT = 15, padB = 22;
+      const padL = 30, padR = 20, padT = 16, padB = 22;
       const plotW = w - padL - padR;
       const plotH = h - padT - padB;
 
-      // Coordinate profilo
-      const points = [
-        { t: 0, d: 0 },
-        { t: descT, d: depth },
-        { t: descT + bTime, d: depth },
-        { t: descT + bTime + asc5T, d: 5 },
-        { t: descT + bTime + asc5T + stopT, d: 5 },
-        { t: totalT, d: 0 }
-      ];
+      let curT = 0;
+      const pts = [{ t: 0, d: 0 }];
+      curT += tDesc; pts.push({ t: curT, d: maxD });
+      curT += tBott; pts.push({ t: curT, d: maxD });
+      curT += tToDeep; pts.push({ t: curT, d: deepD });
+      if (tDeep > 0) { curT += tDeep; pts.push({ t: curT, d: deepD }); }
+      curT += tTo6; pts.push({ t: curT, d: 5 });
+      if (tShallow > 0) { curT += tShallow; pts.push({ t: curT, d: 5 }); }
+      curT += 3; pts.push({ t: curT, d: 5 });
+      pts.push({ t: totalT, d: 0 });
 
-      // Griglia quota
       ctx.strokeStyle = '#202434';
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(padL, padT);
-      ctx.lineTo(w - padR, padT);
-      ctx.moveTo(padL, padT + plotH);
-      ctx.lineTo(w - padR, padT + plotH);
+      ctx.moveTo(padL, padT); ctx.lineTo(w - padR, padT);
+      ctx.moveTo(padL, padT + plotH); ctx.lineTo(w - padR, padT + plotH);
       ctx.stroke();
 
       ctx.fillStyle = '#858da4';
       ctx.font = '8px monospace';
       ctx.textAlign = 'right';
       ctx.fillText('0m', padL - 4, padT + 3);
-      ctx.fillText(`${Math.round(depth)}m`, padL - 4, padT + plotH + 3);
+      ctx.fillText(`${Math.round(maxD)}m`, padL - 4, padT + plotH + 3);
 
-      // Area e linea profilo
       ctx.beginPath();
-      points.forEach((pt, idx) => {
+      pts.forEach((pt, idx) => {
         const x = padL + (pt.t / totalT) * plotW;
-        const y = padT + (pt.d / depth) * plotH;
-        if (idx === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+        const y = padT + (pt.d / maxD) * plotH;
+        if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       });
-
       ctx.strokeStyle = '#00d2d3';
       ctx.lineWidth = 2.5;
       ctx.stroke();
 
-      // Punti run-time
-      points.forEach(pt => {
+      pts.forEach(pt => {
         const x = padL + (pt.t / totalT) * plotW;
-        const y = padT + (pt.d / depth) * plotH;
+        const y = padT + (pt.d / maxD) * plotH;
         ctx.beginPath();
         ctx.arc(x, y, 3, 0, Math.PI * 2);
         ctx.fillStyle = '#ff8c00';
@@ -1349,11 +1838,11 @@
       });
     }
 
-    // 4. LOGBOOK & GOOGLE MAPS
+    // 4. GOOGLE MAPS
     function openGoogleMaps() {
       const loc = document.getElementById('val-maps-url').value.trim() || document.getElementById('val-site').value.trim();
       if (!loc) {
-        alert("Inserisci prima il nome del luogo o un indirizzo.");
+        alert("Inserisci un nome di luogo o un indirizzo.");
         return;
       }
       if (loc.startsWith("http://") || loc.startsWith("https://")) {
@@ -1363,38 +1852,72 @@
       }
     }
 
-    // 5. REGISTRAZIONE E CALCOLI LIVE
+    // 5. REGISTRAZIONE & CALCOLI LIVE
     function runLiveCalculations() {
       const dur = parseFloat(document.getElementById('val-duration').value) || 0;
       const maxD = parseFloat(document.getElementById('val-depth-max').value) || 0;
       const avgD = parseFloat(document.getElementById('val-depth-avg').value) || (maxD * 0.6);
       const pStart = parseFloat(document.getElementById('val-p-start').value) || 0;
       const pEnd = parseFloat(document.getElementById('val-p-end').value) || 0;
+      const tankText = document.getElementById('val-tank').innerText;
       const gasText = document.getElementById('val-gas').innerText;
 
-      let fO2 = 0.21;
+      let vol = 15;
+      const match = tankText.match(/(\d+(\.\d+)?)\s*L/i);
+      if (match) vol = parseFloat(match[1]);
+
+      let fO2 = 0.21, fHe = 0;
       if (gasText.includes("32")) fO2 = 0.32;
       else if (gasText.includes("36")) fO2 = 0.36;
+      else if (gasText.includes("50")) fO2 = 0.50;
+      else if (gasText.includes("Tx")) {
+        const txMatch = gasText.match(/Tx\s*(\d+)\/(\d+)/i);
+        if (txMatch) {
+          fO2 = parseFloat(txMatch[1]) / 100;
+          fHe = parseFloat(txMatch[2]) / 100;
+        }
+      }
 
       if (dur > 0 && pStart > pEnd && avgD >= 0) {
         const deltaP = pStart - pEnd;
         const pAmbAvg = 1 + (avgD / 10);
-        const rmv = ((deltaP * 15) / (pAmbAvg * dur)).toFixed(1);
+        const rmv = ((deltaP * vol) / (pAmbAvg * dur)).toFixed(1);
         document.getElementById('ind-rmv').innerText = `${rmv} L/min`;
+      } else {
+        document.getElementById('ind-rmv').innerText = `-- L/min`;
       }
 
-      if (maxD > 0) {
-        const po2 = (1 + (maxD / 10)) * fO2;
-        const po2El = document.getElementById('ind-po2');
-        po2El.innerText = `${po2.toFixed(2)} b`;
-        po2El.style.color = po2 > 1.4 ? 'var(--danger)' : '#fff';
+      if (dur > 0 && maxD > 0) {
+        const pAmbMax = 1 + (maxD / 10);
+        const po2Avg = (1 + (avgD / 10)) * fO2;
+
+        let ratePerMin = 0;
+        if (po2Avg >= 1.6) ratePerMin = 100 / 45;
+        else if (po2Avg >= 1.5) ratePerMin = 100 / 120;
+        else if (po2Avg >= 1.4) ratePerMin = 100 / 150;
+        else if (po2Avg >= 1.3) ratePerMin = 100 / 180;
+        else if (po2Avg >= 1.2) ratePerMin = 100 / 210;
+        else if (po2Avg >= 1.0) ratePerMin = 100 / 300;
+
+        const totalCns = Math.min(250, Math.round(ratePerMin * dur));
+        const cnsEl = document.getElementById('ind-cns');
+        cnsEl.innerText = `${totalCns}%`;
+        cnsEl.style.color = totalCns > 80 ? 'var(--danger)' : (totalCns > 50 ? 'var(--warning)' : '#fff');
+
+        let otu = 0;
+        if (po2Avg > 0.5) otu = Math.round(dur * Math.pow((po2Avg - 0.5) / 0.5, 0.83));
+        document.getElementById('ind-otu').innerText = otu;
+
+        const fN2 = Math.max(0, 1 - fO2 - fHe);
+        const rho0 = (fO2 * 1.428) + (fN2 * 1.251) + (fHe * 0.179);
+        document.getElementById('ind-density').innerText = `${(rho0 * pAmbMax).toFixed(2)} g/L`;
       }
     }
 
     function executeSaveDive() {
       const dur = parseFloat(document.getElementById('val-duration').value) || 0;
       const maxD = parseFloat(document.getElementById('val-depth-max').value) || 0;
-      const site = document.getElementById('val-site').value.trim() || "Immersione Senza Nome";
+      const avgD = parseFloat(document.getElementById('val-depth-avg').value) || (maxD * 0.6);
 
       if (dur <= 0 || maxD <= 0) {
         alert("Inserisci almeno durata e profondità massima.");
@@ -1403,24 +1926,42 @@
 
       const diveData = {
         id: currentEditingDiveId || Date.now(),
-        site: site,
-        mapsUrl: document.getElementById('val-maps-url').value.trim(),
-        rating: parseInt(document.getElementById('val-rating').value) || 8,
-        gas: document.getElementById('val-gas').innerText || "Aria (21/0)",
-        buddy: document.getElementById('val-buddy').value.trim() || "Solo Diving",
         date: document.getElementById('val-date').value || new Date().toISOString().split('T')[0],
         time: document.getElementById('val-time').value || "10:00",
         duration: dur,
         depthMax: maxD,
-        depthAvg: parseFloat(document.getElementById('val-depth-avg').value) || (maxD * 0.6),
-        pStart: parseFloat(document.getElementById('val-p-start').value) || 210,
-        pEnd: parseFloat(document.getElementById('val-p-end').value) || 50,
-        rmv: document.getElementById('ind-rmv').innerText || "--"
+        depthAvg: avgD,
+        rating: parseInt(document.getElementById('val-rating').value) || 8,
+        tempMin: parseFloat(document.getElementById('val-temp-min').value) || '--',
+        tempMax: parseFloat(document.getElementById('val-temp-max').value) || '--',
+        pStart: parseFloat(document.getElementById('val-p-start').value) || 0,
+        pEnd: parseFloat(document.getElementById('val-p-end').value) || 0,
+        diveType: document.getElementById('val-diveType').innerText || "Ricreativa (NDL)",
+        gas: document.getElementById('val-gas').innerText || "Aria (21/0)",
+        decoGas: document.getElementById('val-decoGas').innerText || "Nessuno",
+        tank: document.getElementById('val-tank').innerText || "Acciaio 15L",
+        water: document.getElementById('val-waterType').innerText || "Salata (1.028)",
+        visibility: document.getElementById('val-visibility').value || '--',
+        current: document.getElementById('val-current').value || "Nulla",
+        sea: document.getElementById('val-sea-state').value || "Calmo",
+        ballast: document.getElementById('val-ballast').value || '0',
+        suit: document.getElementById('val-suit').innerText || "Umida 5mm",
+        gf: document.getElementById('val-gf').innerText || "40 / 85",
+        site: document.getElementById('val-site').value.trim() || "Y-40 The Deep Joy",
+        mapsUrl: document.getElementById('val-maps-url').value.trim(),
+        buddy: document.getElementById('val-buddy').value.trim() || "Solo Diving",
+        center: document.getElementById('val-center').value.trim() || "Privato / Da Riva",
+        video: document.getElementById('val-video-link').value.trim() || "",
+        rmv: document.getElementById('ind-rmv').innerText || "-- L/min",
+        cns: document.getElementById('ind-cns').innerText || "0%",
+        otu: document.getElementById('ind-otu').innerText || "0",
+        density: document.getElementById('ind-density').innerText || "-- g/L",
+        signature: sigCanvas ? sigCanvas.toDataURL() : null
       };
 
       if (currentEditingDiveId) {
         const idx = AppState.dives.findIndex(x => x.id === currentEditingDiveId);
-        if (idx !== -1) AppState.dives[idx] = diveData;
+        if (idx !== -1) AppState.dives[idx] = Object.assign(AppState.dives[idx], diveData);
       } else {
         diveData.num = AppState.dives.length + 1;
         AppState.dives.push(diveData);
@@ -1438,10 +1979,11 @@
       document.getElementById('edit-notice-bar').style.display = 'none';
       document.getElementById('btn-delete-editing').style.display = 'none';
       document.getElementById('btn-submit-main').innerText = "REGISTRA NEL LOGBOOK";
-      document.getElementById('val-site').value = '';
+      document.getElementById('val-video-link').value = '';
       document.getElementById('val-maps-url').value = '';
-      document.getElementById('val-buddy').value = '';
       syncCurrentDateTime();
+      clearSignature();
+      updateCounter();
     }
 
     function loadDiveForEdit(id) {
@@ -1455,18 +1997,37 @@
       document.getElementById('btn-submit-main').innerText = "AGGIORNA IMMERSIONE";
       document.getElementById('btn-delete-editing').style.display = 'flex';
 
-      document.getElementById('val-site').value = d.site || '';
-      document.getElementById('val-maps-url').value = d.mapsUrl || '';
-      document.getElementById('val-rating').value = d.rating || 8;
-      document.getElementById('val-gas').innerText = d.gas || 'Aria (21/0)';
-      document.getElementById('val-buddy').value = d.buddy || '';
       document.getElementById('val-date').value = d.date || '';
       document.getElementById('val-time').value = d.time || '';
       document.getElementById('val-duration').value = d.duration || '';
       document.getElementById('val-depth-max').value = d.depthMax || '';
       document.getElementById('val-depth-avg').value = d.depthAvg || '';
+      document.getElementById('val-rating').value = d.rating || 8;
+      document.getElementById('val-temp-min').value = d.tempMin !== '--' ? d.tempMin : '';
+      document.getElementById('val-temp-max').value = d.tempMax !== '--' ? d.tempMax : '';
       document.getElementById('val-p-start').value = d.pStart || '';
       document.getElementById('val-p-end').value = d.pEnd || '';
+      document.getElementById('val-site').value = d.site || '';
+      document.getElementById('val-maps-url').value = d.mapsUrl || '';
+      document.getElementById('val-buddy').value = d.buddy || '';
+      document.getElementById('val-center').value = d.center || '';
+      document.getElementById('val-video-link').value = d.video || '';
+      document.getElementById('val-visibility').value = d.visibility !== '--' ? d.visibility : '';
+      document.getElementById('val-current').value = d.current || 'Nulla';
+      document.getElementById('val-sea-state').value = d.sea || 'Calmo';
+      document.getElementById('val-ballast').value = d.ballast || '';
+
+      ['diveType', 'gas', 'decoGas', 'tank', 'waterType', 'suit', 'gf'].forEach(k => {
+        const el = document.getElementById(`val-${k}`);
+        if (el && d[k]) el.innerText = d[k];
+      });
+
+      if (d.signature && sigCtx) {
+        clearSignature();
+        const img = new Image();
+        img.onload = () => { sigCtx.drawImage(img, 0, 0); };
+        img.src = d.signature;
+      }
 
       runLiveCalculations();
       switchMainTab('record', document.querySelectorAll('.nav-btn')[2]);
@@ -1474,7 +2035,7 @@
 
     function deleteDiveCurrentlyEditing() {
       if (!currentEditingDiveId) return;
-      if (confirm("Vuoi cancellare definitivamente questo tuffo?")) {
+      if (confirm("Vuoi cancellare definitivamente questa immersione?")) {
         AppState.dives = AppState.dives.filter(x => x.id !== currentEditingDiveId);
         sortDivesChronologically();
         cancelEditMode();
@@ -1482,7 +2043,7 @@
       }
     }
 
-    // 5. FILTRI E RENDERING LOGBOOK
+    // 6. FILTRI E LOGBOOK
     function resetLogFilters() {
       document.getElementById('filter-text').value = '';
       document.getElementById('filter-buddy').value = '';
@@ -1520,20 +2081,33 @@
       }
 
       feed.innerHTML = [...filtered].reverse().map(d => {
+        const deltaP = (d.pStart && d.pEnd) ? (d.pStart - d.pEnd) : '--';
         return `
           <div class="log-card" onclick="loadDiveForEdit(${d.id})">
             <div class="log-header">
               <span class="log-title">#${d.num} · ${d.site}</span>
-              <span class="rating-badge">${d.rating ? '⭐️ ' + d.rating : '8/10'}</span>
+              <span class="rating-badge">⭐️ ${d.rating || 8}/10</span>
             </div>
             <div style="font-size:0.7rem; color:var(--text-sub); margin-bottom:3px;">
               ${d.date} ${d.time || ''} | Gas: <strong>${d.gas}</strong> | Buddy: <strong>${d.buddy || 'Solo'}</strong>
+            </div>
+            <div style="font-size:0.65rem; color:var(--text-muted);">
+              Consumo: ${d.pStart || '--'}b ➔ ${d.pEnd || '--'}b (ΔP ${deltaP} bar) | CNS: <span style="color:var(--accent);">${d.cns || '0%'}</span> | Densità: ${d.density || '--'}
             </div>
 
             ${d.mapsUrl ? `
               <div style="margin-top:4px;">
                 <a href="${d.mapsUrl.startsWith('http') ? d.mapsUrl : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.mapsUrl)}`}" target="_blank" onclick="event.stopPropagation();" style="color:var(--temp-line); font-size:0.65rem; text-decoration:none; font-weight:700;">
-                  📍 Apri Luogo su Google Maps
+                  📍 Apri su Google Maps
+                </a>
+              </div>
+            ` : ''}
+
+            ${d.video ? `
+              <div style="margin-top:4px;">
+                <a href="${d.video}" target="_blank" onclick="event.stopPropagation();" class="yt-badge-link">
+                  <svg style="width:13px; height:13px; fill:currentColor;" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 22c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 2c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/></svg>
+                  Guarda Video
                 </a>
               </div>
             ` : ''}
@@ -1556,7 +2130,7 @@
                 <div class="stat-label">RMV</div>
               </div>
               <div>
-                <div class="stat-val" style="color:var(--warning);">${d.rating || 8}/10</div>
+                <div class="stat-val" style="color:var(--warning);">${d.rating || 8}</div>
                 <div class="stat-label">Voto</div>
               </div>
             </div>
@@ -1565,11 +2139,11 @@
       }).join('');
     }
 
-    // 6. PROFILO CON STATISTICHE CLICCABILI E REDIRECT AL LOGBOOK
+    // 7. PROFILO STATISTICHE & GRAFICI
     function filterLogBy(type, val) {
       resetLogFilters();
       if (type === 'gas') {
-        document.getElementById('filter-gas').value = val.includes('Aria') ? 'Aria' : (val.includes('Tx') ? 'Tx' : 'EAN');
+        document.getElementById('filter-gas').value = val.includes('Aria') ? 'Aria' : (val.includes('32') ? '32' : (val.includes('36') ? '36' : (val.includes('Tx') ? 'Tx' : '')));
       } else if (type === 'buddy') {
         document.getElementById('filter-buddy').value = val;
       } else if (type === 'site') {
@@ -1584,20 +2158,42 @@
 
       const totalMinutes = AppState.dives.reduce((acc, d) => acc + (parseFloat(d.duration) || 0), 0);
       document.getElementById('kpi-total-time').innerHTML = `${Math.floor(totalMinutes / 60)}h <span>${String(totalMinutes % 60).padStart(2, '0')}'</span>`;
+      document.getElementById('kpi-total-days').innerText = `${(totalMinutes / (24 * 60)).toFixed(1)} giorni cumulativi`;
 
       const maxD = AppState.dives.reduce((p, c) => (parseFloat(c.depthMax) || 0) > (parseFloat(p.depthMax) || 0) ? c : p, AppState.dives[0]);
       document.getElementById('kpi-max-depth').innerHTML = `${maxD.depthMax}<span>m</span>`;
+      document.getElementById('kpi-max-depth-site').innerText = `${maxD.site} (${maxD.date})`;
 
-      // Statistiche Miscele
-      const gasCounts = {};
-      AppState.dives.forEach(d => { gasCounts[d.gas] = (gasCounts[d.gas] || 0) + 1; });
-      document.getElementById('profile-gas-list').innerHTML = Object.entries(gasCounts).map(([gas, count]) => `
-        <div class="stat-clickable-badge" onclick="filterLogBy('gas', '${gas}')">
-          <span>${gas}</span><span class="count">${count}</span>
-        </div>
-      `).join('');
+      const rmvEntries = AppState.dives
+        .map(d => ({ id: d.id, val: parseFloat(d.rmv), site: d.site, date: d.date }))
+        .filter(x => !isNaN(x.val) && x.val > 0);
 
-      // Statistiche Buddy
+      if (rmvEntries.length > 0) {
+        const last10 = rmvEntries.slice(-10);
+        const sum10 = last10.reduce((a, b) => a + b.val, 0);
+        const avg10 = (sum10 / last10.length).toFixed(1);
+
+        document.getElementById('kpi-rmv-avg-10').innerHTML = `${avg10}<span>L/m</span>`;
+        document.getElementById('kpi-rmv-avg-10-sub').innerText = `${last10.length} tuffi`;
+        document.getElementById('kpi-rmv-avg-label').innerText = `Media 10: ${avg10} L/m`;
+
+        const best = rmvEntries.reduce((p, c) => c.val < p.val ? c : p, rmvEntries[0]);
+        const worst = rmvEntries.reduce((p, c) => c.val > p.val ? c : p, rmvEntries[0]);
+
+        bestRmvDiveId = best.id; worstRmvDiveId = worst.id;
+
+        document.getElementById('kpi-rmv-best').innerHTML = `${best.val.toFixed(1)}<span>L/m</span>`;
+        document.getElementById('kpi-rmv-best-sub').innerText = `${best.site}`;
+        document.getElementById('kpi-rmv-worst').innerHTML = `${worst.val.toFixed(1)}<span>L/m</span>`;
+        document.getElementById('kpi-rmv-worst-sub').innerText = `${worst.site}`;
+      }
+
+      drawSacTrend();
+      drawDepthAndDurationChart();
+      drawCnsOtuChart();
+      drawGasDistribution();
+
+      // Statistiche Buddy Cliccabili
       const buddyCounts = {};
       AppState.dives.forEach(d => {
         const b = d.buddy || "Solo Diving";
@@ -1609,7 +2205,7 @@
         </div>
       `).join('');
 
-      // Statistiche Luoghi
+      // Statistiche Luoghi Cliccabili
       const siteCounts = {};
       AppState.dives.forEach(d => {
         const s = d.site || "Sito non specificato";
@@ -1622,10 +2218,380 @@
       `).join('');
     }
 
-    // GESTIONE TABS & UTILS
+    function jumpToBestRmvDive() { if (bestRmvDiveId) loadDiveForEdit(bestRmvDiveId); }
+    function jumpToWorstRmvDive() { if (worstRmvDiveId) loadDiveForEdit(worstRmvDiveId); }
+
+    function initSacTrendCanvasInteractivity() {
+      const canvas = document.getElementById('sacTrendCanvas');
+      if (!canvas) return;
+      canvas.addEventListener('click', (e) => {
+        if (!sacChartPoints || sacChartPoints.length === 0) return;
+        const rect = canvas.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+        let closest = null, minDist = 24;
+        sacChartPoints.forEach(pt => {
+          const dist = Math.hypot(pt.x - clickX, pt.y - clickY);
+          if (dist < minDist) { minDist = dist; closest = pt; }
+        });
+        if (closest && closest.id) loadDiveForEdit(closest.id);
+      });
+    }
+
+    function drawSacTrend() {
+      const canvas = document.getElementById('sacTrendCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width || 360;
+      const h = 150;
+
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      ctx.scale(dpr, dpr); ctx.clearRect(0, 0, w, h);
+      sacChartPoints = [];
+
+      const divesWithRmv = AppState.dives
+        .map(d => ({ id: d.id, val: parseFloat(d.rmv), num: d.num, site: d.site }))
+        .filter(d => !isNaN(d.val) && d.val > 0);
+
+      if (divesWithRmv.length === 0) return;
+
+      const vals = divesWithRmv.map(d => d.val);
+      const minVal = Math.min(...vals), maxVal = Math.max(...vals);
+      const maxR = Math.max(maxVal * 1.15, 25), minR = Math.max(0, Math.min(minVal * 0.85, 10));
+
+      const padL = 30, padR = 20, padT = 24, padB = 22;
+      const plotW = w - padL - padR, plotH = h - padT - padB;
+
+      ctx.strokeStyle = '#202434'; ctx.lineWidth = 1;
+      [minR, (minR + maxR) / 2, maxR].forEach(v => {
+        const y = padT + (1 - ((v - minR) / (maxR - minR || 1))) * plotH;
+        ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+      });
+
+      if (divesWithRmv.length > 1) {
+        ctx.beginPath(); ctx.strokeStyle = '#ff8c00'; ctx.lineWidth = 2;
+        divesWithRmv.forEach((d, idx) => {
+          const x = padL + (idx / (divesWithRmv.length - 1)) * plotW;
+          const y = padT + (1 - ((d.val - minR) / (maxR - minR || 1))) * plotH;
+          if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      }
+
+      divesWithRmv.forEach((d, idx) => {
+        const x = divesWithRmv.length === 1 ? (padL + plotW / 2) : (padL + (idx / (divesWithRmv.length - 1)) * plotW);
+        const y = padT + (1 - ((d.val - minR) / (maxR - minR || 1))) * plotH;
+        sacChartPoints.push({ x, y, id: d.id });
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = d.val === minVal ? '#2ed573' : (d.val === maxVal ? '#ff4757' : '#fff');
+        ctx.fill();
+      });
+    }
+
+    function drawDepthAndDurationChart() {
+      const canvas = document.getElementById('depthDurationCanvas');
+      if (!canvas || AppState.dives.length === 0) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width || 360, h = 140;
+
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      ctx.scale(dpr, dpr); ctx.clearRect(0, 0, w, h);
+
+      const padL = 28, padR = 28, padT = 20, padB = 22;
+      const plotW = w - padL - padR, plotH = h - padT - padB;
+      const depths = AppState.dives.map(d => parseFloat(d.depthMax) || 0);
+      const durations = AppState.dives.map(d => parseFloat(d.duration) || 0);
+      const maxDepth = Math.max(30, Math.max(...depths) * 1.15);
+      const maxDur = Math.max(60, Math.max(...durations) * 1.15);
+
+      ctx.beginPath(); ctx.strokeStyle = '#ff8c00'; ctx.lineWidth = 1.8;
+      AppState.dives.forEach((d, idx) => {
+        const x = padL + (AppState.dives.length === 1 ? plotW / 2 : (idx / (AppState.dives.length - 1)) * plotW);
+        const y = padT + (1 - (d.duration / maxDur)) * plotH;
+        if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      ctx.beginPath(); ctx.strokeStyle = '#00d2d3'; ctx.lineWidth = 2;
+      AppState.dives.forEach((d, idx) => {
+        const x = padL + (AppState.dives.length === 1 ? plotW / 2 : (idx / (AppState.dives.length - 1)) * plotW);
+        const y = padT + (1 - (d.depthMax / maxDepth)) * plotH;
+        if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+    }
+
+    function drawCnsOtuChart() {
+      const canvas = document.getElementById('cnsOtuCanvas');
+      if (!canvas || AppState.dives.length === 0) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width || 360, h = 130;
+
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      ctx.scale(dpr, dpr); ctx.clearRect(0, 0, w, h);
+
+      const padL = 28, padR = 15, padT = 16, padB = 22;
+      const plotW = w - padL - padR, plotH = h - padT - padB;
+      const cnsVals = AppState.dives.map(d => parseFloat(d.cns) || 0);
+      const otuVals = AppState.dives.map(d => parseFloat(d.otu) || 0);
+      const maxVal = Math.max(100, Math.max(...cnsVals, ...otuVals) * 1.15);
+
+      const count = AppState.dives.length;
+      const groupW = plotW / count;
+      const barW = Math.max(4, Math.min(14, (groupW / 2) - 3));
+
+      AppState.dives.forEach((d, idx) => {
+        const cns = parseFloat(d.cns) || 0, otu = parseFloat(d.otu) || 0;
+        const centerX = padL + (idx * groupW) + (groupW / 2);
+        const hCns = (cns / maxVal) * plotH, hOtu = (otu / maxVal) * plotH;
+
+        ctx.fillStyle = cns > 80 ? '#ff4757' : 'rgba(255, 71, 87, 0.85)';
+        ctx.fillRect(centerX - barW - 1, padT + plotH - hCns, barW, hCns);
+
+        ctx.fillStyle = '#ff8c00';
+        ctx.fillRect(centerX + 1, padT + plotH - hOtu, barW, hOtu);
+      });
+    }
+
+    function drawGasDistribution() {
+      const container = document.getElementById('gasDistributionBars');
+      const badgeContainer = document.getElementById('profile-gas-badges');
+      if (!container || AppState.dives.length === 0) return;
+
+      const counts = {};
+      AppState.dives.forEach(d => {
+        const g = d.gas || "Aria (21/0)";
+        counts[g] = (counts[g] || 0) + 1;
+      });
+
+      const total = AppState.dives.length;
+      container.innerHTML = Object.entries(counts).map(([name, count]) => {
+        const pct = Math.round((count / total) * 100);
+        return `
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:0.68rem; font-weight:700; margin-bottom:2px;">
+              <span>${name}</span>
+              <span style="color:var(--accent);">${count} tuffi (${pct}%)</span>
+            </div>
+            <div style="width:100%; height:6px; background:#000; border-radius:3px; overflow:hidden;">
+              <div style="width:${pct}%; height:100%; background:var(--accent); border-radius:3px;"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      badgeContainer.innerHTML = Object.entries(counts).map(([gas, count]) => `
+        <div class="stat-clickable-badge" onclick="filterLogBy('gas', '${gas}')">
+          <span>${gas}</span><span class="count">${count}</span>
+        </div>
+      `).join('');
+    }
+
+    // 8. BREVETTI (C-CARDS)
+    function renderHomeCerts() {
+      const container = document.getElementById('c-cards-list-home');
+      if (!container) return;
+
+      if (AppState.certs.length === 0) {
+        container.innerHTML = `
+          <div class="add-c-btn" style="min-width:110px; height:84px;" onclick="openCertModal()">
+            <span style="font-size:1.2rem; font-weight:300;">+</span>
+            <span>Aggiungi Brevetto</span>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = AppState.certs.map((c, i) => `
+        <div class="c-card" onclick="openCertModal(${c.id})">
+          <div class="c-card-badge">#${i + 1}</div>
+          ${c.img ? `<img src="${c.img}" class="c-card-img">` : `<div class="c-card-placeholder">Nessun file</div>`}
+          <div class="c-card-org">${c.org}</div>
+          <div class="c-card-title">${c.title}</div>
+          <div class="c-card-sub">${c.num || 'Licenza archiviata'}</div>
+        </div>
+      `).join('') + `
+        <div class="add-c-btn" style="min-width:56px; height:84px;" onclick="openCertModal()">
+          <span style="font-size:1.1rem;">+</span>
+        </div>
+      `;
+    }
+
+    function openCertModal(id = null) {
+      document.getElementById('cert-modal').classList.add('active');
+      const delBtn = document.getElementById('cert-del-btn');
+      const imgEl = document.getElementById('cert-img-display');
+
+      if (id) {
+        const c = AppState.certs.find(x => x.id === id);
+        if (!c) return;
+        document.getElementById('cert-edit-id').value = c.id;
+        document.getElementById('cert-org').value = c.org;
+        document.getElementById('cert-title').value = c.title;
+        document.getElementById('cert-num').value = c.num;
+        document.getElementById('cert-date').value = c.date;
+        tempCertImageBase64 = c.img || "";
+        if (c.img) { imgEl.src = c.img; imgEl.style.display = 'block'; }
+        else { imgEl.style.display = 'none'; }
+        delBtn.style.display = 'flex';
+      } else {
+        document.getElementById('cert-edit-id').value = "";
+        document.getElementById('cert-org').value = "";
+        document.getElementById('cert-title').value = "";
+        document.getElementById('cert-num').value = "";
+        document.getElementById('cert-date').value = new Date().toISOString().split('T')[0];
+        tempCertImageBase64 = "";
+        imgEl.style.display = 'none';
+        delBtn.style.display = 'none';
+      }
+    }
+
+    function closeCertModal() {
+      document.getElementById('cert-modal').classList.remove('active');
+      tempCertImageBase64 = "";
+    }
+
+    function previewCertFile(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          tempCertImageBase64 = evt.target.result;
+          const imgEl = document.getElementById('cert-img-display');
+          imgEl.src = tempCertImageBase64;
+          imgEl.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function saveCertRecord() {
+      const id = document.getElementById('cert-edit-id').value;
+      const org = document.getElementById('cert-org').value.trim() || "SNSI";
+      const title = document.getElementById('cert-title').value.trim() || "Open Water";
+      const num = document.getElementById('cert-num').value.trim();
+      const date = document.getElementById('cert-date').value || new Date().toISOString().split('T')[0];
+
+      if (id) {
+        const c = AppState.certs.find(x => x.id == id);
+        if (c) {
+          c.org = org; c.title = title; c.num = num; c.date = date;
+          if (tempCertImageBase64) c.img = tempCertImageBase64;
+        }
+      } else {
+        AppState.certs.push({ id: Date.now(), org, title, num, date, img: tempCertImageBase64 });
+      }
+
+      saveStorage();
+      renderHomeCerts();
+      updateCounter();
+      closeCertModal();
+    }
+
+    function deleteCurrentCert() {
+      const id = document.getElementById('cert-edit-id').value;
+      if (id) {
+        AppState.certs = AppState.certs.filter(c => c.id != id);
+        saveStorage();
+        renderHomeCerts();
+        updateCounter();
+        closeCertModal();
+      }
+    }
+
+    // 9. FIRMA CANVAS
+    function initSignaturePad() {
+      sigCanvas = document.getElementById('signatureCanvas');
+      if (!sigCanvas) return;
+      sigCtx = sigCanvas.getContext('2d');
+      resizeSigCanvas();
+
+      const start = (e) => {
+        isDrawing = true;
+        const pos = getSigPos(e);
+        sigCtx.beginPath(); sigCtx.moveTo(pos.x, pos.y);
+      };
+      const move = (e) => {
+        if (!isDrawing) return;
+        const pos = getSigPos(e);
+        sigCtx.lineTo(pos.x, pos.y);
+        sigCtx.strokeStyle = '#00d2d3';
+        sigCtx.lineWidth = 2;
+        sigCtx.stroke();
+      };
+      const stop = () => { isDrawing = false; };
+
+      sigCanvas.addEventListener('mousedown', start);
+      sigCanvas.addEventListener('mousemove', move);
+      window.addEventListener('mouseup', stop);
+      sigCanvas.addEventListener('touchstart', (e) => { start(e.touches[0]); e.preventDefault(); }, {passive: false});
+      sigCanvas.addEventListener('touchmove', (e) => { move(e.touches[0]); e.preventDefault(); }, {passive: false});
+      sigCanvas.addEventListener('touchend', stop);
+    }
+
+    function resizeSigCanvas() {
+      if (!sigCanvas) return;
+      const rect = sigCanvas.getBoundingClientRect();
+      sigCanvas.width = rect.width; sigCanvas.height = 80;
+    }
+
+    function getSigPos(e) {
+      const rect = sigCanvas.getBoundingClientRect();
+      return { x: (e.clientX || e.pageX) - rect.left, y: (e.clientY || e.pageY) - rect.top };
+    }
+
+    function clearSignature() {
+      if (sigCtx && sigCanvas) sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+    }
+
+    // 10. TIMERS & TABS
+    function initHomeTimers() {
+      updateHomeIntervalTimers();
+      if (homeTimerInterval) clearInterval(homeTimerInterval);
+      homeTimerInterval = setInterval(updateHomeIntervalTimers, 1000);
+    }
+
+    function updateHomeIntervalTimers() {
+      const noflyEl = document.getElementById('timer-nofly-display');
+      const siEl = document.getElementById('timer-si-display');
+      if (AppState.dives.length === 0) {
+        noflyEl.innerText = "00:00:00";
+        siEl.innerText = "00:00:00";
+        return;
+      }
+      const last = AppState.dives[AppState.dives.length - 1];
+      const startTime = new Date(`${last.date || "2026-01-01"}T${last.time || "12:00"}:00`).getTime();
+      const surfaceTime = startTime + ((parseFloat(last.duration) || 45) * 60000);
+      const nowMs = Date.now();
+
+      const elapsed = nowMs - surfaceTime;
+      siEl.innerText = elapsed > 0 ? formatTimeMs(elapsed) : "00:00:00";
+
+      const remainingNoFly = (surfaceTime + (18 * 3600000)) - nowMs;
+      noflyEl.innerText = remainingNoFly > 0 ? formatTimeMs(remainingNoFly) : "00:00:00";
+    }
+
+    function formatTimeMs(ms) {
+      const sec = Math.max(0, Math.floor(ms / 1000));
+      return `${String(Math.floor(sec / 3600)).padStart(2,'0')}:${String(Math.floor((sec % 3600)/60)).padStart(2,'0')}:${String(sec % 60).padStart(2,'0')}`;
+    }
+
+    function testVideoLink() {
+      const val = document.getElementById('val-video-link').value.trim();
+      if (!val) { alert("Inserisci prima un link YouTube."); return; }
+      window.open(val, '_blank');
+    }
+
     function switchMainTab(tabKey, btn) {
       if (tabKey !== 'home' && !checkUserGate()) {
-        alert("Inserisci il tuo nome nella schermata Home per cominciare.");
+        alert("Inserisci il tuo nome per cominciare.");
         return;
       }
 
@@ -1642,45 +2608,30 @@
       const titles = { home: "Home", plan: "Planner", record: "Registra", log: "Logbook", profile: "Profilo" };
       document.getElementById('global-view-name').innerText = titles[tabKey] || "Home";
 
+      if (tabKey === 'home') { updateHomeIntervalTimers(); renderHomeCerts(); }
       if (tabKey === 'plan') runPlannerEngine();
       if (tabKey === 'log') renderLogbookFeed();
       if (tabKey === 'profile') renderProfileData();
+      if (tabKey === 'record') { resizeSigCanvas(); if (!currentEditingDiveId) syncCurrentDateTime(); }
     }
 
     function startNewDiveMode(btn = null) {
-      if (!checkUserGate()) {
-        alert("Inserisci il tuo nome nella schermata Home per cominciare.");
-        return;
-      }
+      if (!checkUserGate()) { alert("Inserisci il tuo nome per cominciare."); return; }
       cancelEditMode();
       switchMainTab('record', btn || document.querySelectorAll('.nav-btn')[2]);
     }
 
-    function sortDivesChronologically() {
-      AppState.dives.sort((a, b) => new Date(`${a.date}T${a.time || "00:00"}`) - new Date(`${b.date}T${b.time || "00:00"}`));
-      AppState.dives.forEach((d, idx) => { d.num = idx + 1; });
-      saveStorage();
-    }
-
-    function updateCounter() {
-      const total = AppState.dives.length;
-      document.getElementById('global-badge-count').innerText = `${total} Tuffi`;
-      document.getElementById('home-badge-count').innerText = `${total} Tuffi`;
-    }
-
-    function syncCurrentDateTime() {
-      const now = new Date();
-      document.getElementById('val-date').value = now.toISOString().split('T')[0];
-      document.getElementById('val-time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-    }
-
-    // MODALI DROPDOWN
     function openDropdownSheet(key) {
       currentSheetCategory = key;
       document.getElementById('sheet-title').innerText = "Seleziona Opzione";
       const container = document.getElementById('sheet-list');
       container.innerHTML = '';
-      const list = (key.startsWith('plan') && key.includes('Gas')) ? AppState.options.gas : (AppState.options[key] || AppState.options.gas);
+      let list = AppState.options[key] || [];
+      if (key === 'planGas') list = AppState.options.gas;
+      if (key === 'planDecoGas') list = ["Stesso Gas Fondo", ...AppState.options.decoGas];
+      if (key === 'planTank') list = AppState.options.tank;
+      if (key === 'planGf') list = AppState.options.gf;
+
       list.forEach(item => {
         const row = document.createElement('div');
         row.className = 'sheet-row';
@@ -1692,8 +2643,8 @@
     }
 
     function selectSheetOption(val) {
-      const target = document.getElementById(`val-${currentSheetCategory}`);
-      if (target) target.innerText = val;
+      const el = document.getElementById(`val-${currentSheetCategory}`);
+      if (el) el.innerText = val;
       closeDropdownSheet();
       if (currentSheetCategory.startsWith('plan')) runPlannerEngine();
       else runLiveCalculations();
@@ -1707,15 +2658,21 @@
     function addNewOption() {
       const val = document.getElementById('sheet-new-val').value.trim();
       if (!val) return;
-      if (!AppState.options.gas.includes(val)) {
-        AppState.options.gas.push(val);
+      let key = currentSheetCategory;
+      if (key === 'planGas') key = 'gas';
+      if (key === 'planDecoGas') key = 'decoGas';
+      if (key === 'planTank') key = 'tank';
+      if (key === 'planGf') key = 'gf';
+      if (AppState.options[key] && !AppState.options[key].includes(val)) {
+        AppState.options[key].push(val);
         saveStorage();
       }
       selectSheetOption(val);
     }
 
     function exportDataJson() {
-      const blob = new Blob([JSON.stringify(AppState, null, 2)], { type: "application/json" });
+      const backupPayload = { ...AppState, userName: localStorage.getItem('sucapro_user_fullname') || "" };
+      const blob = new Blob([JSON.stringify(backupPayload, null, 2)], { type: "application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = `sucapro_backup_${new Date().toISOString().split('T')[0]}.json`;
@@ -1730,11 +2687,19 @@
         try {
           const parsed = JSON.parse(evt.target.result);
           if (parsed.dives) AppState.dives = parsed.dives;
+          if (parsed.certs) AppState.certs = parsed.certs;
+          if (parsed.options) AppState.options = parsed.options;
+          if (parsed.userName) {
+            localStorage.setItem('sucapro_user_fullname', parsed.userName);
+            loadUserName();
+          }
           saveStorage();
+          checkUserGate();
           sortDivesChronologically();
           updateCounter();
-          alert("Dati ripristinati.");
-        } catch(err) { alert("File JSON non valido."); }
+          renderHomeCerts();
+          alert("Backup ripristinato.");
+        } catch(err) { alert("File non valido."); }
       };
       reader.readAsText(file);
     }
