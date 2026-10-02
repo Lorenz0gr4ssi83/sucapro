@@ -9,6 +9,14 @@
   <meta name="theme-color" content="#090a0f">
   <title>Sucapro</title>
 
+  <link rel="icon" type="image/jpeg" href="https://i.postimg.cc/LXc6SHfv/1790974080159.jpg">
+  <link rel="apple-touch-icon" href="https://i.postimg.cc/LXc6SHfv/1790974080159.jpg">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Sucapro">
+  <meta name="application-name" content="Sucapro">
+
   <style>
     :root {
       --bg: #090a0f;
@@ -112,18 +120,20 @@
       -webkit-overflow-scrolling: touch;
     }
     .tab-content.active { display: block; }
+    #tab-home.active { overflow-y: auto; }
 
     #user-gate-banner {
       display: none;
-      background: rgba(255, 71, 87, 0.15);
-      border: 1px solid var(--danger);
-      border-radius: 8px;
-      padding: 8px 12px;
+      background: rgba(255, 71, 87, 0.18);
+      border: 1.5px solid var(--danger);
+      border-radius: 10px;
+      padding: 10px 12px;
       margin-bottom: 8px;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       font-weight: 800;
-      color: var(--danger);
+      color: #fff;
       text-align: center;
+      letter-spacing: 0.3px;
     }
 
     .home-hero-banner {
@@ -361,6 +371,9 @@
     .form-control:focus, .form-select-box:active { border-color: var(--accent); }
     .form-control::placeholder { color: var(--text-muted); font-weight: 400; font-size: 0.75rem; }
 
+    .select-val { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.8rem; }
+    .select-val.empty { color: var(--text-muted); font-weight: 400; }
+
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
 
@@ -489,6 +502,15 @@
       margin-bottom: 2px;
     }
     .log-title { font-size: 0.88rem; font-weight: 800; color: #fff; }
+    .rating-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--accent);
+      background: rgba(255, 140, 0, 0.15);
+      border: 1px solid rgba(255, 140, 0, 0.35);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
     .log-stats-bar {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -500,16 +522,6 @@
     }
     .stat-val { font-size: 0.82rem; font-weight: 800; color: #fff; }
     .stat-label { font-size: 0.55rem; color: var(--text-sub); text-transform: uppercase; }
-
-    .rating-badge {
-      display: inline-block;
-      padding: 2px 6px;
-      border-radius: 4px;
-      background: rgba(255, 140, 0, 0.2);
-      color: var(--accent);
-      font-weight: 800;
-      font-size: 0.65rem;
-    }
 
     .yt-badge-link {
       display: inline-flex;
@@ -580,6 +592,34 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       color: #fff;
+    }
+
+    .stat-badge-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      background: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.72rem;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .stat-badge-chip:hover {
+      border-color: var(--accent);
+      background: rgba(255, 140, 0, 0.12);
+    }
+    .stat-badge-chip .count-pill {
+      background: var(--accent);
+      color: #000;
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 10px;
     }
 
     .sheet-modal, .modal-dialog {
@@ -657,26 +697,6 @@
       margin-top: 4px;
       touch-action: none;
     }
-
-    .stat-clickable-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 6px 10px;
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.72rem;
-      font-weight: 600;
-      color: #fff;
-    }
-    .stat-clickable-badge:hover { border-color: var(--accent); }
-    .stat-clickable-badge span.count {
-      color: var(--accent);
-      font-weight: 800;
-      margin-left: 8px;
-    }
   </style>
 </head>
 <body>
@@ -713,31 +733,32 @@
         </div>
       </div>
 
-      <!-- CALCOLATORE GAS TRIANGLE (MOD / EAN / PO2) -->
+      <!-- CALCOLATORE GAS DINAMICO MOD / EAN / PO2 -->
       <div class="panel">
         <div class="panel-header">
-          <span>Calcolatore MOD / Miscela / PO₂</span>
+          <span>Calcolatore MOD / EAN / PO₂</span>
           <span style="color:var(--accent);">Gas Laws</span>
         </div>
         <div class="grid-3">
           <div class="form-group">
             <span class="form-label">PO₂ (bar)</span>
-            <input type="number" step="0.05" id="calc-po2" class="form-control" value="1.40" oninput="calcGasTriangle('po2')">
+            <input type="number" step="0.05" id="calc-po2" class="form-control" value="1.40" oninput="runLiveGasTriangle('po2')">
           </div>
           <div class="form-group">
             <span class="form-label">MOD (m)</span>
-            <input type="number" step="0.5" id="calc-mod" class="form-control" placeholder="es. 33.5" oninput="calcGasTriangle('mod')">
+            <input type="number" step="0.5" id="calc-mod" class="form-control" placeholder="es. 33.8" oninput="runLiveGasTriangle('mod')">
           </div>
           <div class="form-group">
-            <span class="form-label">O₂ (%)</span>
-            <input type="number" step="1" id="calc-ean" class="form-control" placeholder="es. 32" oninput="calcGasTriangle('ean')">
+            <span class="form-label">EAN (% O₂)</span>
+            <input type="number" step="1" id="calc-ean" class="form-control" placeholder="es. 32" oninput="runLiveGasTriangle('ean')">
           </div>
         </div>
         <div style="font-size:0.6rem; color:var(--text-muted); text-align:center;">
-          PO₂ default 1.4 bar (reset al riavvio). Compilando 2 campi il 3° viene calcolato.
+          PO₂ default 1.4 bar (si resetta ad ogni avvio). Modificando 2 campi, il terzo è calcolato in automatico.
         </div>
       </div>
 
+      <!-- PORTAFOGLIO BREVETTI (C-CARDS) INTEGRALE -->
       <div class="panel">
         <div class="panel-header">
           <span>Portafoglio Brevetti (C-Cards)</span>
@@ -746,6 +767,7 @@
         <div class="c-cards-scroll" id="c-cards-list-home"></div>
       </div>
 
+      <!-- FISIOLOGIA & DECOMPRESSIONE INTEGRALE -->
       <div class="panel">
         <div class="panel-header">
           <span>Fisiologia & Decompressione</span>
@@ -778,6 +800,7 @@
 
     <!-- TAB PLANNER -->
     <div id="tab-plan" class="tab-content">
+      <!-- ALLARMI PO2 FONDO E DECO -->
       <div id="plan-alarm-box" style="display:none; background:rgba(255, 71, 87, 0.2); border:1.5px solid var(--danger); border-radius:8px; padding:8px 10px; margin-bottom:8px; color:var(--danger); font-size:0.75rem; font-weight:800; text-align:center;">
         ⚠️ ALLARME IPEROSSIATOSSICA: PO₂ FUORI LIMITE!
       </div>
@@ -850,10 +873,10 @@
         </div>
       </div>
 
-      <!-- GRAFICO DEL PIANO D'IMMERSIONE -->
+      <!-- GRAFICO DEL PROFILO PIANIFICATO -->
       <div class="panel">
         <div class="panel-header">
-          <span>Curva Prevista Piano di Immersione</span>
+          <span>Curva Presunta del Piano d'Immersione</span>
           <span style="color:var(--temp-line);">Profilo Dinamico</span>
         </div>
         <div class="chart-container">
@@ -949,16 +972,17 @@
                 <span style="color:var(--accent);">▾</span>
               </div>
             </div>
+            <!-- VOTO DELL'IMMERSIONE (1-10) -->
             <div class="form-group">
               <span class="form-label">Voto Immersione (1-10)</span>
               <select id="val-rating" class="form-control">
                 <option value="10">⭐️ 10 - Eccezionale</option>
                 <option value="9">⭐️ 9 - Bellissima</option>
-                <option value="8" selected>⭐️️ 8 - Molto bella</option>
+                <option value="8" selected>⭐️ 8 - Molto bella</option>
                 <option value="7">⭐️ 7 - Buona</option>
                 <option value="6">⭐️ 6 - Sufficiente</option>
                 <option value="5">⭐️ 5 - Discreta</option>
-                <option value="4">⭐️ 4 - Torbida/Fredda</option>
+                <option value="4">⭐️ 4 - Fredda/Torbida</option>
                 <option value="3">⭐️ 3 - Pessima</option>
                 <option value="2">⭐️ 2 - Interrotta</option>
                 <option value="1">⭐️ 1 - Disastrosa</option>
@@ -1025,8 +1049,8 @@
         <div class="panel">
           <div class="grid-2">
             <div class="form-group">
-              <span class="form-label">Sito d'Immersione</span>
-              <input type="text" id="val-site" class="form-control" placeholder="es. Relitto Haven" value="Y-40 The Deep Joy">
+              <span class="form-label">Sito / Luogo d'Immersione</span>
+              <input type="text" id="val-site" class="form-control" placeholder="es. Relitto Haven o Secca" value="Y-40 The Deep Joy">
             </div>
             <div class="form-group">
               <span class="form-label">Compagno (Buddy)</span>
@@ -1034,10 +1058,11 @@
             </div>
           </div>
 
+          <!-- GOOGLE MAPS INVECE DI GPS RIGIDO -->
           <div class="form-group">
-            <span class="form-label">Posizione Google Maps (Cerca o incolla luogo/link)</span>
+            <span class="form-label">Posizione Google Maps (Luogo o Link)</span>
             <div style="display:flex; gap:6px;">
-              <input type="text" id="val-maps-url" class="form-control" placeholder="es. Y-40 Montegrotto o link Maps">
+              <input type="text" id="val-maps-url" class="form-control" placeholder="es. Montegrotto Terme o incolla link Google Maps">
               <button type="button" class="btn-icon" title="Cerca su Google Maps" onclick="openGoogleMaps()">🗺️</button>
             </div>
           </div>
@@ -1072,7 +1097,6 @@
             <input type="text" id="val-center" class="form-control" placeholder="es. Diving Center" value="Privato / Da Riva">
           </div>
 
-          <!-- LINK YOUTUBE -->
           <div class="form-group" style="margin-bottom:0; margin-top:8px;">
             <span class="form-label">Video YouTube (Link / URL)</span>
             <div style="display:flex; gap:6px;">
@@ -1160,14 +1184,15 @@
 
     <!-- TAB LOGBOOK -->
     <div id="tab-log" class="tab-content">
+      <!-- BARRA FILTRI MULTIPLI -->
       <div class="panel" style="padding: 8px;">
         <div class="panel-header" style="margin-bottom:4px;">
           <span>Filtri Ricerca Logbook</span>
-          <span style="cursor:pointer;" onclick="resetLogFilters()">Azzera Filtri</span>
+          <span style="cursor:pointer; color:var(--accent);" onclick="resetLogFilters()">Azzera Filtri</span>
         </div>
         <div class="grid-2">
-          <input type="text" id="filter-text" class="form-control" placeholder="Cerca Luogo..." oninput="renderLogbookFeed()">
-          <input type="text" id="filter-buddy" class="form-control" placeholder="Cerca Buddy..." oninput="renderLogbookFeed()">
+          <input type="text" id="filter-text" class="form-control" placeholder="Cerca Luogo / Sito..." oninput="renderLogbookFeed()">
+          <input type="text" id="filter-buddy" class="form-control" placeholder="Cerca Compagno (Buddy)..." oninput="renderLogbookFeed()">
         </div>
         <div class="grid-3" style="margin-top:6px;">
           <select id="filter-gas" class="form-control" onchange="renderLogbookFeed()">
@@ -1178,8 +1203,12 @@
             <option value="Tx">Trimix</option>
           </select>
           <input type="number" id="filter-depth" class="form-control" placeholder="Prof. Min (m)" oninput="renderLogbookFeed()">
+          <input type="number" id="filter-duration" class="form-control" placeholder="Durata Min (')" oninput="renderLogbookFeed()">
+        </div>
+        <div style="margin-top:6px;">
           <select id="filter-rating" class="form-control" onchange="renderLogbookFeed()">
             <option value="">Tutti i Voti</option>
+            <option value="10">⭐️ 10</option>
             <option value="9">≥ 9 ⭐️</option>
             <option value="8">≥ 8 ⭐️</option>
             <option value="7">≥ 7 ⭐️</option>
@@ -1233,53 +1262,68 @@
         <div class="chart-container">
           <canvas id="sacTrendCanvas" height="150" style="cursor:pointer;"></canvas>
         </div>
+        <div style="display:flex; justify-content:center; gap:12px; margin-top:6px; font-size:0.62rem; font-weight:700;">
+          <div style="display:flex; align-items:center; gap:3px;"><span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--success);"></span>Minimo</div>
+          <div style="display:flex; align-items:center; gap:3px;"><span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--danger);"></span>Massimo</div>
+          <div style="display:flex; align-items:center; gap:3px;"><span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#fff;"></span>Altri</div>
+        </div>
       </div>
 
       <!-- GRAFICO 2: PROFILO CRONOLOGICO PROFONDITA & DURATA -->
       <div class="panel">
         <div class="panel-header">
-          <span>2. Quota Max (m) & Durata (min)</span>
+          <span>2. Profilo Cronologico: Quota Max (m) & Durata (min)</span>
           <span style="color:var(--temp-line);">Profondità / Minuti</span>
         </div>
         <div class="chart-container">
           <canvas id="depthDurationCanvas" height="140"></canvas>
+        </div>
+        <div style="display:flex; justify-content:center; gap:14px; margin-top:6px; font-size:0.62rem; font-weight:700;">
+          <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; width:10px; height:3px; background:var(--temp-line);"></span>Quota Max (m)</div>
+          <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; width:10px; height:3px; background:var(--accent);"></span>Durata Tuffo (min)</div>
         </div>
       </div>
 
       <!-- GRAFICO 3: ESPOSIZIONE CNS & OTU -->
       <div class="panel">
         <div class="panel-header">
-          <span>3. Tossicità O₂: CNS Clock (%) & OTU</span>
+          <span>3. Tossicità O₂: CNS Clock (%) & OTU Accumulate</span>
           <span style="color:var(--warning);">Fisiologia Gas</span>
         </div>
         <div class="chart-container">
           <canvas id="cnsOtuCanvas" height="130"></canvas>
         </div>
+        <div style="display:flex; justify-content:center; gap:14px; margin-top:6px; font-size:0.62rem; font-weight:700;">
+          <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; width:8px; height:8px; background:var(--danger); border-radius:2px;"></span>CNS Clock (%)</div>
+          <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; width:8px; height:8px; background:var(--accent); border-radius:2px;"></span>OTU</div>
+        </div>
       </div>
 
-      <!-- RIPARTIZIONE MISCELE -->
+      <!-- GRAFICO 4: DISTRIBUZIONE MISCELE CON REDIRECT AL LOGBOOK -->
       <div class="panel">
         <div class="panel-header">
-          <span>4. Ripartizione Miscele (Tocca per filtrare)</span>
+          <span>4. Ripartizione Miscele Respirate (Tocca per filtrare)</span>
         </div>
-        <div id="gasDistributionBars" style="display:flex; flex-direction:column; gap:8px; margin-bottom:8px;"></div>
-        <div id="profile-gas-badges" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+        <div class="chart-container" style="padding: 10px 12px; background: var(--surface-card); margin-bottom:8px;">
+          <div id="gasDistributionBars" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+        <div id="gasBadgesList" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
       </div>
 
-      <!-- STATISTICHE BUDDY -->
+      <!-- STATISTICA BUDDY CON REDIRECT AL LOGBOOK -->
       <div class="panel">
         <div class="panel-header">
-          <span>Compagni d'Immersione (Buddy - Tocca per filtrare)</span>
+          <span>Statistiche Compagni (Buddy - Tocca per filtrare)</span>
         </div>
-        <div id="profile-buddy-list" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+        <div id="buddyStatsList" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
       </div>
 
-      <!-- STATISTICHE LUOGHI -->
+      <!-- STATISTICA LUOGHI CON REDIRECT AL LOGBOOK -->
       <div class="panel">
         <div class="panel-header">
-          <span>Luoghi Registrati (Tocca per filtrare)</span>
+          <span>Statistiche Luoghi d'Immersione (Tocca per filtrare)</span>
         </div>
-        <div id="profile-site-list" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+        <div id="siteStatsList" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
       </div>
     </div>
 
@@ -1399,11 +1443,14 @@
       runLiveCalculations();
       runPlannerEngine();
       initHomeTimers();
-      window.addEventListener('resize', resizeSigCanvas);
+      window.addEventListener('resize', () => {
+        resizeSigCanvas();
+        drawPlanProfileChart();
+      });
     });
 
-    // 1. CALCOLATORE DINAMICO TRIANGOLO DEI GAS
-    function calcGasTriangle(triggeredBy) {
+    // 1. CALCOLATORE GAS TRIANGLE (MOD / EAN / PO2)
+    function runLiveGasTriangle(source) {
       const po2Input = document.getElementById('calc-po2');
       const modInput = document.getElementById('calc-mod');
       const eanInput = document.getElementById('calc-ean');
@@ -1412,28 +1459,28 @@
       const mod = parseFloat(modInput.value);
       const ean = parseFloat(eanInput.value);
 
-      if (triggeredBy === 'po2') {
+      if (source === 'po2') {
         if (!isNaN(po2) && !isNaN(ean) && ean > 0) {
-          const fO2 = ean / 100;
-          modInput.value = (((po2 / fO2) - 1) * 10).toFixed(1);
+          const fo2 = ean / 100;
+          modInput.value = (((po2 / fo2) - 1) * 10).toFixed(1);
         } else if (!isNaN(po2) && !isNaN(mod) && mod >= 0) {
           const pAmb = 1 + (mod / 10);
           eanInput.value = Math.min(100, Math.round((po2 / pAmb) * 100));
         }
-      } else if (triggeredBy === 'mod') {
+      } else if (source === 'mod') {
         if (!isNaN(mod) && !isNaN(po2) && po2 > 0) {
           const pAmb = 1 + (mod / 10);
           eanInput.value = Math.min(100, Math.round((po2 / pAmb) * 100));
         }
-      } else if (triggeredBy === 'ean') {
+      } else if (source === 'ean') {
         if (!isNaN(ean) && ean > 0 && !isNaN(po2) && po2 > 0) {
-          const fO2 = ean / 100;
-          modInput.value = (((po2 / fO2) - 1) * 10).toFixed(1);
+          const fo2 = ean / 100;
+          modInput.value = (((po2 / fo2) - 1) * 10).toFixed(1);
         }
       }
     }
 
-    // 2. GESTIONE UTENTE E GATE DI BLOCCO
+    // 2. CONTROLLO E PERSISTENZA DEL NOME (GATE DI BLOCCO)
     function checkUserGate() {
       const userName = (localStorage.getItem('sucapro_user_fullname') || "").trim();
       const banner = document.getElementById('user-gate-banner');
@@ -1470,7 +1517,7 @@
     }
 
     function loadStorage() {
-      const data = localStorage.getItem('sucapro_storage_v12');
+      const data = localStorage.getItem('sucapro_storage_v14');
       if (data) {
         try {
           const parsed = JSON.parse(data);
@@ -1482,7 +1529,7 @@
     }
 
     function saveStorage() {
-      localStorage.setItem('sucapro_storage_v12', JSON.stringify(AppState));
+      localStorage.setItem('sucapro_storage_v14', JSON.stringify(AppState));
     }
 
     function syncCurrentDateTime() {
@@ -1519,7 +1566,7 @@
       if (certCount) certCount.innerText = `${AppState.certs.length} Titoli`;
     }
 
-    // 3. PLANNER OTTIMIZZATO CON ALLARMI PO2 E GRAFICO PROFILO
+    // 3. PLANNER CON ALLARMI PO2 E GRAFICO CURVA PROFILO
     function calculateNDL(d, fN2, gfLow, gfHigh) {
       let ndlBase = 0;
       if (d <= 12) ndlBase = 135;
@@ -1544,6 +1591,8 @@
       return Math.max(1, Math.round(calc * gfLowScale));
     }
 
+    let lastCalculatedPlanProfile = null;
+
     function runPlannerEngine() {
       const depth = Math.max(1, parseFloat(document.getElementById('plan-depth').value) || 30);
       const userBottomTime = Math.max(1, parseFloat(document.getElementById('plan-bottom-time').value) || 10);
@@ -1553,6 +1602,7 @@
 
       const headerTargetBadge = document.getElementById('plan-target-reserve-header');
       if (headerTargetBadge) headerTargetBadge.innerText = `Target Riserva: ${reserveTarget} bar`;
+
       const cardReserveBadge = document.getElementById('plan-reserve-card-badge');
       if (cardReserveBadge) cardReserveBadge.innerText = `Target Riserva: ${reserveTarget} bar`;
 
@@ -1563,14 +1613,19 @@
 
       let gfLow = 40, gfHigh = 85;
       const gfMatch = gfText.match(/(\d+)\s*\/\s*(\d+)/);
-      if (gfMatch) { gfLow = parseFloat(gfMatch[1]); gfHigh = parseFloat(gfMatch[2]); }
+      if (gfMatch) {
+        gfLow = parseFloat(gfMatch[1]);
+        gfHigh = parseFloat(gfMatch[2]);
+      }
 
       let tankVol = 15;
       const tMatch = tankText.match(/(\d+(\.\d+)?)\s*L/i);
       if (tMatch) tankVol = parseFloat(tMatch[1]);
 
       let rho = 1.028;
-      let fO2Bottom = 0.21, fHeBottom = 0;
+
+      let fO2Bottom = 0.21;
+      let fHeBottom = 0;
       if (gasText.includes("32")) fO2Bottom = 0.32;
       else if (gasText.includes("36")) fO2Bottom = 0.36;
       else if (gasText.includes("Tx")) {
@@ -1596,26 +1651,26 @@
       po2BottomEl.innerText = `${po2Bottom.toFixed(2)} b`;
       po2DecoEl.innerText = `${po2Deco.toFixed(2)} b`;
 
-      // Gestione Allarmi PO2
+      // VERIFICA ALLARMI PO2
       const alarmBox = document.getElementById('plan-alarm-box');
-      let alarmMsg = [];
+      let alarms = [];
       if (po2Bottom > 1.40) {
         po2BottomEl.style.color = "var(--danger)";
-        alarmMsg.push(`PO₂ Fondo (${po2Bottom.toFixed(2)} bar) > 1.40!`);
+        alarms.push(`PO₂ Fondo (${po2Bottom.toFixed(2)}b) > 1.40!`);
       } else {
         po2BottomEl.style.color = "var(--success)";
       }
 
       if (po2Deco > 1.60) {
         po2DecoEl.style.color = "var(--danger)";
-        alarmMsg.push(`PO₂ Deco/Sosta (${po2Deco.toFixed(2)} bar) > 1.60!`);
+        alarms.push(`PO₂ Deco/Sosta (${po2Deco.toFixed(2)}b) > 1.60!`);
       } else {
         po2DecoEl.style.color = "var(--success)";
       }
 
-      if (alarmMsg.length > 0) {
+      if (alarms.length > 0) {
         alarmBox.style.display = 'block';
-        alarmBox.innerText = `⚠️ ALLARME IPEROSSIATOSSICA: ${alarmMsg.join(' | ')}`;
+        alarmBox.innerText = `⚠️ ALLARME IPEROSSIATOSSICA: ${alarms.join(' | ')}`;
       } else {
         alarmBox.style.display = 'none';
       }
@@ -1634,7 +1689,7 @@
         dNote.innerText = `Densità elevata (${density} g/L): Oltre 48m ad aria, consigliato Trimix.`;
       } else if (dNum > 6.0) {
         dNote.style.color = "var(--warning)";
-        dNote.innerText = `Deep Air Zone (${density} g/L): Nessun lavoro respiratorio intenso.`;
+        dNote.innerText = `Deep Air Zone (${density} g/L): Basso sforzo muscolare consigliato.`;
       } else {
         dNote.style.color = "var(--success)";
         dNote.innerText = `Densità ottimale (≤ 6.0 g/L): Basso lavoro respiratorio.`;
@@ -1687,7 +1742,9 @@
       const deepLevelLiterPerMin = (1 + (chosenDeepLevel * rho / 10)) * sac;
       const shallowLiterPerMin = (1 + (5 * rho / 10)) * sac;
 
-      let deepLevelTime = 0, shallowLevelTime = 0;
+      let deepLevelTime = 0;
+      let shallowLevelTime = 0;
+
       if (gasForMultiLevelLiters > 0) {
         const maxMins = Math.floor(gasForMultiLevelLiters / deepLevelLiterPerMin);
         deepLevelTime = Math.min(maxMins, remainingNdlAtDeepLevel);
@@ -1701,7 +1758,7 @@
 
       if (gasForMultiLevelLiters >= 0) {
         extraTimeEl.innerHTML = `${deepLevelTime}'<span> + ${shallowLevelTime}' a 5m</span>`;
-        extraSubEl.innerText = `${deepLevelTime}' a ${chosenDeepLevel}m (limite NDL) + ${shallowLevelTime}' a 5m`;
+        extraSubEl.innerText = `${deepLevelTime}' a ${chosenDeepLevel}m (limite NDL) + ${shallowLevelTime}' a 5m per ${reserveTarget}b`;
         extraTimeEl.style.color = "var(--temp-line)";
       } else {
         extraTimeEl.innerHTML = `0 <span>min</span>`;
@@ -1728,32 +1785,80 @@
       let currentRunTime = 0;
 
       currentRunTime += descentTime;
-      runtimeRows.push({ phase: "Discesa", depth: `0 ➔ ${depth}m`, speed: `18 m/min (${descentTime}')`, runtime: `${currentRunTime}'`, po2: `${po2Bottom.toFixed(2)}b` });
+      runtimeRows.push({
+        phase: "Discesa",
+        depth: `0 ➔ ${depth}m`,
+        speed: `18 m/min (${descentTime}')`,
+        runtime: `${currentRunTime}'`,
+        po2: `${po2Bottom.toFixed(2)}b`
+      });
 
       currentRunTime += userBottomTime;
-      runtimeRows.push({ phase: "Fondo Quota Max", depth: `${depth}m`, speed: `Fondo (${userBottomTime}')`, runtime: `${currentRunTime}'`, po2: `${po2Bottom.toFixed(2)}b` });
+      runtimeRows.push({
+        phase: "Fondo Quota Max",
+        depth: `${depth}m`,
+        speed: `Permanenza fissa (${userBottomTime}')`,
+        runtime: `${currentRunTime}'`,
+        po2: `${po2Bottom.toFixed(2)}b`
+      });
 
       currentRunTime += toDeepLevelTime;
-      runtimeRows.push({ phase: "Risalita Esplorativa", depth: `${depth} ➔ ${chosenDeepLevel}m`, speed: `9 m/min (${toDeepLevelTime}')`, runtime: `${currentRunTime}'`, po2: `${((1 + (chosenDeepLevel * rho / 10)) * fO2Bottom).toFixed(2)}b` });
+      runtimeRows.push({
+        phase: "Risalita Quota Profonda",
+        depth: `${depth} ➔ ${chosenDeepLevel}m`,
+        speed: `9 m/min (${toDeepLevelTime}')`,
+        runtime: `${currentRunTime}'`,
+        po2: `${((1 + (chosenDeepLevel * rho / 10)) * fO2Bottom).toFixed(2)}b`
+      });
 
       if (deepLevelTime > 0) {
         currentRunTime += deepLevelTime;
-        runtimeRows.push({ phase: "Esplorazione", depth: `${chosenDeepLevel}m`, speed: `Permanenza (${deepLevelTime}')`, runtime: `${currentRunTime}'`, po2: `${((1 + (chosenDeepLevel * rho / 10)) * fO2Bottom).toFixed(2)}b` });
+        runtimeRows.push({
+          phase: "Esplorazione Profonda",
+          depth: `${chosenDeepLevel}m`,
+          speed: `Permanenza (${deepLevelTime}')`,
+          runtime: `${currentRunTime}'`,
+          po2: `${((1 + (chosenDeepLevel * rho / 10)) * fO2Bottom).toFixed(2)}b`
+        });
       }
 
       currentRunTime += fromDeepTo6mTime;
-      runtimeRows.push({ phase: "Risalita a Quota Sosta", depth: `${chosenDeepLevel} ➔ 5m`, speed: `9 m/min (${fromDeepTo6mTime}')`, runtime: `${currentRunTime}'`, po2: `${po2Deco.toFixed(2)}b` });
+      runtimeRows.push({
+        phase: "Risalita a Quota Sosta",
+        depth: `${chosenDeepLevel} ➔ 5m`,
+        speed: `9 m/min (${fromDeepTo6mTime}')`,
+        runtime: `${currentRunTime}'`,
+        po2: `${po2Deco.toFixed(2)}b`
+      });
 
       if (shallowLevelTime > 0) {
         currentRunTime += shallowLevelTime;
-        runtimeRows.push({ phase: "Sosta Bassa Quota", depth: "5m", speed: `Consumo residuo (${shallowLevelTime}')`, runtime: `${currentRunTime}'`, po2: `${po2Deco.toFixed(2)}b` });
+        runtimeRows.push({
+          phase: "Sosta Bassa Quota",
+          depth: "5m",
+          speed: `Consumo residuo (${shallowLevelTime}')`,
+          runtime: `${currentRunTime}'`,
+          po2: `${po2Deco.toFixed(2)}b`
+        });
       }
 
       currentRunTime += 3;
-      runtimeRows.push({ phase: "Safety Stop", depth: "5m", speed: "Sosta 3'", runtime: `${currentRunTime}'`, po2: `${po2Deco.toFixed(2)}b` });
+      runtimeRows.push({
+        phase: "Safety Stop",
+        depth: "5m",
+        speed: "0 m/min (Sosta 3')",
+        runtime: `${currentRunTime}'`,
+        po2: `${po2Deco.toFixed(2)}b`
+      });
 
       currentRunTime += 2;
-      runtimeRows.push({ phase: "Emersione", depth: "5 ➔ 0m", speed: `3 m/min (2')`, runtime: `${currentRunTime}'`, po2: "0.21b" });
+      runtimeRows.push({
+        phase: "Emersione",
+        depth: "5 ➔ 0m",
+        speed: `3 m/min (2')`,
+        runtime: `${currentRunTime}'`,
+        po2: "0.21b"
+      });
 
       document.getElementById('plan-total-runtime').innerText = `Run-Time: ${currentRunTime}'`;
       document.getElementById('plan-total-time-display').value = `${currentRunTime} min`;
@@ -1768,10 +1873,23 @@
         </tr>
       `).join('');
 
-      drawPlanProfileChart(depth, chosenDeepLevel, descentTime, userBottomTime, toDeepLevelTime, deepLevelTime, fromDeepTo6mTime, shallowLevelTime, currentRunTime);
+      lastCalculatedPlanProfile = {
+        maxD: depth,
+        deepD: chosenDeepLevel,
+        tDesc: descentTime,
+        tBott: userBottomTime,
+        tToDeep: toDeepLevelTime,
+        tDeep: deepLevelTime,
+        tTo6: fromDeepTo6mTime,
+        tShallow: shallowLevelTime,
+        totalT: currentRunTime
+      };
+
+      drawPlanProfileChart();
     }
 
-    function drawPlanProfileChart(maxD, deepD, tDesc, tBott, tToDeep, tDeep, tTo6, tShallow, totalT) {
+    function drawPlanProfileChart() {
+      if (!lastCalculatedPlanProfile) return;
       const canvas = document.getElementById('planProfileCanvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
@@ -1785,20 +1903,21 @@
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, w, h);
 
+      const p = lastCalculatedPlanProfile;
       const padL = 30, padR = 20, padT = 16, padB = 22;
       const plotW = w - padL - padR;
       const plotH = h - padT - padB;
 
       let curT = 0;
       const pts = [{ t: 0, d: 0 }];
-      curT += tDesc; pts.push({ t: curT, d: maxD });
-      curT += tBott; pts.push({ t: curT, d: maxD });
-      curT += tToDeep; pts.push({ t: curT, d: deepD });
-      if (tDeep > 0) { curT += tDeep; pts.push({ t: curT, d: deepD }); }
-      curT += tTo6; pts.push({ t: curT, d: 5 });
-      if (tShallow > 0) { curT += tShallow; pts.push({ t: curT, d: 5 }); }
+      curT += p.tDesc; pts.push({ t: curT, d: p.maxD });
+      curT += p.tBott; pts.push({ t: curT, d: p.maxD });
+      curT += p.tToDeep; pts.push({ t: curT, d: p.deepD });
+      if (p.tDeep > 0) { curT += p.tDeep; pts.push({ t: curT, d: p.deepD }); }
+      curT += p.tTo6; pts.push({ t: curT, d: 5 });
+      if (p.tShallow > 0) { curT += p.tShallow; pts.push({ t: curT, d: 5 }); }
       curT += 3; pts.push({ t: curT, d: 5 });
-      pts.push({ t: totalT, d: 0 });
+      pts.push({ t: p.totalT, d: 0 });
 
       ctx.strokeStyle = '#202434';
       ctx.lineWidth = 1;
@@ -1811,12 +1930,12 @@
       ctx.font = '8px monospace';
       ctx.textAlign = 'right';
       ctx.fillText('0m', padL - 4, padT + 3);
-      ctx.fillText(`${Math.round(maxD)}m`, padL - 4, padT + plotH + 3);
+      ctx.fillText(`${Math.round(p.maxD)}m`, padL - 4, padT + plotH + 3);
 
       ctx.beginPath();
       pts.forEach((pt, idx) => {
-        const x = padL + (pt.t / totalT) * plotW;
-        const y = padT + (pt.d / maxD) * plotH;
+        const x = padL + (pt.t / p.totalT) * plotW;
+        const y = padT + (pt.d / p.maxD) * plotH;
         if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       });
       ctx.strokeStyle = '#00d2d3';
@@ -1824,8 +1943,8 @@
       ctx.stroke();
 
       pts.forEach(pt => {
-        const x = padL + (pt.t / totalT) * plotW;
-        const y = padT + (pt.d / maxD) * plotH;
+        const x = padL + (pt.t / p.totalT) * plotW;
+        const y = padT + (pt.d / p.maxD) * plotH;
         ctx.beginPath();
         ctx.arc(x, y, 3, 0, Math.PI * 2);
         ctx.fillStyle = '#ff8c00';
@@ -1838,11 +1957,11 @@
       });
     }
 
-    // 4. GOOGLE MAPS
+    // 4. RICERCA LUOGO SU GOOGLE MAPS
     function openGoogleMaps() {
       const loc = document.getElementById('val-maps-url').value.trim() || document.getElementById('val-site').value.trim();
       if (!loc) {
-        alert("Inserisci un nome di luogo o un indirizzo.");
+        alert("Inserisci prima il nome di un luogo o un indirizzo.");
         return;
       }
       if (loc.startsWith("http://") || loc.startsWith("https://")) {
@@ -1852,7 +1971,7 @@
       }
     }
 
-    // 5. REGISTRAZIONE & CALCOLI LIVE
+    // 5. REGISTRAZIONE IMMERSIONE E CALCOLI LIVE
     function runLiveCalculations() {
       const dur = parseFloat(document.getElementById('val-duration').value) || 0;
       const maxD = parseFloat(document.getElementById('val-depth-max').value) || 0;
@@ -1910,8 +2029,61 @@
 
         const fN2 = Math.max(0, 1 - fO2 - fHe);
         const rho0 = (fO2 * 1.428) + (fN2 * 1.251) + (fHe * 0.179);
-        document.getElementById('ind-density').innerText = `${(rho0 * pAmbMax).toFixed(2)} g/L`;
+        const maxDensity = (rho0 * pAmbMax).toFixed(2);
+        document.getElementById('ind-density').innerText = `${maxDensity} g/L`;
       }
+    }
+
+    function initSignaturePad() {
+      sigCanvas = document.getElementById('signatureCanvas');
+      if (!sigCanvas) return;
+      sigCtx = sigCanvas.getContext('2d');
+      resizeSigCanvas();
+
+      const start = (e) => {
+        isDrawing = true;
+        const pos = getSigPos(e);
+        sigCtx.beginPath(); sigCtx.moveTo(pos.x, pos.y);
+      };
+      const move = (e) => {
+        if (!isDrawing) return;
+        const pos = getSigPos(e);
+        sigCtx.lineTo(pos.x, pos.y);
+        sigCtx.strokeStyle = '#00d2d3';
+        sigCtx.lineWidth = 2;
+        sigCtx.stroke();
+      };
+      const stop = () => { isDrawing = false; };
+
+      sigCanvas.addEventListener('mousedown', start);
+      sigCanvas.addEventListener('mousemove', move);
+      window.addEventListener('mouseup', stop);
+      sigCanvas.addEventListener('touchstart', (e) => { start(e.touches[0]); e.preventDefault(); }, {passive: false});
+      sigCanvas.addEventListener('touchmove', (e) => { move(e.touches[0]); e.preventDefault(); }, {passive: false});
+      sigCanvas.addEventListener('touchend', stop);
+    }
+
+    function resizeSigCanvas() {
+      if (!sigCanvas) return;
+      const rect = sigCanvas.getBoundingClientRect();
+      sigCanvas.width = rect.width;
+      sigCanvas.height = 80;
+    }
+
+    function getSigPos(e) {
+      const rect = sigCanvas.getBoundingClientRect();
+      return { x: (e.clientX || e.pageX) - rect.left, y: (e.clientY || e.pageY) - rect.top };
+    }
+
+    function clearSignature() {
+      if (!sigCanvas || !sigCtx) return;
+      sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+    }
+
+    function testVideoLink() {
+      const val = document.getElementById('val-video-link').value.trim();
+      if (!val) { alert("Inserisci prima un link YouTube."); return; }
+      window.open(val, '_blank');
     }
 
     function executeSaveDive() {
@@ -1920,14 +2092,14 @@
       const avgD = parseFloat(document.getElementById('val-depth-avg').value) || (maxD * 0.6);
 
       if (dur <= 0 || maxD <= 0) {
-        alert("Inserisci almeno durata e profondità massima.");
+        alert("Inserisci almeno la durata e la profondità massima.");
         return;
       }
 
       const diveData = {
         id: currentEditingDiveId || Date.now(),
         date: document.getElementById('val-date').value || new Date().toISOString().split('T')[0],
-        time: document.getElementById('val-time').value || "10:00",
+        time: document.getElementById('val-time').value || "12:00",
         duration: dur,
         depthMax: maxD,
         depthAvg: avgD,
@@ -1948,7 +2120,7 @@
         suit: document.getElementById('val-suit').innerText || "Umida 5mm",
         gf: document.getElementById('val-gf').innerText || "40 / 85",
         site: document.getElementById('val-site').value.trim() || "Y-40 The Deep Joy",
-        mapsUrl: document.getElementById('val-maps-url').value.trim(),
+        mapsUrl: document.getElementById('val-maps-url').value.trim() || "",
         buddy: document.getElementById('val-buddy').value.trim() || "Solo Diving",
         center: document.getElementById('val-center').value.trim() || "Privato / Da Riva",
         video: document.getElementById('val-video-link').value.trim() || "",
@@ -2019,7 +2191,10 @@
 
       ['diveType', 'gas', 'decoGas', 'tank', 'waterType', 'suit', 'gf'].forEach(k => {
         const el = document.getElementById(`val-${k}`);
-        if (el && d[k]) el.innerText = d[k];
+        if (el && d[k]) {
+          el.innerText = d[k];
+          el.classList.remove('empty');
+        }
       });
 
       if (d.signature && sigCtx) {
@@ -2043,12 +2218,13 @@
       }
     }
 
-    // 6. FILTRI E LOGBOOK
+    // 6. LOGBOOK E FILTRI MULTIPLI
     function resetLogFilters() {
       document.getElementById('filter-text').value = '';
       document.getElementById('filter-buddy').value = '';
       document.getElementById('filter-gas').value = '';
       document.getElementById('filter-depth').value = '';
+      document.getElementById('filter-duration').value = '';
       document.getElementById('filter-rating').value = '';
       renderLogbookFeed();
     }
@@ -2064,19 +2240,21 @@
       const fBuddy = document.getElementById('filter-buddy').value.toLowerCase().trim();
       const fGas = document.getElementById('filter-gas').value;
       const fDepth = parseFloat(document.getElementById('filter-depth').value) || 0;
+      const fDuration = parseFloat(document.getElementById('filter-duration').value) || 0;
       const fRating = parseInt(document.getElementById('filter-rating').value) || 0;
 
       const filtered = AppState.dives.filter(d => {
         if (fText && !((d.site || '').toLowerCase().includes(fText))) return false;
         if (fBuddy && !((d.buddy || '').toLowerCase().includes(fBuddy))) return false;
         if (fGas && !((d.gas || '').includes(fGas))) return false;
-        if (fDepth > 0 && (d.depthMax < fDepth)) return false;
-        if (fRating > 0 && ((d.rating || 0) < fRating)) return false;
+        if (fDepth > 0 && ((parseFloat(d.depthMax) || 0) < fDepth)) return false;
+        if (fDuration > 0 && ((parseFloat(d.duration) || 0) < fDuration)) return false;
+        if (fRating > 0 && ((d.rating || 8) < fRating)) return false;
         return true;
       });
 
       if (filtered.length === 0) {
-        feed.innerHTML = `<div style="text-align:center; padding: 30px 10px; color: var(--text-muted); font-size: 0.8rem;">Nessuna immersione corrisponde ai filtri impostati.</div>`;
+        feed.innerHTML = `<div style="text-align:center; padding: 30px 10px; color: var(--text-muted); font-size: 0.8rem;">Nessuna immersione corrisponde ai filtri selezionati.</div>`;
         return;
       }
 
@@ -2089,7 +2267,7 @@
               <span class="rating-badge">⭐️ ${d.rating || 8}/10</span>
             </div>
             <div style="font-size:0.7rem; color:var(--text-sub); margin-bottom:3px;">
-              ${d.date} ${d.time || ''} | Gas: <strong>${d.gas}</strong> | Buddy: <strong>${d.buddy || 'Solo'}</strong>
+              ${d.date} ${d.time || ''} | Gas: <strong>${d.gas}</strong> | Buddy: <strong>${d.buddy || 'Solo Diving'}</strong>
             </div>
             <div style="font-size:0.65rem; color:var(--text-muted);">
               Consumo: ${d.pStart || '--'}b ➔ ${d.pEnd || '--'}b (ΔP ${deltaP} bar) | CNS: <span style="color:var(--accent);">${d.cns || '0%'}</span> | Densità: ${d.density || '--'}
@@ -2104,10 +2282,10 @@
             ` : ''}
 
             ${d.video ? `
-              <div style="margin-top:4px;">
+              <div style="margin-top:6px;">
                 <a href="${d.video}" target="_blank" onclick="event.stopPropagation();" class="yt-badge-link">
-                  <svg style="width:13px; height:13px; fill:currentColor;" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 22c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 2c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/></svg>
-                  Guarda Video
+                  <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 22c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 2c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/></svg>
+                  Video YouTube
                 </a>
               </div>
             ` : ''}
@@ -2127,7 +2305,7 @@
               </div>
               <div>
                 <div class="stat-val" style="color:var(--accent);">${d.rmv ? d.rmv.replace(' L/min','') : '--'}</div>
-                <div class="stat-label">RMV</div>
+                <div class="stat-label">RMV L/m</div>
               </div>
               <div>
                 <div class="stat-val" style="color:var(--warning);">${d.rating || 8}</div>
@@ -2139,7 +2317,7 @@
       }).join('');
     }
 
-    // 7. PROFILO STATISTICHE & GRAFICI
+    // 7. PROFILO, GRAFICI E STATISTICHE INTERATTIVE
     function filterLogBy(type, val) {
       resetLogFilters();
       if (type === 'gas') {
@@ -2174,67 +2352,97 @@
         const avg10 = (sum10 / last10.length).toFixed(1);
 
         document.getElementById('kpi-rmv-avg-10').innerHTML = `${avg10}<span>L/m</span>`;
-        document.getElementById('kpi-rmv-avg-10-sub').innerText = `${last10.length} tuffi`;
+        document.getElementById('kpi-rmv-avg-10-sub').innerText = `${last10.length} ${last10.length === 1 ? 'tuffo' : 'tuffi'} considerati`;
         document.getElementById('kpi-rmv-avg-label').innerText = `Media 10: ${avg10} L/m`;
 
         const best = rmvEntries.reduce((p, c) => c.val < p.val ? c : p, rmvEntries[0]);
         const worst = rmvEntries.reduce((p, c) => c.val > p.val ? c : p, rmvEntries[0]);
 
-        bestRmvDiveId = best.id; worstRmvDiveId = worst.id;
+        bestRmvDiveId = best.id;
+        worstRmvDiveId = worst.id;
 
         document.getElementById('kpi-rmv-best').innerHTML = `${best.val.toFixed(1)}<span>L/m</span>`;
         document.getElementById('kpi-rmv-best-sub').innerText = `${best.site}`;
+
         document.getElementById('kpi-rmv-worst').innerHTML = `${worst.val.toFixed(1)}<span>L/m</span>`;
         document.getElementById('kpi-rmv-worst-sub').innerText = `${worst.site}`;
+      } else {
+        bestRmvDiveId = null;
+        worstRmvDiveId = null;
+        document.getElementById('kpi-rmv-avg-10').innerHTML = `--<span>L/m</span>`;
+        document.getElementById('kpi-rmv-avg-10-sub').innerText = `0 tuffi`;
+        document.getElementById('kpi-rmv-avg-label').innerText = `Media 10: -- L/m`;
+        document.getElementById('kpi-rmv-best').innerHTML = `--<span>L/m</span>`;
+        document.getElementById('kpi-rmv-worst').innerHTML = `--<span>L/m</span>`;
       }
 
       drawSacTrend();
       drawDepthAndDurationChart();
       drawCnsOtuChart();
       drawGasDistribution();
+      renderProfileStatsBadges();
+    }
 
-      // Statistiche Buddy Cliccabili
+    function renderProfileStatsBadges() {
+      // Buddy
       const buddyCounts = {};
       AppState.dives.forEach(d => {
         const b = d.buddy || "Solo Diving";
         buddyCounts[b] = (buddyCounts[b] || 0) + 1;
       });
-      document.getElementById('profile-buddy-list').innerHTML = Object.entries(buddyCounts).map(([buddy, count]) => `
-        <div class="stat-clickable-badge" onclick="filterLogBy('buddy', '${buddy}')">
-          <span>👤 ${buddy}</span><span class="count">${count}</span>
+      document.getElementById('buddyStatsList').innerHTML = Object.entries(buddyCounts).map(([buddy, count]) => `
+        <div class="stat-badge-chip" onclick="filterLogBy('buddy', '${buddy}')">
+          <span>👤 ${buddy}</span>
+          <span class="count-pill">${count}</span>
         </div>
       `).join('');
 
-      // Statistiche Luoghi Cliccabili
+      // Luoghi
       const siteCounts = {};
       AppState.dives.forEach(d => {
-        const s = d.site || "Sito non specificato";
+        const s = d.site || "Sito non indicato";
         siteCounts[s] = (siteCounts[s] || 0) + 1;
       });
-      document.getElementById('profile-site-list').innerHTML = Object.entries(siteCounts).map(([site, count]) => `
-        <div class="stat-clickable-badge" onclick="filterLogBy('site', '${site}')">
-          <span>📍 ${site}</span><span class="count">${count}</span>
+      document.getElementById('siteStatsList').innerHTML = Object.entries(siteCounts).map(([site, count]) => `
+        <div class="stat-badge-chip" onclick="filterLogBy('site', '${site}')">
+          <span>📍 ${site}</span>
+          <span class="count-pill">${count}</span>
         </div>
       `).join('');
     }
 
-    function jumpToBestRmvDive() { if (bestRmvDiveId) loadDiveForEdit(bestRmvDiveId); }
-    function jumpToWorstRmvDive() { if (worstRmvDiveId) loadDiveForEdit(worstRmvDiveId); }
+    function jumpToBestRmvDive() {
+      if (bestRmvDiveId) loadDiveForEdit(bestRmvDiveId);
+    }
+
+    function jumpToWorstRmvDive() {
+      if (worstRmvDiveId) loadDiveForEdit(worstRmvDiveId);
+    }
 
     function initSacTrendCanvasInteractivity() {
       const canvas = document.getElementById('sacTrendCanvas');
       if (!canvas) return;
+
       canvas.addEventListener('click', (e) => {
         if (!sacChartPoints || sacChartPoints.length === 0) return;
         const rect = canvas.getBoundingClientRect();
         const clickX = e.clientX - rect.left;
         const clickY = e.clientY - rect.top;
-        let closest = null, minDist = 24;
+
+        let closest = null;
+        let minDist = 24;
+
         sacChartPoints.forEach(pt => {
           const dist = Math.hypot(pt.x - clickX, pt.y - clickY);
-          if (dist < minDist) { minDist = dist; closest = pt; }
+          if (dist < minDist) {
+            minDist = dist;
+            closest = pt;
+          }
         });
-        if (closest && closest.id) loadDiveForEdit(closest.id);
+
+        if (closest && closest.id) {
+          loadDiveForEdit(closest.id);
+        }
       });
     }
 
@@ -2247,31 +2455,56 @@
       const w = rect.width || 360;
       const h = 150;
 
-      canvas.width = w * dpr; canvas.height = h * dpr;
-      ctx.scale(dpr, dpr); ctx.clearRect(0, 0, w, h);
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
       sacChartPoints = [];
 
       const divesWithRmv = AppState.dives
         .map(d => ({ id: d.id, val: parseFloat(d.rmv), num: d.num, site: d.site }))
         .filter(d => !isNaN(d.val) && d.val > 0);
 
-      if (divesWithRmv.length === 0) return;
+      if (divesWithRmv.length === 0) {
+        ctx.fillStyle = '#858da4';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText("Nessun dato RMV registrato", w / 2, h / 2);
+        return;
+      }
 
       const vals = divesWithRmv.map(d => d.val);
-      const minVal = Math.min(...vals), maxVal = Math.max(...vals);
-      const maxR = Math.max(maxVal * 1.15, 25), minR = Math.max(0, Math.min(minVal * 0.85, 10));
+      const minVal = Math.min(...vals);
+      const maxVal = Math.max(...vals);
+
+      const maxR = Math.max(maxVal * 1.15, 25);
+      const minR = Math.max(0, Math.min(minVal * 0.85, 10));
 
       const padL = 30, padR = 20, padT = 24, padB = 22;
-      const plotW = w - padL - padR, plotH = h - padT - padB;
+      const plotW = w - padL - padR;
+      const plotH = h - padT - padB;
 
-      ctx.strokeStyle = '#202434'; ctx.lineWidth = 1;
+      ctx.strokeStyle = '#202434';
+      ctx.lineWidth = 1;
       [minR, (minR + maxR) / 2, maxR].forEach(v => {
         const y = padT + (1 - ((v - minR) / (maxR - minR || 1))) * plotH;
-        ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(w - padR, y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#858da4';
+        ctx.font = '8px monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText(`${Math.round(v)}`, padL - 5, y + 3);
       });
 
       if (divesWithRmv.length > 1) {
-        ctx.beginPath(); ctx.strokeStyle = '#ff8c00'; ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.strokeStyle = '#ff8c00';
+        ctx.lineWidth = 2;
+
         divesWithRmv.forEach((d, idx) => {
           const x = padL + (idx / (divesWithRmv.length - 1)) * plotW;
           const y = padT + (1 - ((d.val - minR) / (maxR - minR || 1))) * plotH;
@@ -2283,33 +2516,101 @@
       divesWithRmv.forEach((d, idx) => {
         const x = divesWithRmv.length === 1 ? (padL + plotW / 2) : (padL + (idx / (divesWithRmv.length - 1)) * plotW);
         const y = padT + (1 - ((d.val - minR) / (maxR - minR || 1))) * plotH;
-        sacChartPoints.push({ x, y, id: d.id });
+
+        const isBest = (d.val === minVal);
+        const isWorst = (d.val === maxVal && !isBest);
+
+        sacChartPoints.push({ x, y, id: d.id, val: d.val, isBest, isWorst });
+
         ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fillStyle = d.val === minVal ? '#2ed573' : (d.val === maxVal ? '#ff4757' : '#fff');
-        ctx.fill();
+        if (isBest) {
+          ctx.arc(x, y, 6, 0, Math.PI * 2);
+          ctx.fillStyle = '#2ed573';
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = '#fff';
+          ctx.stroke();
+
+          ctx.fillStyle = '#2ed573';
+          ctx.font = 'bold 8px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`MIN ${d.val.toFixed(1)}`, x, y - 8);
+        } else if (isWorst) {
+          ctx.arc(x, y, 6, 0, Math.PI * 2);
+          ctx.fillStyle = '#ff4757';
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = '#fff';
+          ctx.stroke();
+
+          ctx.fillStyle = '#ff4757';
+          ctx.font = 'bold 8px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`MAX ${d.val.toFixed(1)}`, x, y - 8);
+        } else {
+          ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+          ctx.fillStyle = '#fff';
+          ctx.fill();
+        }
       });
     }
 
     function drawDepthAndDurationChart() {
       const canvas = document.getElementById('depthDurationCanvas');
-      if (!canvas || AppState.dives.length === 0) return;
+      if (!canvas) return;
       const ctx = canvas.getContext('2d');
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
-      const w = rect.width || 360, h = 140;
+      const w = rect.width || 360;
+      const h = 140;
 
-      canvas.width = w * dpr; canvas.height = h * dpr;
-      ctx.scale(dpr, dpr); ctx.clearRect(0, 0, w, h);
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      if (AppState.dives.length === 0) {
+        ctx.fillStyle = '#858da4';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText("Nessuna immersione per il profilo", w / 2, h / 2);
+        return;
+      }
 
       const padL = 28, padR = 28, padT = 20, padB = 22;
-      const plotW = w - padL - padR, plotH = h - padT - padB;
+      const plotW = w - padL - padR;
+      const plotH = h - padT - padB;
+
       const depths = AppState.dives.map(d => parseFloat(d.depthMax) || 0);
       const durations = AppState.dives.map(d => parseFloat(d.duration) || 0);
+
       const maxDepth = Math.max(30, Math.max(...depths) * 1.15);
       const maxDur = Math.max(60, Math.max(...durations) * 1.15);
 
-      ctx.beginPath(); ctx.strokeStyle = '#ff8c00'; ctx.lineWidth = 1.8;
+      ctx.strokeStyle = '#202434';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 3; i++) {
+        const y = padT + (plotH / 3) * i;
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(w - padR, y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = '#00d2d3';
+      ctx.font = '8px monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(`${Math.round(maxDepth)}m`, padL - 4, padT + 4);
+      ctx.fillText(`0m`, padL - 4, padT + plotH + 3);
+
+      ctx.fillStyle = '#ff8c00';
+      ctx.textAlign = 'left';
+      ctx.fillText(`${Math.round(maxDur)}'`, w - padR + 4, padT + 4);
+      ctx.fillText(`0'`, w - padR + 4, padT + plotH + 3);
+
+      ctx.beginPath();
+      ctx.strokeStyle = '#ff8c00';
+      ctx.lineWidth = 1.8;
       AppState.dives.forEach((d, idx) => {
         const x = padL + (AppState.dives.length === 1 ? plotW / 2 : (idx / (AppState.dives.length - 1)) * plotW);
         const y = padT + (1 - (d.duration / maxDur)) * plotH;
@@ -2317,57 +2618,114 @@
       });
       ctx.stroke();
 
-      ctx.beginPath(); ctx.strokeStyle = '#00d2d3'; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.strokeStyle = '#00d2d3';
+      ctx.lineWidth = 2;
       AppState.dives.forEach((d, idx) => {
         const x = padL + (AppState.dives.length === 1 ? plotW / 2 : (idx / (AppState.dives.length - 1)) * plotW);
         const y = padT + (1 - (d.depthMax / maxDepth)) * plotH;
         if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       });
       ctx.stroke();
+
+      AppState.dives.forEach((d, idx) => {
+        const x = padL + (AppState.dives.length === 1 ? plotW / 2 : (idx / (AppState.dives.length - 1)) * plotW);
+        const yDepth = padT + (1 - (d.depthMax / maxDepth)) * plotH;
+        ctx.beginPath();
+        ctx.arc(x, yDepth, 3, 0, Math.PI * 2);
+        ctx.fillStyle = '#00d2d3';
+        ctx.fill();
+
+        ctx.fillStyle = '#858da4';
+        ctx.font = '8px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(`#${d.num}`, x, h - 8);
+      });
     }
 
     function drawCnsOtuChart() {
       const canvas = document.getElementById('cnsOtuCanvas');
-      if (!canvas || AppState.dives.length === 0) return;
+      if (!canvas) return;
       const ctx = canvas.getContext('2d');
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
-      const w = rect.width || 360, h = 130;
+      const w = rect.width || 360;
+      const h = 130;
 
-      canvas.width = w * dpr; canvas.height = h * dpr;
-      ctx.scale(dpr, dpr); ctx.clearRect(0, 0, w, h);
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      if (AppState.dives.length === 0) {
+        ctx.fillStyle = '#858da4';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText("Nessun dato tossicità registrato", w / 2, h / 2);
+        return;
+      }
 
       const padL = 28, padR = 15, padT = 16, padB = 22;
-      const plotW = w - padL - padR, plotH = h - padT - padB;
+      const plotW = w - padL - padR;
+      const plotH = h - padT - padB;
+
       const cnsVals = AppState.dives.map(d => parseFloat(d.cns) || 0);
       const otuVals = AppState.dives.map(d => parseFloat(d.otu) || 0);
       const maxVal = Math.max(100, Math.max(...cnsVals, ...otuVals) * 1.15);
+
+      const y100 = padT + (1 - (100 / maxVal)) * plotH;
+      ctx.strokeStyle = 'rgba(255, 71, 87, 0.4)';
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(padL, y100);
+      ctx.lineTo(w - padR, y100);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = 'rgba(255, 71, 87, 0.8)';
+      ctx.font = '7px monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText('100%', padL - 4, y100 + 2);
 
       const count = AppState.dives.length;
       const groupW = plotW / count;
       const barW = Math.max(4, Math.min(14, (groupW / 2) - 3));
 
       AppState.dives.forEach((d, idx) => {
-        const cns = parseFloat(d.cns) || 0, otu = parseFloat(d.otu) || 0;
+        const cns = parseFloat(d.cns) || 0;
+        const otu = parseFloat(d.otu) || 0;
         const centerX = padL + (idx * groupW) + (groupW / 2);
-        const hCns = (cns / maxVal) * plotH, hOtu = (otu / maxVal) * plotH;
+
+        const hCns = (cns / maxVal) * plotH;
+        const hOtu = (otu / maxVal) * plotH;
 
         ctx.fillStyle = cns > 80 ? '#ff4757' : 'rgba(255, 71, 87, 0.85)';
         ctx.fillRect(centerX - barW - 1, padT + plotH - hCns, barW, hCns);
 
         ctx.fillStyle = '#ff8c00';
         ctx.fillRect(centerX + 1, padT + plotH - hOtu, barW, hOtu);
+
+        ctx.fillStyle = '#858da4';
+        ctx.font = '8px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(`#${d.num}`, centerX, h - 8);
       });
     }
 
     function drawGasDistribution() {
       const container = document.getElementById('gasDistributionBars');
-      const badgeContainer = document.getElementById('profile-gas-badges');
-      if (!container || AppState.dives.length === 0) return;
+      const badgeList = document.getElementById('gasBadgesList');
+      if (!container || !badgeList) return;
+
+      if (AppState.dives.length === 0) {
+        container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.75rem;">Nessuna miscela archiviata.</div>`;
+        badgeList.innerHTML = '';
+        return;
+      }
 
       const counts = {};
       AppState.dives.forEach(d => {
-        const g = d.gas || "Aria (21/0)";
+        let g = d.gas || "Aria (21/0)";
         counts[g] = (counts[g] || 0) + 1;
       });
 
@@ -2387,9 +2745,10 @@
         `;
       }).join('');
 
-      badgeContainer.innerHTML = Object.entries(counts).map(([gas, count]) => `
-        <div class="stat-clickable-badge" onclick="filterLogBy('gas', '${gas}')">
-          <span>${gas}</span><span class="count">${count}</span>
+      badgeList.innerHTML = Object.entries(counts).map(([gas, count]) => `
+        <div class="stat-badge-chip" onclick="filterLogBy('gas', '${gas}')">
+          <span>💨 ${gas}</span>
+          <span class="count-pill">${count}</span>
         </div>
       `).join('');
     }
@@ -2438,15 +2797,21 @@
         document.getElementById('cert-num').value = c.num;
         document.getElementById('cert-date').value = c.date;
         tempCertImageBase64 = c.img || "";
-        if (c.img) { imgEl.src = c.img; imgEl.style.display = 'block'; }
-        else { imgEl.style.display = 'none'; }
+        if (c.img) {
+          imgEl.src = c.img;
+          imgEl.style.display = 'block';
+        } else {
+          imgEl.style.display = 'none';
+        }
         delBtn.style.display = 'flex';
       } else {
+        const now = new Date();
+        const curDate = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
         document.getElementById('cert-edit-id').value = "";
         document.getElementById('cert-org').value = "";
         document.getElementById('cert-title').value = "";
         document.getElementById('cert-num').value = "";
-        document.getElementById('cert-date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('cert-date').value = curDate;
         tempCertImageBase64 = "";
         imgEl.style.display = 'none';
         delBtn.style.display = 'none';
@@ -2477,7 +2842,9 @@
       const org = document.getElementById('cert-org').value.trim() || "SNSI";
       const title = document.getElementById('cert-title').value.trim() || "Open Water";
       const num = document.getElementById('cert-num').value.trim();
-      const date = document.getElementById('cert-date').value || new Date().toISOString().split('T')[0];
+      const now = new Date();
+      const defaultDate = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+      const date = document.getElementById('cert-date').value || defaultDate;
 
       if (id) {
         const c = AppState.certs.find(x => x.id == id);
@@ -2486,7 +2853,14 @@
           if (tempCertImageBase64) c.img = tempCertImageBase64;
         }
       } else {
-        AppState.certs.push({ id: Date.now(), org, title, num, date, img: tempCertImageBase64 });
+        AppState.certs.push({
+          id: Date.now(),
+          org,
+          title,
+          num,
+          date,
+          img: tempCertImageBase64
+        });
       }
 
       saveStorage();
@@ -2506,52 +2880,7 @@
       }
     }
 
-    // 9. FIRMA CANVAS
-    function initSignaturePad() {
-      sigCanvas = document.getElementById('signatureCanvas');
-      if (!sigCanvas) return;
-      sigCtx = sigCanvas.getContext('2d');
-      resizeSigCanvas();
-
-      const start = (e) => {
-        isDrawing = true;
-        const pos = getSigPos(e);
-        sigCtx.beginPath(); sigCtx.moveTo(pos.x, pos.y);
-      };
-      const move = (e) => {
-        if (!isDrawing) return;
-        const pos = getSigPos(e);
-        sigCtx.lineTo(pos.x, pos.y);
-        sigCtx.strokeStyle = '#00d2d3';
-        sigCtx.lineWidth = 2;
-        sigCtx.stroke();
-      };
-      const stop = () => { isDrawing = false; };
-
-      sigCanvas.addEventListener('mousedown', start);
-      sigCanvas.addEventListener('mousemove', move);
-      window.addEventListener('mouseup', stop);
-      sigCanvas.addEventListener('touchstart', (e) => { start(e.touches[0]); e.preventDefault(); }, {passive: false});
-      sigCanvas.addEventListener('touchmove', (e) => { move(e.touches[0]); e.preventDefault(); }, {passive: false});
-      sigCanvas.addEventListener('touchend', stop);
-    }
-
-    function resizeSigCanvas() {
-      if (!sigCanvas) return;
-      const rect = sigCanvas.getBoundingClientRect();
-      sigCanvas.width = rect.width; sigCanvas.height = 80;
-    }
-
-    function getSigPos(e) {
-      const rect = sigCanvas.getBoundingClientRect();
-      return { x: (e.clientX || e.pageX) - rect.left, y: (e.clientY || e.pageY) - rect.top };
-    }
-
-    function clearSignature() {
-      if (sigCtx && sigCanvas) sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
-    }
-
-    // 10. TIMERS & TABS
+    // 9. TIMERS & TABS
     function initHomeTimers() {
       updateHomeIntervalTimers();
       if (homeTimerInterval) clearInterval(homeTimerInterval);
@@ -2560,33 +2889,81 @@
 
     function updateHomeIntervalTimers() {
       const noflyEl = document.getElementById('timer-nofly-display');
+      const noflySub = document.getElementById('timer-nofly-sub');
       const siEl = document.getElementById('timer-si-display');
+      const siSub = document.getElementById('timer-si-sub');
+      const ruleEl = document.getElementById('timer-nofly-rule');
+
       if (AppState.dives.length === 0) {
         noflyEl.innerText = "00:00:00";
+        noflyEl.className = "timer-val cleared";
+        noflySub.innerText = "Nessun azoto residuo";
         siEl.innerText = "00:00:00";
+        siEl.className = "timer-val cleared";
+        siSub.innerText = "Nessun tuffo registrato";
         return;
       }
+
       const last = AppState.dives[AppState.dives.length - 1];
-      const startTime = new Date(`${last.date || "2026-01-01"}T${last.time || "12:00"}:00`).getTime();
-      const surfaceTime = startTime + ((parseFloat(last.duration) || 45) * 60000);
+      const now = new Date();
+      const defaultDate = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+      const diveDate = `${last.date || defaultDate}T${last.time || "12:00"}:00`;
+      const startTime = new Date(diveDate).getTime();
+      const durationMs = (parseFloat(last.duration) || 45) * 60000;
+      const surfaceTime = startTime + durationMs;
       const nowMs = Date.now();
 
-      const elapsed = nowMs - surfaceTime;
-      siEl.innerText = elapsed > 0 ? formatTimeMs(elapsed) : "00:00:00";
+      const elapsedSiMs = nowMs - surfaceTime;
+      if (elapsedSiMs <= 0 || isNaN(elapsedSiMs)) {
+        siEl.innerText = "00:00:00";
+        siEl.className = "timer-val";
+        siSub.innerText = "Immersione in corso";
+      } else {
+        siEl.innerText = formatTimeMs(elapsedSiMs);
+        const elapsedMin = Math.floor(elapsedSiMs / 60000);
+        if (elapsedMin < 60) {
+          siEl.className = "timer-val";
+          siSub.innerText = `SI < 1h. Tessuti carichi per eventuale ripetitiva.`;
+        } else if (elapsedMin < 720) {
+          siEl.className = "timer-val active-time";
+          siSub.innerText = `Intervallo attivo per ripetitiva.`;
+        } else {
+          siEl.className = "timer-val cleared";
+          siSub.innerText = `Desaturazione completata (>12h).`;
+        }
+      }
 
-      const remainingNoFly = (surfaceTime + (18 * 3600000)) - nowMs;
-      noflyEl.innerText = remainingNoFly > 0 ? formatTimeMs(remainingNoFly) : "00:00:00";
+      let noFlyHours = 12;
+      let label = "DAN: Singola NDL (12h)";
+      const isDeco = (last.diveType && last.diveType.includes("Deco")) || (last.depthMax > 30);
+      if (isDeco) {
+        noFlyHours = 24;
+        label = "DAN: Deco Profile (24h)";
+      } else if (AppState.dives.length >= 2) {
+        noFlyHours = 18;
+        label = "DAN: Ripetitiva (18h)";
+      }
+
+      ruleEl.innerText = label;
+      const remainingNoFly = (surfaceTime + noFlyHours * 3600000) - nowMs;
+
+      if (remainingNoFly <= 0 || isNaN(remainingNoFly)) {
+        noflyEl.innerText = "00:00:00";
+        noflyEl.className = "timer-val cleared";
+        noflySub.innerText = "Desaturazione completata. Volo autorizzato.";
+      } else {
+        noflyEl.innerText = formatTimeMs(remainingNoFly);
+        noflyEl.className = "timer-val";
+        noflySub.innerText = `Attesa minima ${noFlyHours}h da emersione.`;
+      }
     }
 
     function formatTimeMs(ms) {
       const sec = Math.max(0, Math.floor(ms / 1000));
-      return `${String(Math.floor(sec / 3600)).padStart(2,'0')}:${String(Math.floor((sec % 3600)/60)).padStart(2,'0')}:${String(sec % 60).padStart(2,'0')}`;
-    }
-
-    function testVideoLink() {
-      const val = document.getElementById('val-video-link').value.trim();
-      if (!val) { alert("Inserisci prima un link YouTube."); return; }
-      window.open(val, '_blank');
+      const h = String(Math.floor(sec / 3600)).padStart(2, '0');
+      const m = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return `${h}:${m}:${s}`;
     }
 
     function switchMainTab(tabKey, btn) {
@@ -2603,66 +2980,122 @@
       if (btn) btn.classList.add('active');
 
       const header = document.getElementById('global-header');
-      if (header) header.style.display = (tabKey === 'home') ? 'none' : 'flex';
+      if (header) {
+        header.style.display = (tabKey === 'home') ? 'none' : 'flex';
+      }
 
-      const titles = { home: "Home", plan: "Planner", record: "Registra", log: "Logbook", profile: "Profilo" };
-      document.getElementById('global-view-name').innerText = titles[tabKey] || "Home";
+      const titles = {
+        home: "Home",
+        plan: "Planner",
+        record: currentEditingDiveId ? "Modifica Tuffo" : "Nuova Immersione",
+        log: "Logbook Ufficiale",
+        profile: "Profilo Subacqueo"
+      };
+      const titleEl = document.getElementById('global-view-name');
+      if (titleEl) titleEl.innerText = titles[tabKey] || "Home";
 
       if (tabKey === 'home') { updateHomeIntervalTimers(); renderHomeCerts(); }
-      if (tabKey === 'plan') runPlannerEngine();
+      if (tabKey === 'plan') { runPlannerEngine(); }
       if (tabKey === 'log') renderLogbookFeed();
       if (tabKey === 'profile') renderProfileData();
-      if (tabKey === 'record') { resizeSigCanvas(); if (!currentEditingDiveId) syncCurrentDateTime(); }
+      if (tabKey === 'record') {
+        resizeSigCanvas();
+        if (!currentEditingDiveId) syncCurrentDateTime();
+      }
     }
 
     function startNewDiveMode(btn = null) {
-      if (!checkUserGate()) { alert("Inserisci il tuo nome per cominciare."); return; }
+      if (!checkUserGate()) {
+        alert("Inserisci il tuo nome per cominciare.");
+        return;
+      }
       cancelEditMode();
-      switchMainTab('record', btn || document.querySelectorAll('.nav-btn')[2]);
+      syncCurrentDateTime();
+      const targetBtn = btn || document.querySelectorAll('.nav-btn')[2];
+      switchMainTab('record', targetBtn);
     }
 
+    // 10. MODALI DROPDOWN & BACKUP
     function openDropdownSheet(key) {
       currentSheetCategory = key;
-      document.getElementById('sheet-title').innerText = "Seleziona Opzione";
-      const container = document.getElementById('sheet-list');
-      container.innerHTML = '';
-      let list = AppState.options[key] || [];
-      if (key === 'planGas') list = AppState.options.gas;
-      if (key === 'planDecoGas') list = ["Stesso Gas Fondo", ...AppState.options.decoGas];
-      if (key === 'planTank') list = AppState.options.tank;
-      if (key === 'planGf') list = AppState.options.gf;
+      const titles = {
+        diveType: "Tipologia Profilo",
+        gas: "Miscela Principale",
+        planGas: "Miscela Gas Fondo (Planner)",
+        planDecoGas: "Gas Decompressivo/Sosta (Planner)",
+        decoGas: "Gas Decompressivo",
+        tank: "Volume & Materiale Bombola",
+        planTank: "Bombola (Planner)",
+        waterType: "Tipologia Acqua",
+        suit: "Muta Protettiva",
+        gf: "Gradient Factors",
+        planGf: "Gradient Factors (Planner)"
+      };
 
-      list.forEach(item => {
-        const row = document.createElement('div');
-        row.className = 'sheet-row';
-        row.innerHTML = `<span style="font-weight:600; color:#fff;">${item}</span>`;
-        row.onclick = () => selectSheetOption(item);
-        container.appendChild(row);
-      });
+      document.getElementById('sheet-title').innerText = titles[key] || "Seleziona";
+      renderSheetList();
+      document.getElementById('sheet-new-val').value = '';
       document.getElementById('sheet-overlay').classList.add('active');
-    }
-
-    function selectSheetOption(val) {
-      const el = document.getElementById(`val-${currentSheetCategory}`);
-      if (el) el.innerText = val;
-      closeDropdownSheet();
-      if (currentSheetCategory.startsWith('plan')) runPlannerEngine();
-      else runLiveCalculations();
     }
 
     function closeDropdownSheet(e) {
       if (e && e.target !== document.getElementById('sheet-overlay')) return;
       document.getElementById('sheet-overlay').classList.remove('active');
+      currentSheetCategory = null;
+    }
+
+    function getCategoryOptionList(cat) {
+      if (cat === 'planGas') return AppState.options.gas;
+      if (cat === 'planDecoGas') return ["Stesso Gas Fondo", ...AppState.options.decoGas];
+      if (cat === 'planTank') return AppState.options.tank;
+      if (cat === 'planGf') return AppState.options.gf;
+      return AppState.options[cat] || [];
+    }
+
+    function renderSheetList() {
+      const container = document.getElementById('sheet-list');
+      container.innerHTML = '';
+      const list = getCategoryOptionList(currentSheetCategory);
+      const targetEl = document.getElementById(`val-${currentSheetCategory}`);
+      const currentSelected = targetEl ? targetEl.innerText : '';
+
+      list.forEach(item => {
+        const row = document.createElement('div');
+        row.className = `sheet-row ${item === currentSelected ? 'selected' : ''}`;
+        row.innerHTML = `
+          <span style="font-weight:600; color:#fff;">${item}</span>
+          <button style="background:none; border:none; color:var(--text-muted);" onclick="deleteOption('${item}', event)">✕</button>
+        `;
+        row.onclick = () => selectSheetOption(item);
+        container.appendChild(row);
+      });
+    }
+
+    function selectSheetOption(val) {
+      const el = document.getElementById(`val-${currentSheetCategory}`);
+      if (el) {
+        el.innerText = val;
+        el.classList.remove('empty');
+      }
+      document.getElementById('sheet-overlay').classList.remove('active');
+
+      if (currentSheetCategory && currentSheetCategory.startsWith('plan')) {
+        runPlannerEngine();
+      } else {
+        runLiveCalculations();
+      }
     }
 
     function addNewOption() {
       const val = document.getElementById('sheet-new-val').value.trim();
       if (!val) return;
+
       let key = currentSheetCategory;
       if (key === 'planGas') key = 'gas';
       if (key === 'planDecoGas') key = 'decoGas';
       if (key === 'planTank') key = 'tank';
       if (key === 'planGf') key = 'gf';
+
       if (AppState.options[key] && !AppState.options[key].includes(val)) {
         AppState.options[key].push(val);
         saveStorage();
@@ -2670,13 +3103,52 @@
       selectSheetOption(val);
     }
 
-    function exportDataJson() {
-      const backupPayload = { ...AppState, userName: localStorage.getItem('sucapro_user_fullname') || "" };
-      const blob = new Blob([JSON.stringify(backupPayload, null, 2)], { type: "application/json" });
+    function deleteOption(val, e) {
+      e.stopPropagation();
+      let key = currentSheetCategory;
+      if (key === 'planGas') key = 'gas';
+      if (key === 'planDecoGas') key = 'decoGas';
+      if (key === 'planTank') key = 'tank';
+      if (key === 'planGf') key = 'gf';
+
+      if (AppState.options[key]) {
+        AppState.options[key] = AppState.options[key].filter(x => x !== val);
+        saveStorage();
+        renderSheetList();
+      }
+    }
+
+    async function exportDataJson() {
+      const now = new Date();
+      const fileName = `sucapro_backup_${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}.json`;
+      const backupPayload = {
+        ...AppState,
+        userName: localStorage.getItem('sucapro_user_fullname') || ""
+      };
+      const jsonContent = JSON.stringify(backupPayload, null, 2);
+
+      if (window.showSaveFilePicker) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: fileName,
+            types: [{ description: 'JSON Backup', accept: { 'application/json': ['.json'] } }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(jsonContent);
+          await writable.close();
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') return;
+        }
+      }
+
+      const blob = new Blob([jsonContent], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `sucapro_backup_${new Date().toISOString().split('T')[0]}.json`;
+      a.href = url;
+      a.download = fileName;
       a.click();
+      URL.revokeObjectURL(url);
     }
 
     function importDataJson(e) {
@@ -2689,7 +3161,7 @@
           if (parsed.dives) AppState.dives = parsed.dives;
           if (parsed.certs) AppState.certs = parsed.certs;
           if (parsed.options) AppState.options = parsed.options;
-          if (parsed.userName) {
+          if (parsed.userName !== undefined) {
             localStorage.setItem('sucapro_user_fullname', parsed.userName);
             loadUserName();
           }
@@ -2698,8 +3170,11 @@
           sortDivesChronologically();
           updateCounter();
           renderHomeCerts();
-          alert("Backup ripristinato.");
-        } catch(err) { alert("File non valido."); }
+          runPlannerEngine();
+          alert("Backup ripristinato con successo.");
+        } catch(err) {
+          alert("File JSON non valido.");
+        }
       };
       reader.readAsText(file);
     }
