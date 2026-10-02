@@ -2,11 +2,13 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#090a0f">
   <title>Sucapro</title>
 
-  <!-- Icona e PWA Standalone -->
   <link rel="icon" type="image/jpeg" href="https://i.postimg.cc/LXc6SHfv/1790974080159.jpg">
   <link rel="apple-touch-icon" href="https://i.postimg.cc/LXc6SHfv/1790974080159.jpg">
   <meta name="mobile-web-app-capable" content="yes">
@@ -120,10 +122,7 @@
       -webkit-overflow-scrolling: touch;
     }
     .tab-content.active { display: block; }
-
-    #tab-home.active {
-      overflow-y: hidden;
-    }
+    #tab-home.active { overflow-y: hidden; }
 
     .home-hero-banner {
       display: flex;
@@ -200,9 +199,7 @@
       padding: 1px 0;
       width: 100%;
     }
-    .home-user-name-input:focus {
-      border-bottom-color: var(--accent);
-    }
+    .home-user-name-input:focus { border-bottom-color: var(--accent); }
     .home-hero-bottom-row {
       display: flex;
       justify-content: flex-end;
@@ -504,6 +501,21 @@
     }
     .stat-val { font-size: 0.82rem; font-weight: 800; color: #fff; }
     .stat-label { font-size: 0.55rem; color: var(--text-sub); text-transform: uppercase; }
+
+    .yt-badge-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255, 71, 87, 0.15);
+      border: 1px solid var(--danger);
+      color: #ff6b81;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-decoration: none;
+      margin-top: 6px;
+    }
 
     .profile-grid-2 {
       display: grid;
@@ -853,7 +865,7 @@
         <button type="button" class="btn-icon" style="height:28px; width:28px; font-size:0.75rem;" onclick="cancelEditMode()">✕</button>
       </div>
 
-      <form id="main-dive-form" onsubmit="submitDive(event)">
+      <div id="main-dive-form-container">
         <input type="hidden" id="editing-dive-id" value="">
 
         <div class="panel">
@@ -972,7 +984,7 @@
             </div>
           </div>
 
-          <div class="form-group" style="margin-bottom:0;">
+          <div class="form-group">
             <span class="form-label">Coordinate GPS</span>
             <div style="display:flex; gap:6px;">
               <input type="text" id="val-gps" class="form-control" placeholder="44.3647° N, 8.6833° E">
@@ -980,9 +992,13 @@
             </div>
           </div>
 
+          <!-- CAMPO YOUTUBE DIRETTO -->
           <div class="form-group" style="margin-bottom:0; margin-top:8px;">
-            <span class="form-label">Video YouTube (URL)</span>
-            <input type="url" id="val-video-link" class="form-control" placeholder="https://youtu.be/...">
+            <span class="form-label">Video YouTube (Link / URL)</span>
+            <div style="display:flex; gap:6px;">
+              <input type="url" id="val-video-link" class="form-control" placeholder="https://youtu.be/... o https://www.youtube.com/watch?v=...">
+              <button type="button" class="btn-icon" style="color:var(--danger);" onclick="testVideoLink()" title="Verifica link video">▶</button>
+            </div>
           </div>
         </div>
 
@@ -990,22 +1006,22 @@
           <div class="grid-3">
             <div class="form-group">
               <span class="form-label">Data</span>
-              <input type="date" id="val-date" class="form-control" required>
+              <input type="date" id="val-date" class="form-control">
             </div>
             <div class="form-group">
               <span class="form-label">Ora Inizio</span>
-              <input type="time" id="val-time" class="form-control" required>
+              <input type="time" id="val-time" class="form-control">
             </div>
             <div class="form-group">
               <span class="form-label">Durata (min)</span>
-              <input type="number" id="val-duration" class="form-control" placeholder="45" value="45" oninput="runLiveCalculations()" required>
+              <input type="number" id="val-duration" class="form-control" placeholder="45" value="45" oninput="runLiveCalculations()">
             </div>
           </div>
 
           <div class="grid-2">
             <div class="form-group">
               <span class="form-label">Prof. Massima (m)</span>
-              <input type="number" step="0.1" id="val-depth-max" class="form-control" placeholder="25.0" value="20.0" oninput="runLiveCalculations()" required>
+              <input type="number" step="0.1" id="val-depth-max" class="form-control" placeholder="25.0" value="20.0" oninput="runLiveCalculations()">
             </div>
             <div class="form-group">
               <span class="form-label">Prof. Media (m)</span>
@@ -1056,10 +1072,10 @@
         </div>
 
         <div style="display:flex; gap:8px;">
-          <button type="submit" class="btn-action" id="btn-submit-main" style="flex:1;">REGISTRA NEL LOGBOOK</button>
+          <button type="button" class="btn-action" id="btn-submit-main" style="flex:1;" onclick="executeSaveDive()">REGISTRA NEL LOGBOOK</button>
           <button type="button" id="btn-delete-editing" class="btn-icon" style="color:var(--danger); display:none;" onclick="deleteDiveCurrentlyEditing()">🗑</button>
         </div>
-      </form>
+      </div>
     </div>
 
     <!-- TAB LOGBOOK -->
@@ -1100,9 +1116,10 @@
         </div>
       </div>
 
+      <!-- GRAFICO 1: TREND RMV -->
       <div class="panel">
         <div class="panel-header">
-          <span>Trend Consumo RMV</span>
+          <span>1. Trend Consumo RMV (Tocca i punti per aprire il tuffo)</span>
           <span id="kpi-rmv-avg-label">Media 10: -- L/m</span>
         </div>
         <div class="chart-container">
@@ -1115,12 +1132,43 @@
         </div>
       </div>
 
+      <!-- GRAFICO 2: PROFILO CRONOLOGICO PROFONDITA & DURATA -->
       <div class="panel">
         <div class="panel-header">
-          <span>Ripartizione Fasce di Profondità</span>
+          <span>2. Profilo Cronologico: Quota Max (m) & Durata (min)</span>
+          <span style="color:var(--temp-line);">Profondità / Minuti</span>
         </div>
         <div class="chart-container">
-          <canvas id="depthDistCanvas" height="130"></canvas>
+          <canvas id="depthDurationCanvas" height="140"></canvas>
+        </div>
+        <div style="display:flex; justify-content:center; gap:14px; margin-top:6px; font-size:0.62rem; font-weight:700;">
+          <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; width:10px; height:3px; background:var(--temp-line);"></span>Quota Max (m)</div>
+          <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; width:10px; height:3px; background:var(--accent);"></span>Durata Tuffo (min)</div>
+        </div>
+      </div>
+
+      <!-- GRAFICO 3: ESPOSIZIONE CNS & OTU -->
+      <div class="panel">
+        <div class="panel-header">
+          <span>3. Tossicità O₂: CNS Clock (%) & OTU Accumulate</span>
+          <span style="color:var(--warning);">Fisiologia Gas</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="cnsOtuCanvas" height="130"></canvas>
+        </div>
+        <div style="display:flex; justify-content:center; gap:14px; margin-top:6px; font-size:0.62rem; font-weight:700;">
+          <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; width:8px; height:8px; background:var(--danger); border-radius:2px;"></span>CNS Clock (%)</div>
+          <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; width:8px; height:8px; background:var(--accent); border-radius:2px;"></span>OTU</div>
+        </div>
+      </div>
+
+      <!-- GRAFICO 4: DISTRIBUZIONE MISCELE -->
+      <div class="panel">
+        <div class="panel-header">
+          <span>4. Ripartizione Miscele Respirate (Aria / EAN / Trimix)</span>
+        </div>
+        <div class="chart-container" style="padding: 10px 12px; background: var(--surface-card);">
+          <div id="gasDistributionBars" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
       </div>
     </div>
@@ -1234,7 +1282,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       loadStorage();
       loadUserName();
-      resetFormToDefaults();
+      syncCurrentDateTime();
       initSignaturePad();
       initSacTrendCanvasInteractivity();
       renderHomeCerts();
@@ -1246,19 +1294,18 @@
       window.addEventListener('resize', resizeSigCanvas);
     });
 
-    function getNowDateString() {
+    function syncCurrentDateTime() {
       const now = new Date();
-      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    }
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
 
-    function getNowTimeString() {
-      const now = new Date();
-      return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-    }
-
-    function resetFormToDefaults() {
-      document.getElementById('val-date').value = getNowDateString();
-      document.getElementById('val-time').value = getNowTimeString();
+      const dateEl = document.getElementById('val-date');
+      const timeEl = document.getElementById('val-time');
+      if (dateEl) dateEl.value = `${y}-${m}-${d}`;
+      if (timeEl) timeEl.value = `${hh}:${mm}`;
     }
 
     function saveUserName(val) {
@@ -1291,21 +1338,19 @@
     }
 
     async function exportDataJson() {
+      const now = new Date();
+      const fileName = `sucapro_backup_${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}.json`;
       const backupPayload = {
         ...AppState,
         userName: localStorage.getItem('sucapro_user_fullname') || "Lorenzo Grassi"
       };
       const jsonContent = JSON.stringify(backupPayload, null, 2);
-      const fileName = `sucapro_backup_${getNowDateString()}.json`;
 
       if (window.showSaveFilePicker) {
         try {
           const handle = await window.showSaveFilePicker({
             suggestedName: fileName,
-            types: [{
-              description: 'JSON Backup File',
-              accept: { 'application/json': ['.json'] }
-            }]
+            types: [{ description: 'JSON Backup', accept: { 'application/json': ['.json'] } }]
           });
           const writable = await handle.createWritable();
           await writable.write(jsonContent);
@@ -1816,13 +1861,15 @@
       }
 
       const last = AppState.dives[AppState.dives.length - 1];
-      const diveDate = `${last.date || getNowDateString()}T${last.time || "12:00"}:00`;
+      const now = new Date();
+      const defaultDate = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+      const diveDate = `${last.date || defaultDate}T${last.time || "12:00"}:00`;
       const startTime = new Date(diveDate).getTime();
       const durationMs = (parseFloat(last.duration) || 45) * 60000;
       const surfaceTime = startTime + durationMs;
-      const now = Date.now();
+      const nowMs = Date.now();
 
-      const elapsedSiMs = now - surfaceTime;
+      const elapsedSiMs = nowMs - surfaceTime;
       if (elapsedSiMs <= 0 || isNaN(elapsedSiMs)) {
         siEl.innerText = "00:00:00";
         siEl.className = "timer-val";
@@ -1854,7 +1901,7 @@
       }
 
       ruleEl.innerText = label;
-      const remainingNoFly = (surfaceTime + noFlyHours * 3600000) - now;
+      const remainingNoFly = (surfaceTime + noFlyHours * 3600000) - nowMs;
 
       if (remainingNoFly <= 0 || isNaN(remainingNoFly)) {
         noflyEl.innerText = "00:00:00";
@@ -1875,20 +1922,35 @@
       return `${h}:${m}:${s}`;
     }
 
-    function submitDive(e) {
-      e.preventDefault();
+    function testVideoLink() {
+      const val = document.getElementById('val-video-link').value.trim();
+      if (!val) {
+        alert("Inserisci prima un link YouTube.");
+        return;
+      }
+      window.open(val, '_blank');
+    }
+
+    function executeSaveDive() {
       const dur = parseFloat(document.getElementById('val-duration').value) || 0;
       const maxD = parseFloat(document.getElementById('val-depth-max').value) || 0;
       const avgD = parseFloat(document.getElementById('val-depth-avg').value) || (maxD * 0.6);
 
       if (dur <= 0 || maxD <= 0) {
-        alert("Inserisci durata e profondità massima.");
+        alert("Inserisci almeno la durata e la profondità massima.");
         return;
       }
 
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+
       const diveData = {
-        date: document.getElementById('val-date').value || getNowDateString(),
-        time: document.getElementById('val-time').value || getNowTimeString(),
+        date: document.getElementById('val-date').value || `${y}-${m}-${d}`,
+        time: document.getElementById('val-time').value || `${hh}:${mm}`,
         duration: dur,
         depthMax: maxD,
         depthAvg: avgD,
@@ -1911,7 +1973,7 @@
         buddy: document.getElementById('val-buddy').innerText || "Solo Diving",
         center: document.getElementById('val-center').innerText || "Privato / Da Riva",
         gps: document.getElementById('val-gps').value || "",
-        video: document.getElementById('val-video-link').value || "",
+        video: document.getElementById('val-video-link').value.trim() || "",
         rmv: document.getElementById('ind-rmv').innerText || "-- L/min",
         cns: document.getElementById('ind-cns').innerText || "0%",
         otu: document.getElementById('ind-otu').innerText || "0",
@@ -1940,8 +2002,8 @@
       document.getElementById('edit-notice-bar').style.display = 'none';
       document.getElementById('btn-delete-editing').style.display = 'none';
       document.getElementById('btn-submit-main').innerText = "REGISTRA NEL LOGBOOK";
-      document.getElementById('main-dive-form').reset();
-      resetFormToDefaults();
+      document.getElementById('val-video-link').value = '';
+      syncCurrentDateTime();
       clearSignature();
       updateCounter();
     }
@@ -1957,8 +2019,8 @@
       document.getElementById('btn-submit-main').innerText = "AGGIORNA IMMERSIONE";
       document.getElementById('btn-delete-editing').style.display = 'flex';
 
-      document.getElementById('val-date').value = d.date || getNowDateString();
-      document.getElementById('val-time').value = d.time || getNowTimeString();
+      document.getElementById('val-date').value = d.date || '';
+      document.getElementById('val-time').value = d.time || '';
       document.getElementById('val-duration').value = d.duration || '';
       document.getElementById('val-depth-max').value = d.depthMax || '';
       document.getElementById('val-depth-avg').value = d.depthAvg || '';
@@ -2018,18 +2080,21 @@
               <span style="font-size:0.7rem; color:var(--text-sub);">${d.date} ${d.time || ''}</span>
             </div>
             <div style="font-size:0.7rem; color:var(--text-sub); margin-bottom:3px;">
-              ${d.gas} | GF: ${d.gf || '40/85'} | CNS: <span style="color:var(--accent);">${d.cns || '0%'}</span> | Densità: ${d.density || '--'}
+              ${d.gas} | GF: ${d.gf || '40/85'} | CNS: <span style="color:var(--accent);">${d.cns || '0%'}</span> | OTU: ${d.otu || '0'} | Densità: ${d.density || '--'}
             </div>
             <div style="font-size:0.65rem; color:var(--text-muted);">
               Consumo: ${d.pStart || '--'}b ➔ ${d.pEnd || '--'}b (ΔP ${deltaP} bar)
             </div>
+
             ${d.video ? `
-              <div style="margin-top:4px; font-size:0.68rem;">
-                <a href="${d.video}" target="_blank" onclick="event.stopPropagation();" style="color:var(--temp-line); text-decoration:underline;">
-                  ▶ Guarda Video YouTube
+              <div style="margin-top:6px;">
+                <a href="${d.video}" target="_blank" onclick="event.stopPropagation();" class="yt-badge-link">
+                  <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 22c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 2c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/></svg>
+                  Video YouTube
                 </a>
               </div>
             ` : ''}
+
             <div class="log-stats-bar">
               <div>
                 <div class="stat-val">${d.depthMax}m</div>
@@ -2100,7 +2165,9 @@
       }
 
       drawSacTrend();
-      drawDepthDistribution();
+      drawDepthAndDurationChart();
+      drawCnsOtuChart();
+      drawGasDistribution();
     }
 
     function jumpToBestRmvDive() {
@@ -2217,25 +2284,25 @@
         ctx.beginPath();
         if (isBest) {
           ctx.arc(x, y, 6, 0, Math.PI * 2);
-          ctx.fillStyle = 'var(--success)';
+          ctx.fillStyle = '#2ed573';
           ctx.fill();
           ctx.lineWidth = 2;
           ctx.strokeStyle = '#fff';
           ctx.stroke();
 
-          ctx.fillStyle = 'var(--success)';
+          ctx.fillStyle = '#2ed573';
           ctx.font = 'bold 8px monospace';
           ctx.textAlign = 'center';
           ctx.fillText(`MIN ${d.val.toFixed(1)}`, x, y - 8);
         } else if (isWorst) {
           ctx.arc(x, y, 6, 0, Math.PI * 2);
-          ctx.fillStyle = 'var(--danger)';
+          ctx.fillStyle = '#ff4757';
           ctx.fill();
           ctx.lineWidth = 2;
           ctx.strokeStyle = '#fff';
           ctx.stroke();
 
-          ctx.fillStyle = 'var(--danger)';
+          ctx.fillStyle = '#ff4757';
           ctx.font = 'bold 8px monospace';
           ctx.textAlign = 'center';
           ctx.fillText(`MAX ${d.val.toFixed(1)}`, x, y - 8);
@@ -2247,8 +2314,105 @@
       });
     }
 
-    function drawDepthDistribution() {
-      const canvas = document.getElementById('depthDistCanvas');
+    // GRAFICO 2: PROFILO CRONOLOGICO PROFONDITA E TEMPO
+    function drawDepthAndDurationChart() {
+      const canvas = document.getElementById('depthDurationCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width || 360;
+      const h = 140;
+
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      if (AppState.dives.length === 0) {
+        ctx.fillStyle = '#858da4';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText("Nessuna immersione per il profilo", w / 2, h / 2);
+        return;
+      }
+
+      const padL = 28, padR = 28, padT = 20, padB = 22;
+      const plotW = w - padL - padR;
+      const plotH = h - padT - padB;
+
+      const depths = AppState.dives.map(d => parseFloat(d.depthMax) || 0);
+      const durations = AppState.dives.map(d => parseFloat(d.duration) || 0);
+
+      const maxDepth = Math.max(30, Math.max(...depths) * 1.15);
+      const maxDur = Math.max(60, Math.max(...durations) * 1.15);
+
+      // Griglia base
+      ctx.strokeStyle = '#202434';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 3; i++) {
+        const y = padT + (plotH / 3) * i;
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(w - padR, y);
+        ctx.stroke();
+      }
+
+      // Scala Depth a sinistra
+      ctx.fillStyle = '#00d2d3';
+      ctx.font = '8px monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(`${Math.round(maxDepth)}m`, padL - 4, padT + 4);
+      ctx.fillText(`0m`, padL - 4, padT + plotH + 3);
+
+      // Scala Duration a destra
+      ctx.fillStyle = '#ff8c00';
+      ctx.textAlign = 'left';
+      ctx.fillText(`${Math.round(maxDur)}'`, w - padR + 4, padT + 4);
+      ctx.fillText(`0'`, w - padR + 4, padT + plotH + 3);
+
+      // Tracciamento Durata (Linea Arancione)
+      ctx.beginPath();
+      ctx.strokeStyle = '#ff8c00';
+      ctx.lineWidth = 1.8;
+      AppState.dives.forEach((d, idx) => {
+        const x = padL + (AppState.dives.length === 1 ? plotW / 2 : (idx / (AppState.dives.length - 1)) * plotW);
+        const y = padT + (1 - (d.duration / maxDur)) * plotH;
+        if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Tracciamento Profondità (Area + Linea Azzurra)
+      ctx.beginPath();
+      ctx.strokeStyle = '#00d2d3';
+      ctx.lineWidth = 2;
+      AppState.dives.forEach((d, idx) => {
+        const x = padL + (AppState.dives.length === 1 ? plotW / 2 : (idx / (AppState.dives.length - 1)) * plotW);
+        const y = padT + (1 - (d.depthMax / maxDepth)) * plotH;
+        if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Punti
+      AppState.dives.forEach((d, idx) => {
+        const x = padL + (AppState.dives.length === 1 ? plotW / 2 : (idx / (AppState.dives.length - 1)) * plotW);
+        const yDepth = padT + (1 - (d.depthMax / maxDepth)) * plotH;
+        ctx.beginPath();
+        ctx.arc(x, yDepth, 3, 0, Math.PI * 2);
+        ctx.fillStyle = '#00d2d3';
+        ctx.fill();
+
+        // Label asse X numero tuffo
+        ctx.fillStyle = '#858da4';
+        ctx.font = '8px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(`#${d.num}`, x, h - 8);
+      });
+    }
+
+    // GRAFICO 3: CNS CLOCK & OTU TOSSICITA O2
+    function drawCnsOtuChart() {
+      const canvas = document.getElementById('cnsOtuCanvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       const dpr = window.devicePixelRatio || 1;
@@ -2261,38 +2425,109 @@
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, w, h);
 
-      const brackets = [
-        { label: '0-20m', count: 0 },
-        { label: '20-40m', count: 0 },
-        { label: '40-60m', count: 0 },
-        { label: '>60m', count: 0 }
-      ];
-
-      AppState.dives.forEach(d => {
-        const dep = d.depthMax || 0;
-        if (dep <= 20) brackets[0].count++;
-        else if (dep <= 40) brackets[1].count++;
-        else if (dep <= 60) brackets[2].count++;
-        else brackets[3].count++;
-      });
-
-      const maxCount = Math.max(...brackets.map(b => b.count), 1);
-      const colW = (w - 30) / 4;
-
-      brackets.forEach((b, idx) => {
-        const barH = (b.count / maxCount) * (h - 40);
-        const x = 20 + idx * colW;
-        const y = h - 20 - barH;
-
-        ctx.fillStyle = 'rgba(255, 140, 0, 0.85)';
-        ctx.fillRect(x + 5, y, colW - 10, barH);
-
-        ctx.fillStyle = '#b2b9cb';
-        ctx.font = '9px sans-serif';
+      if (AppState.dives.length === 0) {
+        ctx.fillStyle = '#858da4';
+        ctx.font = '10px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(b.label, x + colW / 2, h - 5);
-        ctx.fillText(String(b.count), x + colW / 2, y - 4);
+        ctx.fillText("Nessun dato tossicità registrato", w / 2, h / 2);
+        return;
+      }
+
+      const padL = 28, padR = 15, padT = 16, padB = 22;
+      const plotW = w - padL - padR;
+      const plotH = h - padT - padB;
+
+      // Trova massimi per scala comune
+      const cnsVals = AppState.dives.map(d => parseFloat(d.cns) || 0);
+      const otuVals = AppState.dives.map(d => parseFloat(d.otu) || 0);
+      const maxVal = Math.max(100, Math.max(...cnsVals, ...otuVals) * 1.15);
+
+      // Linea di sicurezza limite 100% CNS
+      const y100 = padT + (1 - (100 / maxVal)) * plotH;
+      ctx.strokeStyle = 'rgba(255, 71, 87, 0.4)';
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(padL, y100);
+      ctx.lineTo(w - padR, y100);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = 'rgba(255, 71, 87, 0.8)';
+      ctx.font = '7px monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText('100%', padL - 4, y100 + 2);
+
+      const count = AppState.dives.length;
+      const groupW = plotW / count;
+      const barW = Math.max(4, Math.min(14, (groupW / 2) - 3));
+
+      AppState.dives.forEach((d, idx) => {
+        const cns = parseFloat(d.cns) || 0;
+        const otu = parseFloat(d.otu) || 0;
+        const centerX = padL + (idx * groupW) + (groupW / 2);
+
+        const hCns = (cns / maxVal) * plotH;
+        const hOtu = (otu / maxVal) * plotH;
+
+        // Barra CNS (Rosso)
+        ctx.fillStyle = cns > 80 ? '#ff4757' : 'rgba(255, 71, 87, 0.85)';
+        ctx.fillRect(centerX - barW - 1, padT + plotH - hCns, barW, hCns);
+
+        // Barra OTU (Arancione)
+        ctx.fillStyle = '#ff8c00';
+        ctx.fillRect(centerX + 1, padT + plotH - hOtu, barW, hOtu);
+
+        // Label sotto
+        ctx.fillStyle = '#858da4';
+        ctx.font = '8px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(`#${d.num}`, centerX, h - 8);
       });
+    }
+
+    // GRAFICO 4: DISTRIBUZIONE MISCELE
+    function drawGasDistribution() {
+      const container = document.getElementById('gasDistributionBars');
+      if (!container) return;
+
+      if (AppState.dives.length === 0) {
+        container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.75rem;">Nessuna miscela archiviata.</div>`;
+        return;
+      }
+
+      const counts = {};
+      AppState.dives.forEach(d => {
+        let g = d.gas || "Aria (21/0)";
+        if (g.includes("Aria")) g = "Aria 21%";
+        else if (g.includes("32")) g = "Nitrox EAN32";
+        else if (g.includes("36")) g = "Nitrox EAN36";
+        else if (g.includes("Tx")) g = "Trimix";
+        counts[g] = (counts[g] || 0) + 1;
+      });
+
+      const total = AppState.dives.length;
+      const colors = {
+        "Aria 21%": "#00d2d3",
+        "Nitrox EAN32": "#2ed573",
+        "Nitrox EAN36": "#ff8c00",
+        "Trimix": "#a55eea"
+      };
+
+      container.innerHTML = Object.entries(counts).map(([name, count]) => {
+        const pct = Math.round((count / total) * 100);
+        const col = colors[name] || "#eccc68";
+        return `
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:0.68rem; font-weight:700; margin-bottom:2px;">
+              <span>${name}</span>
+              <span style="color:${col};">${count} tuffi (${pct}%)</span>
+            </div>
+            <div style="width:100%; height:6px; background:#000; border-radius:3px; overflow:hidden;">
+              <div style="width:${pct}%; height:100%; background:${col}; border-radius:3px;"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     function openDropdownSheet(key) {
@@ -2449,11 +2684,13 @@
         }
         delBtn.style.display = 'flex';
       } else {
+        const now = new Date();
+        const curDate = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
         document.getElementById('cert-edit-id').value = "";
         document.getElementById('cert-org').value = "";
         document.getElementById('cert-title').value = "";
         document.getElementById('cert-num').value = "";
-        document.getElementById('cert-date').value = getNowDateString();
+        document.getElementById('cert-date').value = curDate;
         tempCertImageBase64 = "";
         imgEl.style.display = 'none';
         delBtn.style.display = 'none';
@@ -2484,7 +2721,9 @@
       const org = document.getElementById('cert-org').value.trim() || "SNSI";
       const title = document.getElementById('cert-title').value.trim() || "Open Water";
       const num = document.getElementById('cert-num').value.trim();
-      const date = document.getElementById('cert-date').value || getNowDateString();
+      const now = new Date();
+      const defaultDate = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+      const date = document.getElementById('cert-date').value || defaultDate;
 
       if (id) {
         const c = AppState.certs.find(x => x.id == id);
@@ -2549,13 +2788,13 @@
       if (tabKey === 'profile') renderProfileData();
       if (tabKey === 'record') {
         resizeSigCanvas();
-        if (!currentEditingDiveId) resetFormToDefaults();
+        if (!currentEditingDiveId) syncCurrentDateTime();
       }
     }
 
     function startNewDiveMode(btn = null) {
       cancelEditMode();
-      resetFormToDefaults();
+      syncCurrentDateTime();
       const targetBtn = btn || document.querySelectorAll('.nav-btn')[2];
       switchMainTab('record', targetBtn);
     }
