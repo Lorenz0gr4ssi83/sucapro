@@ -558,6 +558,17 @@
       border-radius: 6px;
     }
 
+    .mysnsi-pill {
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(255, 140, 0, 0.15);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      letter-spacing: 0.3px;
+    }
+
     .log-stats-bar {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -1023,7 +1034,7 @@
                 <option value="5">⭐️ 5 - Discreta</option>
                 <option value="4">⭐ 4 - Fredda/Torbida</option>
                 <option value="3">⭐️ 3 - Pessima</option>
-                <option value="2">⭐️️ 2 - Interrotta</option>
+                <option value="2">⭐️ 2 - Interrotta</option>
                 <option value="1">⭐️ 1 - Disastrosa</option>
               </select>
             </div>
@@ -2481,7 +2492,10 @@
           <div class="log-card" onclick="loadDiveForEdit(${d.id})">
             <div class="log-header">
               <span class="log-title">#${d.num} · ${d.site}</span>
-              <span class="rating-badge">⭐️ ${d.rating || 8}/10</span>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span class="rating-badge">⭐️ ${d.rating || 8}/10</span>
+                <span class="mysnsi-pill">MYSNSI</span>
+              </div>
             </div>
             <div style="font-size:0.7rem; color:var(--text-sub); margin-bottom:3px;">
               ${d.date} ${d.time || ''} | Gas: <strong>${d.gas}</strong> | Buddy: <strong>${d.buddy || 'Solo Diving'}</strong>
