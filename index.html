@@ -1052,10 +1052,10 @@
                 <option value="10">⭐️ 10 - Eccezionale</option>
                 <option value="9">⭐️ 9 - Bellissima</option>
                 <option value="8" selected>⭐️ 8 - Molto bella</option>
-                <option value="7">⭐️ 7 - Buona</option>
+                <option value="7">⭐ 7 - Buona</option>
                 <option value="6">⭐ 6 - Sufficiente</option>
                 <option value="5">⭐️ 5 - Discreta</option>
-                <option value="4">⭐️ 4 - Fredda/Torbida</option>
+                <option value="4">⭐ 4 - Fredda/Torbida</option>
                 <option value="3">⭐️ 3 - Pessima</option>
                 <option value="2">⭐️ 2 - Interrotta</option>
                 <option value="1">⭐️ 1 - Disastrosa</option>
@@ -2494,14 +2494,12 @@
         "dive-site": dive.site || ""
       };
 
-      navigator.clipboard.writeText(JSON.stringify(payload)).then(() => {
-        dive.syncedSnsi = true;
-        saveStorage();
-        renderLogbookFeed();
-        window.open("https://mysnsi.com/it/it/new-dive/", "_blank");
-      }).catch(err => {
-        alert("Errore accesso appunti: " + err.message);
-      });
+      localStorage.setItem('snsi_active_payload', JSON.stringify(payload));
+
+      dive.syncedSnsi = true;
+      saveStorage();
+      renderLogbookFeed();
+      window.open("https://mysnsi.com/it/it/new-dive/", "_blank");
     }
 
     function renderLogbookFeed() {
@@ -2574,7 +2572,7 @@
             <div class="log-header">
               <span class="log-title">#${d.num} · ${d.site}</span>
               <div style="display:flex; align-items:center; gap:6px;">
-                <span class="rating-badge">⭐️️ ${d.rating || 8}/10</span>
+                <span class="rating-badge">⭐️ ${d.rating || 8}/10</span>
                 <span class="snsi-badge ${isSynced ? 'snsi-synced' : 'snsi-unsynced'}" title="Tocca per commutare manualmente lo stato" onclick="toggleSnsiStatus(${d.id}, event)">
                   ${isSynced ? '✓ SNSI' : '○ Non Sinc.'}
                 </span>
