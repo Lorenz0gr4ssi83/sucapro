@@ -557,6 +557,41 @@
       padding: 2px 6px;
       border-radius: 6px;
     }
+
+    .snsi-badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .snsi-synced {
+      background: rgba(46, 213, 115, 0.15);
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+    .snsi-unsynced {
+      background: rgba(133, 141, 164, 0.15);
+      border: 1px solid var(--surface-border);
+      color: var(--text-muted);
+    }
+    .btn-sync-action {
+      background: rgba(255, 140, 0, 0.12);
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      color: var(--accent);
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-sync-action:hover { background: var(--accent); color: #000; }
+
     .log-stats-bar {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -764,6 +799,31 @@
           <div class="home-hero-bottom-row">
             <div class="header-badge-large" id="home-badge-count">0 Tuffi</div>
           </div>
+        </div>
+      </div>
+
+      <!-- CONFIGURAZIONE MY SNSI INTEGRATION -->
+      <div class="panel">
+        <div class="panel-header">
+          <span>Integrazione MySNSI</span>
+          <span style="color:var(--accent);">API Sync</span>
+        </div>
+        <div class="form-group">
+          <span class="form-label">Worker Proxy URL</span>
+          <input type="url" id="snsi-proxy-url" class="form-control" placeholder="https://tuo-worker.tuonome.workers.dev" oninput="saveSnsiConfig()">
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <span class="form-label">Username MySNSI</span>
+            <input type="text" id="snsi-username" class="form-control" placeholder="es. email o username" oninput="saveSnsiConfig()">
+          </div>
+          <div class="form-group">
+            <span class="form-label">Password MySNSI</span>
+            <input type="password" id="snsi-password" class="form-control" placeholder="••••••••" oninput="saveSnsiConfig()">
+          </div>
+        </div>
+        <div style="font-size:0.58rem; color:var(--text-muted); text-align:center;">
+          Le credenziali restano salvate esclusivamente nel tuo dispositivo.
         </div>
       </div>
 
@@ -996,7 +1056,7 @@
         <input type="hidden" id="editing-dive-id" value="">
 
         <div class="panel">
-          <div class="grid-2">
+          <div class="grid-3">
             <div class="form-group">
               <span class="form-label">Tipologia Profilo</span>
               <div class="form-select-box" onclick="openDropdownSheet('diveType')">
@@ -1005,13 +1065,20 @@
               </div>
             </div>
             <div class="form-group">
-              <span class="form-label">Voto Immersione (1-10)</span>
+              <span class="form-label">Scopo (SNSI)</span>
+              <div class="form-select-box" onclick="openDropdownSheet('diveFor')">
+                <span class="select-val" id="val-diveFor">Fun</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <span class="form-label">Voto (1-10)</span>
               <select id="val-rating" class="form-control">
                 <option value="10">⭐️ 10 - Eccezionale</option>
                 <option value="9">⭐️ 9 - Bellissima</option>
                 <option value="8" selected>⭐️ 8 - Molto bella</option>
                 <option value="7">⭐️ 7 - Buona</option>
-                <option value="6">⭐️️ 6 - Sufficiente</option>
+                <option value="6">⭐ 6 - Sufficiente</option>
                 <option value="5">⭐️ 5 - Discreta</option>
                 <option value="4">⭐️ 4 - Fredda/Torbida</option>
                 <option value="3">⭐️ 3 - Pessima</option>
@@ -1095,6 +1162,24 @@
             </div>
           </div>
 
+          <!-- SEZIONE GUIDA / LEADER SNSI -->
+          <div class="grid-2">
+            <div class="form-group">
+              <span class="form-label">Ruolo Leader (SNSI)</span>
+              <div class="form-select-box" onclick="openDropdownSheet('leaderRole')">
+                <span class="select-val" id="val-leaderRole">Dive Guide</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <span class="form-label">Nome Leader (SNSI)</span>
+              <div class="form-select-box" onclick="openDropdownSheet('leaderName')">
+                <span class="select-val" id="val-leaderName">Nessuna Guida</span>
+                <span style="color:var(--accent);">▾</span>
+              </div>
+            </div>
+          </div>
+
           <div class="form-group">
             <span class="form-label">Posizione Google Maps (Cerca Luogo o Incolla Link)</span>
             <div style="display:flex; gap:6px;">
@@ -1172,13 +1257,17 @@
             </div>
           </div>
 
-          <div class="grid-2">
+          <div class="grid-3">
             <div class="form-group">
-              <span class="form-label">Temp Min (°C)</span>
+              <span class="form-label">T. Aria (°C)</span>
+              <input type="number" step="0.1" id="val-air-temp" class="form-control" placeholder="24">
+            </div>
+            <div class="form-group">
+              <span class="form-label">T. H2O Min (°C)</span>
               <input type="number" step="0.1" id="val-temp-min" class="form-control" placeholder="14">
             </div>
             <div class="form-group">
-              <span class="form-label">Temp Max (°C)</span>
+              <span class="form-label">T. H2O Max (°C)</span>
               <input type="number" step="0.1" id="val-temp-max" class="form-control" placeholder="22">
             </div>
           </div>
@@ -1267,7 +1356,7 @@
               <option value="">Tutti i Voti</option>
               <option value="10">⭐️ 10</option>
               <option value="9">≥ 9 ⭐️</option>
-              <option value="8">≥ 8 ⭐️️</option>
+              <option value="8">≥ 8 ⭐</option>
               <option value="7">≥ 7 ⭐️</option>
               <option value="6">≥ 6 ⭐️</option>
             </select>
@@ -1491,6 +1580,9 @@
   <script>
     const DEFAULT_OPTIONS = {
       diveType: ["Ricreativa (NDL)", "Deco Normossica", "Deco Ipossica", "Rebreather (CCR)", "Addestramento"],
+      diveFor: ["Fun", "Training"],
+      leaderRole: ["Dive Guide", "Instructor"],
+      leaderName: ["Nessuna Guida"],
       gas: ["Aria (21/0)", "EAN32 (32/0)", "EAN36 (36/0)", "Tx 21/35", "Tx 18/45", "Tx 15/55", "Tx 10/70"],
       decoGas: ["Nessuno", "EAN50 (50/0)", "Ossigeno 100%", "Tx 50/25"],
       tank: ["Alluminio S80 (11.1L)", "Acciaio 12L", "Acciaio 15L", "Acciaio 18L", "Bibombola 2x10L (20L)", "Bibombola 2x12L (24L)"],
@@ -1523,7 +1615,6 @@
       const splashLogo = document.getElementById('splash-logo');
       if (!splashScreen || !splashLogo) return;
 
-      // Durata icona impostata a 1,2 secondi
       setTimeout(() => {
         splashLogo.classList.add('blend-in');
         setTimeout(() => {
@@ -1540,6 +1631,7 @@
       runSplashScreenAnimation();
       loadStorage();
       loadUserName();
+      loadSnsiConfig();
       checkUserGate();
       syncCurrentDateTime();
       initSignaturePad();
@@ -1556,6 +1648,24 @@
         drawPlanProfileChart();
       });
     });
+
+    function saveSnsiConfig() {
+      const url = document.getElementById('snsi-proxy-url').value.trim();
+      const user = document.getElementById('snsi-username').value.trim();
+      const pass = document.getElementById('snsi-password').value;
+      localStorage.setItem('sucapro_snsi_proxy_url', url);
+      localStorage.setItem('sucapro_snsi_username', user);
+      localStorage.setItem('sucapro_snsi_password', pass);
+    }
+
+    function loadSnsiConfig() {
+      const urlEl = document.getElementById('snsi-proxy-url');
+      const userEl = document.getElementById('snsi-username');
+      const passEl = document.getElementById('snsi-password');
+      if (urlEl) urlEl.value = localStorage.getItem('sucapro_snsi_proxy_url') || "";
+      if (userEl) userEl.value = localStorage.getItem('sucapro_snsi_username') || "";
+      if (passEl) passEl.value = localStorage.getItem('sucapro_snsi_password') || "";
+    }
 
     function runLiveGasTriangle(source) {
       const po2Input = document.getElementById('calc-po2');
@@ -1630,6 +1740,7 @@
           AppState.dives = parsed.dives || [];
           AppState.certs = parsed.certs || [];
           if (parsed.options) AppState.options = Object.assign({}, DEFAULT_OPTIONS, parsed.options);
+          else AppState.options = JSON.parse(JSON.stringify(DEFAULT_OPTIONS));
         } catch(e) { console.error(e); }
       }
     }
@@ -2199,6 +2310,8 @@
         return;
       }
 
+      const existingDive = currentEditingDiveId ? AppState.dives.find(x => x.id === currentEditingDiveId) : null;
+
       const diveData = {
         id: currentEditingDiveId || Date.now(),
         date: document.getElementById('val-date').value || new Date().toISOString().split('T')[0],
@@ -2207,11 +2320,15 @@
         depthMax: maxD,
         depthAvg: avgD,
         rating: parseInt(document.getElementById('val-rating').value) || 8,
+        airTemp: document.getElementById('val-air-temp').value !== '' ? parseFloat(document.getElementById('val-air-temp').value) : '--',
         tempMin: document.getElementById('val-temp-min').value !== '' ? parseFloat(document.getElementById('val-temp-min').value) : '--',
         tempMax: document.getElementById('val-temp-max').value !== '' ? parseFloat(document.getElementById('val-temp-max').value) : '--',
         pStart: parseFloat(document.getElementById('val-p-start').value) || 0,
         pEnd: parseFloat(document.getElementById('val-p-end').value) || 0,
         diveType: document.getElementById('val-diveType').innerText || "Ricreativa (NDL)",
+        diveFor: document.getElementById('val-diveFor').innerText || "Fun",
+        leaderRole: document.getElementById('val-leaderRole').innerText || "Dive Guide",
+        leaderName: document.getElementById('val-leaderName').innerText || "Nessuna Guida",
         gas: document.getElementById('val-gas').innerText || "Aria (21/0)",
         decoGas: document.getElementById('val-decoGas').innerText || "Nessuno",
         tank: document.getElementById('val-tank').innerText || "Acciaio 15L",
@@ -2231,7 +2348,8 @@
         cns: document.getElementById('ind-cns').innerText || "0%",
         otu: document.getElementById('ind-otu').innerText || "0",
         density: document.getElementById('ind-density').innerText || "-- g/L",
-        signature: sigCanvas ? sigCanvas.toDataURL() : null
+        signature: sigCanvas ? sigCanvas.toDataURL() : null,
+        syncedSnsi: existingDive ? (existingDive.syncedSnsi || false) : false
       };
 
       if (currentEditingDiveId) {
@@ -2257,6 +2375,7 @@
       document.getElementById('btn-submit-main').innerText = "REGISTRA NEL LOGBOOK";
       document.getElementById('val-video-link').value = '';
       document.getElementById('val-maps-url').value = '';
+      document.getElementById('val-air-temp').value = '';
       syncCurrentDateTime();
       clearSignature();
       updateCounter();
@@ -2279,6 +2398,7 @@
       document.getElementById('val-depth-max').value = d.depthMax || '';
       document.getElementById('val-depth-avg').value = d.depthAvg || '';
       document.getElementById('val-rating').value = d.rating || 8;
+      document.getElementById('val-air-temp').value = d.airTemp !== '--' && d.airTemp !== undefined ? d.airTemp : '';
       document.getElementById('val-temp-min').value = d.tempMin !== '--' ? d.tempMin : '';
       document.getElementById('val-temp-max').value = d.tempMax !== '--' ? d.tempMax : '';
       document.getElementById('val-p-start').value = d.pStart || '';
@@ -2290,7 +2410,7 @@
       document.getElementById('val-sea-state').value = d.sea || 'Calmo';
       document.getElementById('val-ballast').value = d.ballast || '';
 
-      ['diveType', 'gas', 'decoGas', 'tank', 'waterType', 'suit', 'gf', 'site', 'buddy', 'center'].forEach(k => {
+      ['diveType', 'diveFor', 'leaderRole', 'leaderName', 'gas', 'decoGas', 'tank', 'waterType', 'suit', 'gf', 'site', 'buddy', 'center'].forEach(k => {
         const el = document.getElementById(`val-${k}`);
         if (el && d[k]) {
           el.innerText = d[k];
@@ -2373,6 +2493,93 @@
       renderLogbookFeed();
     }
 
+    function toggleSnsiStatus(id, event) {
+      if (event) event.stopPropagation();
+      const dive = AppState.dives.find(d => d.id === id);
+      if (!dive) return;
+      dive.syncedSnsi = !dive.syncedSnsi;
+      saveStorage();
+      renderLogbookFeed();
+    }
+
+    async function syncDiveToSnsi(id, event) {
+      if (event) event.stopPropagation();
+
+      const proxyUrl = (localStorage.getItem('sucapro_snsi_proxy_url') || "").trim();
+      const username = (localStorage.getItem('sucapro_snsi_username') || "").trim();
+      const password = localStorage.getItem('sucapro_snsi_password') || "";
+
+      if (!proxyUrl || !username || !password) {
+        alert("Configura URL Worker, Username e Password MySNSI nella schermata Home.");
+        return;
+      }
+
+      const dive = AppState.dives.find(d => d.id === id);
+      if (!dive) return;
+
+      const btn = event.currentTarget;
+      const originalText = btn.innerHTML;
+      btn.innerText = "Invio in corso...";
+      btn.style.pointerEvents = "none";
+
+      let endTime = "";
+      if (dive.time && dive.duration) {
+        const [h, m] = dive.time.split(':').map(Number);
+        const totalMin = h * 60 + m + Number(dive.duration);
+        endTime = `${String(Math.floor((totalMin / 60) % 24)).padStart(2, '0')}:${String(totalMin % 60).padStart(2, '0')}`;
+      }
+
+      const isRec = (dive.diveType || "").includes("Ricreativa") || (dive.diveType || "").includes("Normossica");
+      const diveTypeSnsi = isRec ? "Recreational" : "Technical";
+
+      const payload = {
+        "max-depth": dive.depthMax,
+        "dive-for": dive.diveFor || "Fun",
+        "dive-type": diveTypeSnsi,
+        "dive-date": dive.date,
+        "start-time": dive.time,
+        "end-time": endTime,
+        "leader-info": dive.leaderRole || "Dive Guide",
+        "leader-name": dive.leaderName && dive.leaderName !== "Nessuna Guida" ? dive.leaderName : "",
+        "dive-center": dive.center || "",
+        "tank-pressure-start": dive.pStart,
+        "tank-pressure-end": dive.pEnd,
+        "weight": dive.ballast || 0,
+        "suit": dive.suit || "",
+        "gas-type": dive.gas || "Aria",
+        "air-temp": dive.airTemp !== '--' ? dive.airTemp : "",
+        "water-temp": dive.tempMin !== '--' ? dive.tempMin : (dive.tempMax !== '--' ? dive.tempMax : ""),
+        "visibility": dive.visibility !== '--' ? dive.visibility : "",
+        "dive-site": dive.site || "",
+        "latitude": "",
+        "longitude": ""
+      };
+
+      try {
+        const response = await fetch(proxyUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password, payload })
+        });
+
+        const resData = await response.json();
+        if (response.ok && resData.success) {
+          dive.syncedSnsi = true;
+          saveStorage();
+          renderLogbookFeed();
+          alert(`Immersione #${dive.num} caricata con successo su MySNSI!`);
+        } else {
+          alert(`Errore MySNSI: ${resData.error || "Impossibile completare l'invio"}`);
+          btn.innerHTML = originalText;
+          btn.style.pointerEvents = "auto";
+        }
+      } catch (err) {
+        alert(`Errore di rete o proxy non raggiungibile: ${err.message}`);
+        btn.innerHTML = originalText;
+        btn.style.pointerEvents = "auto";
+      }
+    }
+
     function renderLogbookFeed() {
       const feed = document.getElementById('logbook-feed');
       if (AppState.dives.length === 0) {
@@ -2436,38 +2643,53 @@
 
       feed.innerHTML = filtered.map(d => {
         const deltaP = (d.pStart && d.pEnd) ? (d.pStart - d.pEnd) : '--';
+        const isSynced = !!d.syncedSnsi;
+
         return `
           <div class="log-card" onclick="loadDiveForEdit(${d.id})">
             <div class="log-header">
               <span class="log-title">#${d.num} · ${d.site}</span>
-              <span class="rating-badge">⭐️ ${d.rating || 8}/10</span>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span class="rating-badge">⭐️ ${d.rating || 8}/10</span>
+                <span class="snsi-badge ${isSynced ? 'snsi-synced' : 'snsi-unsynced'}" title="Tocca per commutare manualmente lo stato" onclick="toggleSnsiStatus(${d.id}, event)">
+                  ${isSynced ? '✓ SNSI' : '○ Non Sinc.'}
+                </span>
+              </div>
             </div>
             <div style="font-size:0.7rem; color:var(--text-sub); margin-bottom:3px;">
               ${d.date} ${d.time || ''} | Gas: <strong>${d.gas}</strong> | Buddy: <strong>${d.buddy || 'Solo Diving'}</strong>
             </div>
             <div style="font-size:0.65rem; color:var(--text-muted); margin-bottom:2px;">
-              Diving: <strong>${d.center || 'Privato / Da Riva'}</strong> | Temp: <strong>${d.tempMin !== '--' ? d.tempMin + '°C' : '--'} / ${d.tempMax !== '--' ? d.tempMax + '°C' : '--'}</strong>
+              Diving: <strong>${d.center || 'Privato / Da Riva'}</strong> | T. Aria: <strong>${d.airTemp !== '--' && d.airTemp !== undefined ? d.airTemp + '°C' : '--'}</strong> | T. Acqua: <strong>${d.tempMin !== '--' ? d.tempMin + '°C' : '--'} / ${d.tempMax !== '--' ? d.tempMax + '°C' : '--'}</strong>
             </div>
             <div style="font-size:0.65rem; color:var(--text-muted);">
               Consumo: ${d.pStart || '--'}b ➔ ${d.pEnd || '--'}b (ΔP ${deltaP} bar) | CNS: <span style="color:var(--accent);">${d.cns || '0%'}</span> | Densità: ${d.density || '--'}
             </div>
 
-            ${d.mapsUrl ? `
-              <div style="margin-top:4px;">
-                <a href="${d.mapsUrl.startsWith('http') ? d.mapsUrl : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.mapsUrl)}`}" target="_blank" onclick="event.stopPropagation();" style="color:var(--temp-line); font-size:0.65rem; text-decoration:none; font-weight:700;">
-                  📍 Apri su Google Maps
-                </a>
-              </div>
-            ` : ''}
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+              <div style="display:flex; gap:8px; align-items:center;">
+                ${d.mapsUrl ? `
+                  <a href="${d.mapsUrl.startsWith('http') ? d.mapsUrl : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.mapsUrl)}`}" target="_blank" onclick="event.stopPropagation();" style="color:var(--temp-line); font-size:0.65rem; text-decoration:none; font-weight:700;">
+                    📍 Maps
+                  </a>
+                ` : ''}
 
-            ${d.video ? `
-              <div style="margin-top:6px;">
-                <a href="${d.video}" target="_blank" onclick="event.stopPropagation();" class="yt-badge-link">
-                  <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 22c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73z"/></svg>
-                  Video YouTube
-                </a>
+                ${d.video ? `
+                  <a href="${d.video}" target="_blank" onclick="event.stopPropagation();" class="yt-badge-link" style="margin-top:0;">
+                    <svg style="width:12px; height:12px; fill:currentColor;" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 22c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L22 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73z"/></svg>
+                    Video
+                  </a>
+                ` : ''}
               </div>
-            ` : ''}
+
+              ${!isSynced ? `
+                <button type="button" class="btn-sync-action" onclick="syncDiveToSnsi(${d.id}, event)">
+                  ⬆ Invia a MySNSI
+                </button>
+              ` : `
+                <span style="font-size:0.62rem; color:var(--success); font-weight:700;">✓ Registrato SNSI</span>
+              `}
+            </div>
 
             <div class="log-stats-bar">
               <div>
@@ -3269,6 +3491,9 @@
       currentSheetCategory = key;
       const titles = {
         diveType: "Tipologia Profilo",
+        diveFor: "Scopo Immersione (SNSI)",
+        leaderRole: "Ruolo Leader (SNSI)",
+        leaderName: "Nome Leader (SNSI)",
         gas: "Miscela Principale",
         planGas: "Miscela Gas Fondo (Planner)",
         planDecoGas: "Gas Decompressivo/Sosta (Planner)",
@@ -3413,7 +3638,7 @@
           const parsed = JSON.parse(evt.target.result);
           if (parsed.dives) AppState.dives = parsed.dives;
           if (parsed.certs) AppState.certs = parsed.certs;
-          if (parsed.options) AppState.options = parsed.options;
+          if (parsed.options) AppState.options = Object.assign({}, DEFAULT_OPTIONS, parsed.options);
           if (parsed.userName !== undefined) {
             localStorage.setItem('sucapro_user_fullname', parsed.userName);
             loadUserName();
