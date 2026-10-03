@@ -2473,18 +2473,18 @@
       const isRec = (dive.diveType || "").includes("Ricreativa") || (dive.diveType || "").includes("Normossica");
       const diveTypeSnsi = isRec ? "Recreational" : "Technical";
 
-      const payload = {
-        "max-depth": dive.depthMax,
+      const params = new URLSearchParams({
+        "max-depth": dive.depthMax || "",
         "dive-for": dive.diveFor || "Fun",
         "dive-type": diveTypeSnsi,
-        "dive-date": dive.date,
-        "start-time": dive.time,
+        "dive-date": dive.date || "",
+        "start-time": dive.time || "",
         "end-time": endTime,
         "leader-info": dive.leaderRole || "Dive Guide",
         "leader-name": dive.leaderName && dive.leaderName !== "Nessuna Guida" ? dive.leaderName : "",
         "dive-center": dive.center || "",
-        "tank-pressure-start": dive.pStart,
-        "tank-pressure-end": dive.pEnd,
+        "tank-pressure-start": dive.pStart || "",
+        "tank-pressure-end": dive.pEnd || "",
         "weight": dive.ballast || 0,
         "suit": dive.suit || "",
         "gas-type": dive.gas || "Aria",
@@ -2492,14 +2492,13 @@
         "water-temp": dive.tempMin !== '--' ? dive.tempMin : (dive.tempMax !== '--' ? dive.tempMax : ""),
         "visibility": dive.visibility !== '--' ? dive.visibility : "",
         "dive-site": dive.site || ""
-      };
-
-      localStorage.setItem('snsi_active_payload', JSON.stringify(payload));
+      });
 
       dive.syncedSnsi = true;
       saveStorage();
       renderLogbookFeed();
-      window.open("https://mysnsi.com/it/it/new-dive/", "_blank");
+
+      window.open(`https://mysnsi.com/it/it/new-dive/?${params.toString()}`, "_blank");
     }
 
     function renderLogbookFeed() {
