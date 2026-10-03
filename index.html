@@ -558,7 +558,6 @@
       border-radius: 6px;
     }
 
-    /* Stile per il brand MYSNSI con checkbox interattivo */
     .mysnsi-badge-box {
       display: inline-flex;
       align-items: center;
@@ -578,7 +577,7 @@
       color: #fff;
     }
     .mysnsi-logo-text span {
-      color: #00d2d3; /* Colore tipico del logo SNSI */
+      color: #00d2d3;
     }
     .mysnsi-checkbox {
       appearance: none;
@@ -3145,7 +3144,7 @@
       const delBtn = document.getElementById('cert-del-btn');
       const imgEl = document.getElementById('cert-img-display');
 
-      if (id) {
+      if (id !== null && id !== undefined && id !== "") {
         const c = AppState.certs.find(x => x.id === id);
         if (!c) return;
         document.getElementById('cert-edit-id').value = c.id;
@@ -3195,7 +3194,8 @@
     }
 
     function saveCertRecord() {
-      const id = document.getElementById('cert-edit-id').value;
+      const idStr = document.getElementById('cert-edit-id').value;
+      const id = idStr ? Number(idStr) : null;
       const org = document.getElementById('cert-org').value.trim() || "SNSI";
       const title = document.getElementById('cert-title').value.trim() || "Open Water";
       const num = document.getElementById('cert-num').value.trim();
@@ -3203,8 +3203,8 @@
       const defaultDate = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
       const date = document.getElementById('cert-date').value || defaultDate;
 
-      if (id) {
-        const c = AppState.certs.find(x => x.id == id);
+      if (id !== null && !isNaN(id)) {
+        const c = AppState.certs.find(x => x.id === id);
         if (c) {
           c.org = org; c.title = title; c.num = num; c.date = date;
           if (tempCertImageBase64) c.img = tempCertImageBase64;
@@ -3227,9 +3227,10 @@
     }
 
     function deleteCurrentCert() {
-      const id = document.getElementById('cert-edit-id').value;
-      if (id) {
-        AppState.certs = AppState.certs.filter(c => c.id != id);
+      const idStr = document.getElementById('cert-edit-id').value;
+      const id = idStr ? Number(idStr) : null;
+      if (id !== null && !isNaN(id)) {
+        AppState.certs = AppState.certs.filter(c => c.id !== id);
         saveStorage();
         renderHomeCerts();
         updateCounter();
