@@ -558,40 +558,6 @@
       border-radius: 6px;
     }
 
-    .snsi-badge {
-      font-size: 0.65rem;
-      font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 6px;
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-    }
-    .snsi-synced {
-      background: rgba(46, 213, 115, 0.15);
-      border: 1px solid var(--success);
-      color: var(--success);
-    }
-    .snsi-unsynced {
-      background: rgba(133, 141, 164, 0.15);
-      border: 1px solid var(--surface-border);
-      color: var(--text-muted);
-    }
-    .btn-sync-action {
-      background: rgba(255, 140, 0, 0.12);
-      border: 1px solid var(--accent);
-      border-radius: 6px;
-      color: var(--accent);
-      font-size: 0.65rem;
-      font-weight: 700;
-      padding: 3px 8px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .btn-sync-action:hover { background: var(--accent); color: #000; }
-
     .log-stats-bar {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -1040,7 +1006,7 @@
               </div>
             </div>
             <div class="form-group">
-              <span class="form-label">Scopo (SNSI)</span>
+              <span class="form-label">Scopo</span>
               <div class="form-select-box" onclick="openDropdownSheet('diveFor')">
                 <span class="select-val" id="val-diveFor">Fun</span>
                 <span style="color:var(--accent);">▾</span>
@@ -1137,17 +1103,16 @@
             </div>
           </div>
 
-          <!-- SEZIONE GUIDA / LEADER SNSI -->
           <div class="grid-2">
             <div class="form-group">
-              <span class="form-label">Ruolo Leader (SNSI)</span>
+              <span class="form-label">Ruolo Leader</span>
               <div class="form-select-box" onclick="openDropdownSheet('leaderRole')">
                 <span class="select-val" id="val-leaderRole">Dive Guide</span>
                 <span style="color:var(--accent);">▾</span>
               </div>
             </div>
             <div class="form-group">
-              <span class="form-label">Nome Leader (SNSI)</span>
+              <span class="form-label">Nome Leader</span>
               <div class="form-select-box" onclick="openDropdownSheet('leaderName')">
                 <span class="select-val" id="val-leaderName">Nessuna Guida</span>
                 <span style="color:var(--accent);">▾</span>
@@ -2462,43 +2427,9 @@
       if (event) event.stopPropagation();
       const dive = AppState.dives.find(d => d.id === id);
       if (!dive) return;
-
-      let endTime = "";
-      if (dive.time && dive.duration) {
-        const [h, m] = dive.time.split(':').map(Number);
-        const totalMin = h * 60 + m + Number(dive.duration);
-        endTime = `${String(Math.floor((totalMin / 60) % 24)).padStart(2, '0')}:${String(totalMin % 60).padStart(2, '0')}`;
-      }
-
-      const isRec = (dive.diveType || "").includes("Ricreativa") || (dive.diveType || "").includes("Normossica");
-      const diveTypeSnsi = isRec ? "Recreational" : "Technical";
-
-      const params = new URLSearchParams({
-        "max-depth": dive.depthMax || "",
-        "dive-for": dive.diveFor || "Fun",
-        "dive-type": diveTypeSnsi,
-        "dive-date": dive.date || "",
-        "start-time": dive.time || "",
-        "end-time": endTime,
-        "leader-info": dive.leaderRole || "Dive Guide",
-        "leader-name": dive.leaderName && dive.leaderName !== "Nessuna Guida" ? dive.leaderName : "",
-        "dive-center": dive.center || "",
-        "tank-pressure-start": dive.pStart || "",
-        "tank-pressure-end": dive.pEnd || "",
-        "weight": dive.ballast || 0,
-        "suit": dive.suit || "",
-        "gas-type": dive.gas || "Aria",
-        "air-temp": dive.airTemp !== '--' && dive.airTemp !== undefined ? dive.airTemp : "",
-        "water-temp": dive.tempMin !== '--' ? dive.tempMin : (dive.tempMax !== '--' ? dive.tempMax : ""),
-        "visibility": dive.visibility !== '--' ? dive.visibility : "",
-        "dive-site": dive.site || ""
-      });
-
       dive.syncedSnsi = true;
       saveStorage();
       renderLogbookFeed();
-
-      window.open(`https://mysnsi.com/it/it/new-dive/?${params.toString()}`, "_blank");
     }
 
     function renderLogbookFeed() {
@@ -2602,14 +2533,6 @@
                   </a>
                 ` : ''}
               </div>
-
-              ${!isSynced ? `
-                <button type="button" class="btn-sync-action" onclick="syncDiveToSnsi(${d.id}, event)">
-                  ⬆ Invia a MySNSI
-                </button>
-              ` : `
-                <span style="font-size:0.62rem; color:var(--success); font-weight:700;">✓ Registrato SNSI</span>
-              `}
             </div>
 
             <div class="log-stats-bar">
@@ -3412,9 +3335,9 @@
       currentSheetCategory = key;
       const titles = {
         diveType: "Tipologia Profilo",
-        diveFor: "Scopo Immersione (SNSI)",
-        leaderRole: "Ruolo Leader (SNSI)",
-        leaderName: "Nome Leader (SNSI)",
+        diveFor: "Scopo Immersione",
+        leaderRole: "Ruolo Leader",
+        leaderName: "Nome Leader",
         gas: "Miscela Principale",
         planGas: "Miscela Gas Fondo (Planner)",
         planDecoGas: "Gas Decompressivo/Sosta (Planner)",
