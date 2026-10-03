@@ -558,15 +558,53 @@
       border-radius: 6px;
     }
 
-    .mysnsi-pill {
-      font-size: 0.65rem;
-      font-weight: 800;
-      padding: 3px 8px;
+    /* Stile per il brand MYSNSI con checkbox interattivo */
+    .mysnsi-badge-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(18, 20, 28, 0.9);
+      border: 1px solid rgba(255, 140, 0, 0.35);
+      padding: 2px 7px;
       border-radius: 6px;
-      background: rgba(255, 140, 0, 0.15);
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      letter-spacing: 0.3px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .mysnsi-logo-text {
+      font-size: 0.68rem;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      font-style: italic;
+      color: #fff;
+    }
+    .mysnsi-logo-text span {
+      color: #00d2d3; /* Colore tipico del logo SNSI */
+    }
+    .mysnsi-checkbox {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border: 1.5px solid var(--text-muted);
+      border-radius: 3px;
+      background: var(--surface-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: all 0.2s;
+    }
+    .mysnsi-checkbox:checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .mysnsi-checkbox:checked::after {
+      content: '✔';
+      font-size: 8px;
+      color: #000;
+      font-weight: 900;
+      position: absolute;
     }
 
     .log-stats-bar {
@@ -2280,7 +2318,8 @@
         cns: document.getElementById('ind-cns').innerText || "0%",
         otu: document.getElementById('ind-otu').innerText || "0",
         density: document.getElementById('ind-density').innerText || "-- g/L",
-        signature: sigCanvas ? sigCanvas.toDataURL() : null
+        signature: sigCanvas ? sigCanvas.toDataURL() : null,
+        mysnsiChecked: existingDive ? (existingDive.mysnsiChecked || false) : false
       };
 
       if (currentEditingDiveId) {
@@ -2424,6 +2463,14 @@
       renderLogbookFeed();
     }
 
+    function toggleMysnsiCheckbox(id, event) {
+      if (event) event.stopPropagation();
+      const dive = AppState.dives.find(d => d.id === id);
+      if (!dive) return;
+      dive.mysnsiChecked = !dive.mysnsiChecked;
+      saveStorage();
+    }
+
     function renderLogbookFeed() {
       const feed = document.getElementById('logbook-feed');
       if (AppState.dives.length === 0) {
@@ -2487,6 +2534,7 @@
 
       feed.innerHTML = filtered.map(d => {
         const deltaP = (d.pStart && d.pEnd) ? (d.pStart - d.pEnd) : '--';
+        const isChecked = !!d.mysnsiChecked;
 
         return `
           <div class="log-card" onclick="loadDiveForEdit(${d.id})">
@@ -2494,7 +2542,10 @@
               <span class="log-title">#${d.num} · ${d.site}</span>
               <div style="display:flex; align-items:center; gap:6px;">
                 <span class="rating-badge">⭐️ ${d.rating || 8}/10</span>
-                <span class="mysnsi-pill">MYSNSI</span>
+                <div class="mysnsi-badge-box" onclick="toggleMysnsiCheckbox(${d.id}, event)">
+                  <span class="mysnsi-logo-text">MY<span>SNSI</span></span>
+                  <input type="checkbox" class="mysnsi-checkbox" ${isChecked ? 'checked' : ''} onclick="toggleMysnsiCheckbox(${d.id}, event)">
+                </div>
               </div>
             </div>
             <div style="font-size:0.7rem; color:var(--text-sub); margin-bottom:3px;">
