@@ -1023,7 +1023,7 @@
                 <option value="5">⭐️ 5 - Discreta</option>
                 <option value="4">⭐ 4 - Fredda/Torbida</option>
                 <option value="3">⭐️ 3 - Pessima</option>
-                <option value="2">⭐️ 2 - Interrotta</option>
+                <option value="2">⭐️️ 2 - Interrotta</option>
                 <option value="1">⭐️ 1 - Disastrosa</option>
               </select>
             </div>
@@ -2269,8 +2269,7 @@
         cns: document.getElementById('ind-cns').innerText || "0%",
         otu: document.getElementById('ind-otu').innerText || "0",
         density: document.getElementById('ind-density').innerText || "-- g/L",
-        signature: sigCanvas ? sigCanvas.toDataURL() : null,
-        syncedSnsi: existingDive ? (existingDive.syncedSnsi || false) : false
+        signature: sigCanvas ? sigCanvas.toDataURL() : null
       };
 
       if (currentEditingDiveId) {
@@ -2414,24 +2413,6 @@
       renderLogbookFeed();
     }
 
-    function toggleSnsiStatus(id, event) {
-      if (event) event.stopPropagation();
-      const dive = AppState.dives.find(d => d.id === id);
-      if (!dive) return;
-      dive.syncedSnsi = !dive.syncedSnsi;
-      saveStorage();
-      renderLogbookFeed();
-    }
-
-    function syncDiveToSnsi(id, event) {
-      if (event) event.stopPropagation();
-      const dive = AppState.dives.find(d => d.id === id);
-      if (!dive) return;
-      dive.syncedSnsi = true;
-      saveStorage();
-      renderLogbookFeed();
-    }
-
     function renderLogbookFeed() {
       const feed = document.getElementById('logbook-feed');
       if (AppState.dives.length === 0) {
@@ -2495,18 +2476,12 @@
 
       feed.innerHTML = filtered.map(d => {
         const deltaP = (d.pStart && d.pEnd) ? (d.pStart - d.pEnd) : '--';
-        const isSynced = !!d.syncedSnsi;
 
         return `
           <div class="log-card" onclick="loadDiveForEdit(${d.id})">
             <div class="log-header">
               <span class="log-title">#${d.num} · ${d.site}</span>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span class="rating-badge">⭐️ ${d.rating || 8}/10</span>
-                <span class="snsi-badge ${isSynced ? 'snsi-synced' : 'snsi-unsynced'}" title="Tocca per commutare manualmente lo stato" onclick="toggleSnsiStatus(${d.id}, event)">
-                  ${isSynced ? '✓ SNSI' : '○ Non Sinc.'}
-                </span>
-              </div>
+              <span class="rating-badge">⭐️ ${d.rating || 8}/10</span>
             </div>
             <div style="font-size:0.7rem; color:var(--text-sub); margin-bottom:3px;">
               ${d.date} ${d.time || ''} | Gas: <strong>${d.gas}</strong> | Buddy: <strong>${d.buddy || 'Solo Diving'}</strong>
