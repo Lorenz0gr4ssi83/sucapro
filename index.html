@@ -802,31 +802,6 @@
         </div>
       </div>
 
-      <!-- CONFIGURAZIONE MY SNSI INTEGRATION -->
-      <div class="panel">
-        <div class="panel-header">
-          <span>Integrazione MySNSI</span>
-          <span style="color:var(--accent);">API Sync</span>
-        </div>
-        <div class="form-group">
-          <span class="form-label">Worker / Val Proxy URL</span>
-          <input type="url" id="snsi-proxy-url" class="form-control" placeholder="https://tuo-endpoint.web.val.run" oninput="saveSnsiConfig()">
-        </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <span class="form-label">Username MySNSI</span>
-            <input type="text" id="snsi-username" class="form-control" placeholder="es. email o username" oninput="saveSnsiConfig()">
-          </div>
-          <div class="form-group">
-            <span class="form-label">Password MySNSI</span>
-            <input type="password" id="snsi-password" class="form-control" placeholder="••••••••" oninput="saveSnsiConfig()">
-          </div>
-        </div>
-        <div style="font-size:0.58rem; color:var(--text-muted); text-align:center;">
-          Le credenziali restano salvate esclusivamente nel tuo dispositivo.
-        </div>
-      </div>
-
       <!-- CALCOLATORE GAS DINAMICO MOD / EAN / PO2 -->
       <div class="panel">
         <div class="panel-header">
@@ -1077,10 +1052,10 @@
                 <option value="10">⭐️ 10 - Eccezionale</option>
                 <option value="9">⭐️ 9 - Bellissima</option>
                 <option value="8" selected>⭐️ 8 - Molto bella</option>
-                <option value="7">⭐️️ 7 - Buona</option>
+                <option value="7">⭐️ 7 - Buona</option>
                 <option value="6">⭐ 6 - Sufficiente</option>
                 <option value="5">⭐️ 5 - Discreta</option>
-                <option value="4">⭐️️ 4 - Fredda/Torbida</option>
+                <option value="4">⭐️ 4 - Fredda/Torbida</option>
                 <option value="3">⭐️ 3 - Pessima</option>
                 <option value="2">⭐️ 2 - Interrotta</option>
                 <option value="1">⭐️ 1 - Disastrosa</option>
@@ -1631,7 +1606,6 @@
       runSplashScreenAnimation();
       loadStorage();
       loadUserName();
-      loadSnsiConfig();
       checkUserGate();
       syncCurrentDateTime();
       initSignaturePad();
@@ -1648,24 +1622,6 @@
         drawPlanProfileChart();
       });
     });
-
-    function saveSnsiConfig() {
-      const url = document.getElementById('snsi-proxy-url').value.trim();
-      const user = document.getElementById('snsi-username').value.trim();
-      const pass = document.getElementById('snsi-password').value;
-      localStorage.setItem('sucapro_snsi_proxy_url', url);
-      localStorage.setItem('sucapro_snsi_username', user);
-      localStorage.setItem('sucapro_snsi_password', pass);
-    }
-
-    function loadSnsiConfig() {
-      const urlEl = document.getElementById('snsi-proxy-url');
-      const userEl = document.getElementById('snsi-username');
-      const passEl = document.getElementById('snsi-password');
-      if (urlEl) urlEl.value = localStorage.getItem('sucapro_snsi_proxy_url') || "";
-      if (userEl) userEl.value = localStorage.getItem('sucapro_snsi_username') || "";
-      if (passEl) passEl.value = localStorage.getItem('sucapro_snsi_password') || "";
-    }
 
     function runLiveGasTriangle(source) {
       const po2Input = document.getElementById('calc-po2');
@@ -2502,25 +2458,10 @@
       renderLogbookFeed();
     }
 
-    async function syncDiveToSnsi(id, event) {
+    function syncDiveToSnsi(id, event) {
       if (event) event.stopPropagation();
-
-      const proxyUrl = (localStorage.getItem('sucapro_snsi_proxy_url') || "").trim();
-      const username = (localStorage.getItem('sucapro_snsi_username') || "").trim();
-      const password = localStorage.getItem('sucapro_snsi_password') || "";
-
-      if (!proxyUrl || !username || !password) {
-        alert("Configura URL Proxy, Username e Password MySNSI nella schermata Home.");
-        return;
-      }
-
       const dive = AppState.dives.find(d => d.id === id);
       if (!dive) return;
-
-      const btn = event.currentTarget;
-      const originalText = btn.innerHTML;
-      btn.innerText = "Invio in corso...";
-      btn.style.pointerEvents = "none";
 
       let endTime = "";
       if (dive.time && dive.duration) {
@@ -2550,47 +2491,17 @@
         "air-temp": dive.airTemp !== '--' && dive.airTemp !== undefined ? dive.airTemp : "",
         "water-temp": dive.tempMin !== '--' ? dive.tempMin : (dive.tempMax !== '--' ? dive.tempMax : ""),
         "visibility": dive.visibility !== '--' ? dive.visibility : "",
-        "dive-site": dive.site || "",
-        "latitude": "",
-        "longitude": ""
+        "dive-site": dive.site || ""
       };
 
-      try {
-        const response = await fetch(proxyUrl, {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify({ username, password, payload })
-        });
-
-        const rawText = await response.text();
-        let resData;
-        try {
-          resData = JSON.parse(rawText);
-        } catch(e) {
-          alert(`Risposta non-JSON dal proxy (HTTP ${response.status}):\n${rawText.substring(0, 150)}`);
-          btn.innerHTML = originalText;
-          btn.style.pointerEvents = "auto";
-          return;
-        }
-
-        if (response.ok && resData.success) {
-          dive.syncedSnsi = true;
-          saveStorage();
-          renderLogbookFeed();
-          alert(`Immersione #${dive.num} caricata con successo su MySNSI!`);
-        } else {
-          alert(`Errore (HTTP ${response.status}):\n${resData.error || "Impossibile completare l'invio"}`);
-          btn.innerHTML = originalText;
-          btn.style.pointerEvents = "auto";
-        }
-      } catch (err) {
-        alert(`Errore di rete o URL non valido:\n${err.message}`);
-        btn.innerHTML = originalText;
-        btn.style.pointerEvents = "auto";
-      }
+      navigator.clipboard.writeText(JSON.stringify(payload)).then(() => {
+        dive.syncedSnsi = true;
+        saveStorage();
+        renderLogbookFeed();
+        window.open("https://mysnsi.com/it/it/new-dive/", "_blank");
+      }).catch(err => {
+        alert("Errore accesso appunti: " + err.message);
+      });
     }
 
     function renderLogbookFeed() {
@@ -2663,7 +2574,7 @@
             <div class="log-header">
               <span class="log-title">#${d.num} · ${d.site}</span>
               <div style="display:flex; align-items:center; gap:6px;">
-                <span class="rating-badge">⭐️ ${d.rating || 8}/10</span>
+                <span class="rating-badge">⭐️️ ${d.rating || 8}/10</span>
                 <span class="snsi-badge ${isSynced ? 'snsi-synced' : 'snsi-unsynced'}" title="Tocca per commutare manualmente lo stato" onclick="toggleSnsiStatus(${d.id}, event)">
                   ${isSynced ? '✓ SNSI' : '○ Non Sinc.'}
                 </span>
@@ -2689,7 +2600,7 @@
 
                 ${d.video ? `
                   <a href="${d.video}" target="_blank" onclick="event.stopPropagation();" class="yt-badge-link" style="margin-top:0;">
-                    <svg style="width:12px; height:12px; fill:currentColor;" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 22c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73z"/></svg>
+                    <svg style="width:12px; height:12px; fill:currentColor;" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 22c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L22 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73z"/></svg>
                     Video
                   </a>
                 ` : ''}
